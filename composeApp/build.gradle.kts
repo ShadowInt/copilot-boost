@@ -4,6 +4,22 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.buildkonfig)
+}
+
+val projectVersion = "0.0.1"
+val projectName = "copilot-boost"
+
+buildkonfig {
+    packageName = "ru.copilot.boost"
+
+    defaultConfigs {
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "PROJECT_VERSION",
+            projectVersion,
+        )
+    }
 }
 
 kotlin {
