@@ -183,8 +183,10 @@ private fun ThreeColumnEditorWithDownload(
                     modifier = Modifier.width(fileColumnWidth),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Button(onClick = onDownloadClick) {
-                        Text("Скачать измененный файл")
+                    if (state.hasChanges) {
+                        Button(onClick = onDownloadClick) {
+                            Text("Скачать измененный файл")
+                        }
                     }
                 }
             }
