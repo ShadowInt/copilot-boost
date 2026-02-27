@@ -25,6 +25,7 @@ class CfgPatcher {
             removeAutocraftMenuDelay = isPresetApplied(currentValuesByKey, removeAutocraftMenuDelayPresetValues),
             reduceSleepingBagRemovalDelay = isPresetApplied(currentValuesByKey, reduceSleepingBagRemovalDelayPresetValues),
             addMapInfoToF8Menu = isPresetApplied(currentValuesByKey, addMapInfoToF8MenuPresetValues),
+            disableClientErrorOverlay = isPresetApplied(currentValuesByKey, disableClientErrorOverlayPresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -43,6 +44,7 @@ class CfgPatcher {
         removeAutocraftMenuDelay: Boolean,
         reduceSleepingBagRemovalDelay: Boolean,
         addMapInfoToF8Menu: Boolean,
+        disableClientErrorOverlay: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -56,6 +58,7 @@ class CfgPatcher {
         removeQuickCraftDelay: Boolean = false,
         removeSleepingBagRemovalDelay: Boolean = false,
         removeMapInfoFromF8Menu: Boolean = false,
+        removeClientErrorOverlay: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -72,6 +75,7 @@ class CfgPatcher {
             removeAutocraftMenuDelay = removeAutocraftMenuDelay,
             reduceSleepingBagRemovalDelay = reduceSleepingBagRemovalDelay,
             addMapInfoToF8Menu = addMapInfoToF8Menu,
+            disableClientErrorOverlay = disableClientErrorOverlay,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -87,6 +91,7 @@ class CfgPatcher {
             removeQuickCraftDelay = removeQuickCraftDelay,
             removeSleepingBagRemovalDelay = removeSleepingBagRemovalDelay,
             removeMapInfoFromF8Menu = removeMapInfoFromF8Menu,
+            removeClientErrorOverlay = removeClientErrorOverlay,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -220,6 +225,9 @@ class CfgPatcher {
         private val addMapInfoToF8MenuPresetValues = linkedMapOf(
             "debug.showworldinfoinperformancereadout" to "\"True\"",
         )
+        private val disableClientErrorOverlayPresetValues = linkedMapOf(
+            "console.erroroverlay" to "\"False\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -248,6 +256,7 @@ class CfgPatcher {
         private val removeAutocraftMenuDelayPresetLinesByKey = canonicalPresetLinesByKey(removeAutocraftMenuDelayPresetValues)
         private val reduceSleepingBagRemovalDelayPresetLinesByKey = canonicalPresetLinesByKey(reduceSleepingBagRemovalDelayPresetValues)
         private val addMapInfoToF8MenuPresetLinesByKey = canonicalPresetLinesByKey(addMapInfoToF8MenuPresetValues)
+        private val disableClientErrorOverlayPresetLinesByKey = canonicalPresetLinesByKey(disableClientErrorOverlayPresetValues)
         private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
         private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
         private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
@@ -263,6 +272,7 @@ class CfgPatcher {
             removeQuickCraftDelay: Boolean,
             removeSleepingBagRemovalDelay: Boolean,
             removeMapInfoFromF8Menu: Boolean,
+            removeClientErrorOverlay: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -279,6 +289,7 @@ class CfgPatcher {
                 removeQuickCraftDelay to removeAutocraftMenuDelayPresetLinesByKey.keys,
                 removeSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey.keys,
                 removeMapInfoFromF8Menu to addMapInfoToF8MenuPresetLinesByKey.keys,
+                removeClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey.keys,
                 removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
                 removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
                 removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
@@ -299,6 +310,7 @@ class CfgPatcher {
             removeAutocraftMenuDelay: Boolean,
             reduceSleepingBagRemovalDelay: Boolean,
             addMapInfoToF8Menu: Boolean,
+            disableClientErrorOverlay: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -315,6 +327,7 @@ class CfgPatcher {
                 removeAutocraftMenuDelay to removeAutocraftMenuDelayPresetLinesByKey,
                 reduceSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey,
                 addMapInfoToF8Menu to addMapInfoToF8MenuPresetLinesByKey,
+                disableClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey,
                 reduceCameraShake to reduceCameraShakePresetLinesByKey,
                 improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
                 disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,

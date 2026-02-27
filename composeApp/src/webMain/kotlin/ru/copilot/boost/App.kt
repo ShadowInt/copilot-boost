@@ -70,6 +70,7 @@ fun App() {
                             onRemoveAutocraftMenuDelayChanged = store::onRemoveAutocraftMenuDelayChanged,
                             onReduceSleepingBagRemovalDelayChanged = store::onReduceSleepingBagRemovalDelayChanged,
                             onAddMapInfoToF8MenuChanged = store::onAddMapInfoToF8MenuChanged,
+                            onDisableClientErrorOverlayChanged = store::onDisableClientErrorOverlayChanged,
                             onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
                             onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
                             onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,

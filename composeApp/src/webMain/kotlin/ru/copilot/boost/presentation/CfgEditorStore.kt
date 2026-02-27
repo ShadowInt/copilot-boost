@@ -44,6 +44,7 @@ class CfgEditorStore(
             removeAutocraftMenuDelay = appliedPresets.removeAutocraftMenuDelay,
             reduceSleepingBagRemovalDelay = appliedPresets.reduceSleepingBagRemovalDelay,
             addMapInfoToF8Menu = appliedPresets.addMapInfoToF8Menu,
+            disableClientErrorOverlay = appliedPresets.disableClientErrorOverlay,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -106,6 +107,12 @@ class CfgEditorStore(
         }
     }
 
+    fun onDisableClientErrorOverlayChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.disableClientErrorOverlay) {
+            it.copy(disableClientErrorOverlay = enabled)
+        }
+    }
+
     fun onReduceCameraShakeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
             it.copy(reduceCameraShake = enabled)
@@ -153,6 +160,7 @@ class CfgEditorStore(
             removeAutocraftMenuDelay = state.removeAutocraftMenuDelay,
             reduceSleepingBagRemovalDelay = state.reduceSleepingBagRemovalDelay,
             addMapInfoToF8Menu = state.addMapInfoToF8Menu,
+            disableClientErrorOverlay = state.disableClientErrorOverlay,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -166,6 +174,7 @@ class CfgEditorStore(
             removeQuickCraftDelay = initial?.removeAutocraftMenuDelay == true && !state.removeAutocraftMenuDelay,
             removeSleepingBagRemovalDelay = initial?.reduceSleepingBagRemovalDelay == true && !state.reduceSleepingBagRemovalDelay,
             removeMapInfoFromF8Menu = initial?.addMapInfoToF8Menu == true && !state.addMapInfoToF8Menu,
+            removeClientErrorOverlay = initial?.disableClientErrorOverlay == true && !state.disableClientErrorOverlay,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,
