@@ -15,6 +15,7 @@ data class CfgEditorUiState(
     val reduceHeldItemSize: Boolean = false,
     val restoreEventTextNotifications: Boolean = false,
     val removeAutocraftMenuDelay: Boolean = false,
+    val reduceSleepingBagRemovalDelay: Boolean = false,
     val reduceCameraShake: Boolean = false,
     val improveTreeMarkerVisibility: Boolean = false,
     val disableOcclusionCullingSafeMode: Boolean = false,
@@ -32,6 +33,7 @@ data class CfgEditorUiState(
             reduceHeldItemSize ||
             restoreEventTextNotifications ||
             removeAutocraftMenuDelay ||
+            reduceSleepingBagRemovalDelay ||
             reduceCameraShake ||
             improveTreeMarkerVisibility ||
             disableOcclusionCullingSafeMode ||

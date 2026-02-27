@@ -68,6 +68,7 @@ fun App() {
                             onReduceHeldItemSizeChanged = store::onReduceHeldItemSizeChanged,
                             onRestoreEventTextNotificationsChanged = store::onRestoreEventTextNotificationsChanged,
                             onRemoveAutocraftMenuDelayChanged = store::onRemoveAutocraftMenuDelayChanged,
+                            onReduceSleepingBagRemovalDelayChanged = store::onReduceSleepingBagRemovalDelayChanged,
                             onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
                             onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
                             onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,

@@ -42,6 +42,7 @@ class CfgEditorStore(
             reduceHeldItemSize = appliedPresets.reduceHeldItemSize,
             restoreEventTextNotifications = appliedPresets.restoreEventTextNotifications,
             removeAutocraftMenuDelay = appliedPresets.removeAutocraftMenuDelay,
+            reduceSleepingBagRemovalDelay = appliedPresets.reduceSleepingBagRemovalDelay,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -92,6 +93,12 @@ class CfgEditorStore(
         }
     }
 
+    fun onReduceSleepingBagRemovalDelayChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.reduceSleepingBagRemovalDelay) {
+            it.copy(reduceSleepingBagRemovalDelay = enabled)
+        }
+    }
+
     fun onReduceCameraShakeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
             it.copy(reduceCameraShake = enabled)
@@ -137,6 +144,7 @@ class CfgEditorStore(
             reduceHeldItemSize = state.reduceHeldItemSize,
             restoreEventTextNotifications = state.restoreEventTextNotifications,
             removeAutocraftMenuDelay = state.removeAutocraftMenuDelay,
+            reduceSleepingBagRemovalDelay = state.reduceSleepingBagRemovalDelay,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -148,6 +156,7 @@ class CfgEditorStore(
             removeHeldItemSize = initial?.reduceHeldItemSize == true && !state.reduceHeldItemSize,
             removeEventTextNotifications = initial?.restoreEventTextNotifications == true && !state.restoreEventTextNotifications,
             removeQuickCraftDelay = initial?.removeAutocraftMenuDelay == true && !state.removeAutocraftMenuDelay,
+            removeSleepingBagRemovalDelay = initial?.reduceSleepingBagRemovalDelay == true && !state.reduceSleepingBagRemovalDelay,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,

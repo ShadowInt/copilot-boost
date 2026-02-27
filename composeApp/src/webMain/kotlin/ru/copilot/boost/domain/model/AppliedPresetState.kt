@@ -8,6 +8,7 @@ data class AppliedPresetState(
     val reduceHeldItemSize: Boolean,
     val restoreEventTextNotifications: Boolean,
     val removeAutocraftMenuDelay: Boolean,
+    val reduceSleepingBagRemovalDelay: Boolean,
     val reduceCameraShake: Boolean,
     val improveTreeMarkerVisibility: Boolean,
     val disableOcclusionCullingSafeMode: Boolean,

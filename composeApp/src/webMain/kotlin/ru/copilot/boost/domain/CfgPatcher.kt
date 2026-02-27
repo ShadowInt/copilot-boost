@@ -23,6 +23,7 @@ class CfgPatcher {
             reduceHeldItemSize = isPresetApplied(currentValuesByKey, reduceHeldItemSizePresetValues),
             restoreEventTextNotifications = isPresetApplied(currentValuesByKey, restoreEventTextNotificationsPresetValues),
             removeAutocraftMenuDelay = isPresetApplied(currentValuesByKey, removeAutocraftMenuDelayPresetValues),
+            reduceSleepingBagRemovalDelay = isPresetApplied(currentValuesByKey, reduceSleepingBagRemovalDelayPresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -39,6 +40,7 @@ class CfgPatcher {
         reduceHeldItemSize: Boolean,
         restoreEventTextNotifications: Boolean,
         removeAutocraftMenuDelay: Boolean,
+        reduceSleepingBagRemovalDelay: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -50,6 +52,7 @@ class CfgPatcher {
         removeHeldItemSize: Boolean = false,
         removeEventTextNotifications: Boolean = false,
         removeQuickCraftDelay: Boolean = false,
+        removeSleepingBagRemovalDelay: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -64,6 +67,7 @@ class CfgPatcher {
             reduceHeldItemSize = reduceHeldItemSize,
             restoreEventTextNotifications = restoreEventTextNotifications,
             removeAutocraftMenuDelay = removeAutocraftMenuDelay,
+            reduceSleepingBagRemovalDelay = reduceSleepingBagRemovalDelay,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -77,6 +81,7 @@ class CfgPatcher {
             removeHeldItemSize = removeHeldItemSize,
             removeEventTextNotifications = removeEventTextNotifications,
             removeQuickCraftDelay = removeQuickCraftDelay,
+            removeSleepingBagRemovalDelay = removeSleepingBagRemovalDelay,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -204,6 +209,9 @@ class CfgPatcher {
         private val removeAutocraftMenuDelayPresetValues = linkedMapOf(
             "inventory.quickcraftdelay" to "\"0\"",
         )
+        private val reduceSleepingBagRemovalDelayPresetValues = linkedMapOf(
+            "client.bag_unclaim_duration" to "\"0.1\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -230,6 +238,7 @@ class CfgPatcher {
         private val reduceHeldItemSizePresetLinesByKey = canonicalPresetLinesByKey(reduceHeldItemSizePresetValues)
         private val restoreEventTextNotificationsPresetLinesByKey = canonicalPresetLinesByKey(restoreEventTextNotificationsPresetValues)
         private val removeAutocraftMenuDelayPresetLinesByKey = canonicalPresetLinesByKey(removeAutocraftMenuDelayPresetValues)
+        private val reduceSleepingBagRemovalDelayPresetLinesByKey = canonicalPresetLinesByKey(reduceSleepingBagRemovalDelayPresetValues)
         private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
         private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
         private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
@@ -243,6 +252,7 @@ class CfgPatcher {
             removeHeldItemSize: Boolean,
             removeEventTextNotifications: Boolean,
             removeQuickCraftDelay: Boolean,
+            removeSleepingBagRemovalDelay: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -257,6 +267,7 @@ class CfgPatcher {
                 removeHeldItemSize to reduceHeldItemSizePresetLinesByKey.keys,
                 removeEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey.keys,
                 removeQuickCraftDelay to removeAutocraftMenuDelayPresetLinesByKey.keys,
+                removeSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey.keys,
                 removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
                 removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
                 removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
@@ -275,6 +286,7 @@ class CfgPatcher {
             reduceHeldItemSize: Boolean,
             restoreEventTextNotifications: Boolean,
             removeAutocraftMenuDelay: Boolean,
+            reduceSleepingBagRemovalDelay: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -289,6 +301,7 @@ class CfgPatcher {
                 reduceHeldItemSize to reduceHeldItemSizePresetLinesByKey,
                 restoreEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey,
                 removeAutocraftMenuDelay to removeAutocraftMenuDelayPresetLinesByKey,
+                reduceSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey,
                 reduceCameraShake to reduceCameraShakePresetLinesByKey,
                 improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
                 disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,
