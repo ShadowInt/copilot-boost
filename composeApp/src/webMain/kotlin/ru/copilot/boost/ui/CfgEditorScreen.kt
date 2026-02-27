@@ -94,12 +94,14 @@ fun CfgEditorScreen(
                         }
                     }
 
-                    state.uploadError?.let { error ->
-                        Text(
-                            text = error,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(top = 10.dp),
-                        )
+                    if (!state.isDragging) {
+                        state.uploadError?.let { error ->
+                            Text(
+                                text = error,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(top = 10.dp),
+                            )
+                        }
                     }
                 }
             }

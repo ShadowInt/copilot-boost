@@ -31,7 +31,7 @@ actual fun observeGlobalFileDrop(
         onDragStateChanged(false)
         val file = dragEvent.dataTransfer?.files?.item(0)
         if (file != null) {
-            if (isAllowedCfgFile(file.name)) {
+            if (isAllowedClientCfgFile(file.name)) {
                 readFileAsText(file) { content ->
                     onFileSelected(UploadedFileData(name = file.name, content = content))
                 }
@@ -64,7 +64,7 @@ actual fun openFilePicker(
     input.onchange = {
         val file = input.files?.item(0)
         if (file != null) {
-            if (isAllowedCfgFile(file.name)) {
+            if (isAllowedClientCfgFile(file.name)) {
                 readFileAsText(file) { content ->
                     onFileSelected(UploadedFileData(name = file.name, content = content))
                 }
@@ -105,4 +105,4 @@ private fun readFileAsText(file: File, onRead: (String) -> Unit) {
     reader.readAsText(file)
 }
 
-private fun isAllowedCfgFile(fileName: String): Boolean = fileName.endsWith(".cfg", ignoreCase = true)
+private fun isAllowedClientCfgFile(fileName: String): Boolean = fileName == "client.cfg"

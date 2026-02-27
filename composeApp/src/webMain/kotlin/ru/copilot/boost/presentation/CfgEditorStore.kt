@@ -100,6 +100,6 @@ class CfgEditorStore(
     }
 
     companion object {
-        const val INVALID_FILE_ERROR: String = "Разрешены только файлы с расширением .cfg"
+        const val INVALID_FILE_ERROR: String = "Разрешен только файл с именем client.cfg"
     }
 }
