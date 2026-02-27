@@ -50,6 +50,7 @@ fun CfgEditorScreen(
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onEnlargedConsoleChanged: (Boolean) -> Unit,
+    onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -135,6 +136,7 @@ fun CfgEditorScreen(
                 onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
                 onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
                 onEnlargedConsoleChanged = onEnlargedConsoleChanged,
+                onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -165,6 +167,7 @@ private fun ThreeColumnEditorWithDownload(
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onEnlargedConsoleChanged: (Boolean) -> Unit,
+    onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -202,6 +205,7 @@ private fun ThreeColumnEditorWithDownload(
                     onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
                     onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
                     onEnlargedConsoleChanged = onEnlargedConsoleChanged,
+                    onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -249,6 +253,7 @@ private fun SettingsColumn(
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onEnlargedConsoleChanged: (Boolean) -> Unit,
+    onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -326,6 +331,13 @@ private fun SettingsColumn(
                     "Увеличенная консоль",
                     state.enlargedConsole,
                     onEnlargedConsoleChanged,
+                )
+
+                SettingsGroupTitle("Экспериментальные")
+                SettingRow(
+                    "Снизить задержку вызова радиального меню",
+                    state.reduceRadialMenuCallDelay,
+                    onReduceRadialMenuCallDelayChanged,
                 )
 
             }

@@ -14,6 +14,7 @@ data class AppliedPresetState(
     val addAdminGesturesToGameMenu: Boolean,
     val convenientSkinSorting: Boolean,
     val enlargedConsole: Boolean,
+    val reduceRadialMenuCallDelay: Boolean,
     val reduceCameraShake: Boolean,
     val improveTreeMarkerVisibility: Boolean,
     val disableOcclusionCullingSafeMode: Boolean,

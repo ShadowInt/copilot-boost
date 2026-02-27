@@ -29,6 +29,7 @@ class CfgPatcher {
             addAdminGesturesToGameMenu = isPresetApplied(currentValuesByKey, addAdminGesturesToGameMenuPresetValues),
             convenientSkinSorting = isPresetApplied(currentValuesByKey, convenientSkinSortingPresetValues),
             enlargedConsole = isPresetApplied(currentValuesByKey, enlargedConsolePresetValues),
+            reduceRadialMenuCallDelay = isPresetApplied(currentValuesByKey, reduceRadialMenuCallDelayPresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -51,6 +52,7 @@ class CfgPatcher {
         addAdminGesturesToGameMenu: Boolean,
         convenientSkinSorting: Boolean,
         enlargedConsole: Boolean,
+        reduceRadialMenuCallDelay: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -68,6 +70,7 @@ class CfgPatcher {
         removeAdminGesturesFromGameMenu: Boolean = false,
         removeConvenientSkinSorting: Boolean = false,
         removeEnlargedConsole: Boolean = false,
+        removeRadialMenuCallDelay: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -88,6 +91,7 @@ class CfgPatcher {
             addAdminGesturesToGameMenu = addAdminGesturesToGameMenu,
             convenientSkinSorting = convenientSkinSorting,
             enlargedConsole = enlargedConsole,
+            reduceRadialMenuCallDelay = reduceRadialMenuCallDelay,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -107,6 +111,7 @@ class CfgPatcher {
             removeAdminGesturesFromGameMenu = removeAdminGesturesFromGameMenu,
             removeConvenientSkinSorting = removeConvenientSkinSorting,
             removeEnlargedConsole = removeEnlargedConsole,
+            removeRadialMenuCallDelay = removeRadialMenuCallDelay,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -252,6 +257,9 @@ class CfgPatcher {
         private val enlargedConsolePresetValues = linkedMapOf(
             "global.consolescale" to "\"16\"",
         )
+        private val reduceRadialMenuCallDelayPresetValues = linkedMapOf(
+            "input.holdtime" to "\"0.15\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -284,6 +292,7 @@ class CfgPatcher {
         private val addAdminGesturesToGameMenuPresetLinesByKey = canonicalPresetLinesByKey(addAdminGesturesToGameMenuPresetValues)
         private val convenientSkinSortingPresetLinesByKey = canonicalPresetLinesByKey(convenientSkinSortingPresetValues)
         private val enlargedConsolePresetLinesByKey = canonicalPresetLinesByKey(enlargedConsolePresetValues)
+        private val reduceRadialMenuCallDelayPresetLinesByKey = canonicalPresetLinesByKey(reduceRadialMenuCallDelayPresetValues)
         private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
         private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
         private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
@@ -303,6 +312,7 @@ class CfgPatcher {
             removeAdminGesturesFromGameMenu: Boolean,
             removeConvenientSkinSorting: Boolean,
             removeEnlargedConsole: Boolean,
+            removeRadialMenuCallDelay: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -323,6 +333,7 @@ class CfgPatcher {
                 removeAdminGesturesFromGameMenu to addAdminGesturesToGameMenuPresetLinesByKey.keys,
                 removeConvenientSkinSorting to convenientSkinSortingPresetLinesByKey.keys,
                 removeEnlargedConsole to enlargedConsolePresetLinesByKey.keys,
+                removeRadialMenuCallDelay to reduceRadialMenuCallDelayPresetLinesByKey.keys,
                 removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
                 removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
                 removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
@@ -347,6 +358,7 @@ class CfgPatcher {
             addAdminGesturesToGameMenu: Boolean,
             convenientSkinSorting: Boolean,
             enlargedConsole: Boolean,
+            reduceRadialMenuCallDelay: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -367,6 +379,7 @@ class CfgPatcher {
                 addAdminGesturesToGameMenu to addAdminGesturesToGameMenuPresetLinesByKey,
                 convenientSkinSorting to convenientSkinSortingPresetLinesByKey,
                 enlargedConsole to enlargedConsolePresetLinesByKey,
+                reduceRadialMenuCallDelay to reduceRadialMenuCallDelayPresetLinesByKey,
                 reduceCameraShake to reduceCameraShakePresetLinesByKey,
                 improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
                 disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,

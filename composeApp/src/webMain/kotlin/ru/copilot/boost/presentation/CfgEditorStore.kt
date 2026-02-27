@@ -48,6 +48,7 @@ class CfgEditorStore(
             addAdminGesturesToGameMenu = appliedPresets.addAdminGesturesToGameMenu,
             convenientSkinSorting = appliedPresets.convenientSkinSorting,
             enlargedConsole = appliedPresets.enlargedConsole,
+            reduceRadialMenuCallDelay = appliedPresets.reduceRadialMenuCallDelay,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -134,6 +135,12 @@ class CfgEditorStore(
         }
     }
 
+    fun onReduceRadialMenuCallDelayChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.reduceRadialMenuCallDelay) {
+            it.copy(reduceRadialMenuCallDelay = enabled)
+        }
+    }
+
     fun onReduceCameraShakeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
             it.copy(reduceCameraShake = enabled)
@@ -185,6 +192,7 @@ class CfgEditorStore(
             addAdminGesturesToGameMenu = state.addAdminGesturesToGameMenu,
             convenientSkinSorting = state.convenientSkinSorting,
             enlargedConsole = state.enlargedConsole,
+            reduceRadialMenuCallDelay = state.reduceRadialMenuCallDelay,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -202,6 +210,7 @@ class CfgEditorStore(
             removeAdminGesturesFromGameMenu = initial?.addAdminGesturesToGameMenu == true && !state.addAdminGesturesToGameMenu,
             removeConvenientSkinSorting = initial?.convenientSkinSorting == true && !state.convenientSkinSorting,
             removeEnlargedConsole = initial?.enlargedConsole == true && !state.enlargedConsole,
+            removeRadialMenuCallDelay = initial?.reduceRadialMenuCallDelay == true && !state.reduceRadialMenuCallDelay,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,

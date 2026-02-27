@@ -74,6 +74,7 @@ fun App() {
                             onAddAdminGesturesToGameMenuChanged = store::onAddAdminGesturesToGameMenuChanged,
                             onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
                             onEnlargedConsoleChanged = store::onEnlargedConsoleChanged,
+                            onReduceRadialMenuCallDelayChanged = store::onReduceRadialMenuCallDelayChanged,
                             onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
                             onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
                             onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,
