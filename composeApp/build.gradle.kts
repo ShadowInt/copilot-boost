@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.buildkonfig)
 }
 
-val projectVersion = "0.0.3"
+val projectVersion = "0.0.4"
 val projectName = "copilot-boost"
 
 buildkonfig {
