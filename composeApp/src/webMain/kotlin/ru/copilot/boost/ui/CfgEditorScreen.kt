@@ -284,71 +284,124 @@ private fun SettingsColumn(
         ) {
             Column {
                 SettingsGroupTitle("Рекомендуемые")
-                SettingRow("Отключить все паразитные параметры", state.disableParasiticParameters, onDisableParasiticChanged)
-                SettingRow("Отключить отображение ног", state.disableLegsRendering, onDisableLegsRenderingChanged)
-                SettingRow("Уменьшить тряску камеры", state.reduceCameraShake, onReduceCameraShakeChanged)
-                SettingRow("Улучшить видимость крестиков на деревьях", state.improveTreeMarkerVisibility, onImproveTreeMarkerVisibilityChanged)
-                SettingRow("Отключить безопасный режим механизма отсечению окклюзии", state.disableOcclusionCullingSafeMode, onDisableOcclusionCullingSafeModeChanged)
+                SettingRow(
+                    label = "Отключить все паразитные параметры",
+                    checked = state.disableParasiticParameters,
+                    onCheckedChange = onDisableParasiticChanged,
+                    hint = "Отключает все ненужные настройки, которые затрудняют геймплей, снижают производительность или просто удалены из игры, но остались в меню (ненужные блики, размытия, уведомления, анимации и т.д.)",
+                )
+                SettingRow(
+                    label = "Отключить отображение ног",
+                    checked = state.disableLegsRendering,
+                    onCheckedChange = onDisableLegsRenderingChanged,
+                    hint = "Отключает отображение ног персонажа от первого лица, помогая целиться вниз.",
+                )
+                SettingRow(
+                    label = "Уменьшить тряску камеры",
+                    checked = state.reduceCameraShake,
+                    onCheckedChange = onReduceCameraShakeChanged,
+                    hint = "Минимизирует тряску камеры при беге, стрельбе, взрывах и получении урона.",
+                )
+                SettingRow(
+                    label = "Улучшить видимость крестиков на деревьях",
+                    checked = state.improveTreeMarkerVisibility,
+                    onCheckedChange = onImproveTreeMarkerVisibilityChanged,
+                    hint = "Меняет цвет отображения маркеров на деревьях на более контрастный.",
+                )
+                SettingRow(
+                    label = "Отключить безопасный режим механизма отсечению окклюзии",
+                    checked = state.disableOcclusionCullingSafeMode,
+                    onCheckedChange = onDisableOcclusionCullingSafeModeChanged,
+                    hint = "Проверка, что безопасный режим отсечения окклюзии, который очень сильно снижает FPS, отключен.",
+                )
 
                 SettingsGroupTitle("Визуальные эффекты")
-                SettingRow("Полностью отключить обломки", state.disableGibsCompletely, onDisableGibsCompletelyChanged)
-                SettingRow("Отключить деформацию ног", state.disableLegsDeformation, onDisableLegsDeformationChanged)
-                SettingRow("Отключить стробоскопы", state.disableStrobeLights, onDisableStrobeLightsChanged)
-                SettingRow("Уменьшить предмет в руках", state.reduceHeldItemSize, onReduceHeldItemSizeChanged)
+                SettingRow(
+                    label = "Полностью отключить обломки",
+                    checked = state.disableGibsCompletely,
+                    onCheckedChange = onDisableGibsCompletelyChanged,
+                    hint = "Полностью отключает обломки при разрушении сооружений и объектов. Звуки разрушений при этом сохраняются.",
+                )
+                SettingRow(
+                    label = "Отключить деформацию ног",
+                    checked = state.disableLegsDeformation,
+                    onCheckedChange = onDisableLegsDeformationChanged,
+                    hint = "Возвращает старую анимацию ног персонажа, которая не подстраивается под рельеф. Может помочь в PVP и немного снизить нагрузку на ПК.",
+                )
+                SettingRow(
+                    label = "Отключить стробоскопы",
+                    checked = state.disableStrobeLights,
+                    onCheckedChange = onDisableStrobeLightsChanged,
+                    hint = "Полностью отключает стробоскопы в игре, оставляя только звук их работы. Может сильно повысить FPS, если рядом несколько стробоскопов.",
+                )
+                SettingRow(
+                    label = "Уменьшить предмет в руках",
+                    checked = state.reduceHeldItemSize,
+                    onCheckedChange = onReduceHeldItemSizeChanged,
+                    hint = "Делает оружие и предметы в руках персонажа меньше. Функция работает только если уголь обзора установлен выше 70.",
+                )
 
                 SettingsGroupTitle("Интерфейс")
                 SettingRow(
-                    "Вернуть текстовые уведомления об ивентах",
-                    state.restoreEventTextNotifications,
-                    onRestoreEventTextNotificationsChanged,
+                    label = "Вернуть текстовые уведомления об ивентах",
+                    checked = state.restoreEventTextNotifications,
+                    onCheckedChange = onRestoreEventTextNotificationsChanged,
+                    hint = "Возвращает текстовые уведомления о старте ивентов, таких как появление на карте карго, патрульного вертолета, чинука и т.п.",
                 )
                 SettingRow(
-                    "Убрать задержку в меню автокрафта",
-                    state.removeAutocraftMenuDelay,
-                    onRemoveAutocraftMenuDelayChanged,
+                    label = "Убрать задержку в меню автокрафта",
+                    checked = state.removeAutocraftMenuDelay,
+                    onCheckedChange = onRemoveAutocraftMenuDelayChanged,
+                    hint = "Отключает небольшое провисание интерфейса при попытке скрафтить предмет через меню быстрого крафта.",
                 )
                 SettingRow(
-                    "Снизить задержку при удалении спальников",
-                    state.reduceSleepingBagRemovalDelay,
-                    onReduceSleepingBagRemovalDelayChanged,
+                    label = "Снизить задержку при удалении спальников",
+                    checked = state.reduceSleepingBagRemovalDelay,
+                    onCheckedChange = onReduceSleepingBagRemovalDelayChanged,
+                    hint = "Твик позволяет практически мгновенно удалять спальники, кликнув на крестик на карте.",
                 )
                 SettingRow(
-                    "Добавить информацию о карте в меню F8",
-                    state.addMapInfoToF8Menu,
-                    onAddMapInfoToF8MenuChanged,
+                    label = "Добавить информацию о карте в меню F8",
+                    checked = state.addMapInfoToF8Menu,
+                    onCheckedChange = onAddMapInfoToF8MenuChanged,
+                    hint = "Добавляет информацию о типе, размере и сиде карты в меню отладки F8. У администраторов серверов также отображаются коорлинаты персонажа.",
                 )
                 SettingRow(
-                    "Отключить отображение клиентских ошибок",
-                    state.disableClientErrorOverlay,
-                    onDisableClientErrorOverlayChanged,
+                    label = "Отключить отображение клиентских ошибок",
+                    checked = state.disableClientErrorOverlay,
+                    onCheckedChange = onDisableClientErrorOverlayChanged,
+                    hint = "Полностью отключает надоедливые красные ошибки в углу экрана.",
                 )
                 SettingRow(
-                    "Добавить админские жесты в игровое меню",
-                    state.addAdminGesturesToGameMenu,
-                    onAddAdminGesturesToGameMenuChanged,
+                    label = "Добавить админские жесты в игровое меню",
+                    checked = state.addAdminGesturesToGameMenu,
+                    onCheckedChange = onAddAdminGesturesToGameMenuChanged,
+                    hint = "Добавляет скрытые анимации в меню настройки жестов. Эти анимации работают только при наличии админки на сервере.",
                 )
                 SettingRow(
-                    "Удобная сортировка скинов",
-                    state.convenientSkinSorting,
-                    onConvenientSkinSortingChanged,
+                    label = "Удобная сортировка скинов",
+                    checked = state.convenientSkinSorting,
+                    onCheckedChange = onConvenientSkinSortingChanged,
+                    hint = "Сортирует скины в меню крафта по дате использования.",
                 )
                 SettingRow(
-                    "Увеличенная консоль",
-                    state.enlargedConsole,
-                    onEnlargedConsoleChanged,
+                    label = "Увеличенная консоль",
+                    checked = state.enlargedConsole,
+                    onCheckedChange = onEnlargedConsoleChanged,
+                    hint = "Увеличивает размер шрифта в консоли.",
                 )
 
                 SettingsGroupTitle("Экспериментальные")
                 SettingRow(
-                    "Снизить задержку вызова радиального меню",
-                    state.reduceRadialMenuCallDelay,
-                    onReduceRadialMenuCallDelayChanged,
+                    label = "Снизить задержку вызова радиального меню",
+                    checked = state.reduceRadialMenuCallDelay,
+                    onCheckedChange = onReduceRadialMenuCallDelayChanged,
                     hint = "Немного ускоряет появление радиального меню при зажатии кнопки взаимодействия. Может быть не привычно. Не рекомендуется игрокам с низким FPS.",
                 )
                 SettingRow(
-                    "Режим левой руки",
-                    state.leftHandMode,
-                    onLeftHandModeChanged,
+                    label = "Режим левой руки",
+                    checked = state.leftHandMode,
+                    onCheckedChange = onLeftHandModeChanged,
                     hint = "Переносит оружие и предметы в левую руку персонажа",
                 )
 
