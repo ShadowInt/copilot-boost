@@ -45,6 +45,7 @@ fun CfgEditorScreen(
     onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
     onRemoveAutocraftMenuDelayChanged: (Boolean) -> Unit,
     onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
+    onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -125,6 +126,7 @@ fun CfgEditorScreen(
                 onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
                 onRemoveAutocraftMenuDelayChanged = onRemoveAutocraftMenuDelayChanged,
                 onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
+                onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -150,6 +152,7 @@ private fun ThreeColumnEditorWithDownload(
     onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
     onRemoveAutocraftMenuDelayChanged: (Boolean) -> Unit,
     onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
+    onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -182,6 +185,7 @@ private fun ThreeColumnEditorWithDownload(
                     onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
                     onRemoveAutocraftMenuDelayChanged = onRemoveAutocraftMenuDelayChanged,
                     onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
+                    onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -224,6 +228,7 @@ private fun SettingsColumn(
     onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
     onRemoveAutocraftMenuDelayChanged: (Boolean) -> Unit,
     onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
+    onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -276,6 +281,11 @@ private fun SettingsColumn(
                     "Снизить задержку при удалении спальников",
                     state.reduceSleepingBagRemovalDelay,
                     onReduceSleepingBagRemovalDelayChanged,
+                )
+                SettingRow(
+                    "Добавить информацию о карте в меню F8",
+                    state.addMapInfoToF8Menu,
+                    onAddMapInfoToF8MenuChanged,
                 )
 
             }

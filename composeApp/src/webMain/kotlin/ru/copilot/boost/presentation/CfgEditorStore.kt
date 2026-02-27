@@ -43,6 +43,7 @@ class CfgEditorStore(
             restoreEventTextNotifications = appliedPresets.restoreEventTextNotifications,
             removeAutocraftMenuDelay = appliedPresets.removeAutocraftMenuDelay,
             reduceSleepingBagRemovalDelay = appliedPresets.reduceSleepingBagRemovalDelay,
+            addMapInfoToF8Menu = appliedPresets.addMapInfoToF8Menu,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -99,6 +100,12 @@ class CfgEditorStore(
         }
     }
 
+    fun onAddMapInfoToF8MenuChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.addMapInfoToF8Menu) {
+            it.copy(addMapInfoToF8Menu = enabled)
+        }
+    }
+
     fun onReduceCameraShakeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
             it.copy(reduceCameraShake = enabled)
@@ -145,6 +152,7 @@ class CfgEditorStore(
             restoreEventTextNotifications = state.restoreEventTextNotifications,
             removeAutocraftMenuDelay = state.removeAutocraftMenuDelay,
             reduceSleepingBagRemovalDelay = state.reduceSleepingBagRemovalDelay,
+            addMapInfoToF8Menu = state.addMapInfoToF8Menu,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -157,6 +165,7 @@ class CfgEditorStore(
             removeEventTextNotifications = initial?.restoreEventTextNotifications == true && !state.restoreEventTextNotifications,
             removeQuickCraftDelay = initial?.removeAutocraftMenuDelay == true && !state.removeAutocraftMenuDelay,
             removeSleepingBagRemovalDelay = initial?.reduceSleepingBagRemovalDelay == true && !state.reduceSleepingBagRemovalDelay,
+            removeMapInfoFromF8Menu = initial?.addMapInfoToF8Menu == true && !state.addMapInfoToF8Menu,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,
