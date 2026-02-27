@@ -80,16 +80,18 @@ fun CfgEditorScreen(
                         },
                         style = MaterialTheme.typography.headlineSmall,
                     )
-                    Text(
-                        text = "ИЛИ",
-                        modifier = Modifier.padding(top = 10.dp),
-                    )
+                    if (!state.isDragging) {
+                        Text(
+                            text = "ИЛИ",
+                            modifier = Modifier.padding(top = 10.dp),
+                        )
 
-                    Button(
-                        onClick = onPickFileClick,
-                        modifier = Modifier.padding(top = 16.dp),
-                    ) {
-                        Text("Выберите файл")
+                        Button(
+                            onClick = onPickFileClick,
+                            modifier = Modifier.padding(top = 16.dp),
+                        ) {
+                            Text("Выберите файл")
+                        }
                     }
 
                     state.uploadError?.let { error ->
