@@ -23,8 +23,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import ru.copilot.boost.domain.model.DiffRow
@@ -54,56 +56,53 @@ fun CfgEditorScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         if (!state.hasFile) {
-            Text(
-                text = "Загрузка файла",
-                style = MaterialTheme.typography.headlineSmall,
-            )
-        }
-
-        if (!state.hasFile) {
+            val dropZoneShape = RoundedCornerShape(16.dp)
             Box(
                 modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth()
-                    .height(170.dp)
+                    .fillMaxSize()
+                    .clip(dropZoneShape)
                     .border(
                         width = 2.dp,
                         color = if (state.isDragging) MaterialTheme.colorScheme.primary else Color.Gray,
+                        shape = dropZoneShape,
                     ),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = if (state.isDragging) {
-                        "Отпустите файл здесь"
-                    } else {
-                        "Перетащите файл в эту область"
-                    },
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = if (state.isDragging) {
+                            "Отпустите файл здесь"
+                        } else {
+                            "Перетащите client.cfg файл в эту область"
+                        },
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    Text(
+                        text = "ИЛИ",
+                        modifier = Modifier.padding(top = 10.dp),
+                    )
+
+                    Button(
+                        onClick = onPickFileClick,
+                        modifier = Modifier.padding(top = 16.dp),
+                    ) {
+                        Text("Выберите файл")
+                    }
+
+                    state.uploadError?.let { error ->
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(top = 10.dp),
+                        )
+                    }
+                }
             }
 
-            Button(
-                onClick = onPickFileClick,
-                modifier = Modifier.padding(top = 16.dp),
-            ) {
-                Text("Выбрать файл")
-            }
-        }
-
-        state.uploadError?.let { error ->
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 10.dp),
-            )
-        }
-
-        if (!state.hasFile) {
-            state.fileName?.let { fileName ->
-                Text(
-                    text = "Файл: $fileName",
-                    modifier = Modifier.padding(top = 12.dp),
-                )
-            }
+            return@Column
         }
 
         if (state.hasFile) {
