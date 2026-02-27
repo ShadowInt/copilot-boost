@@ -27,6 +27,7 @@ class CfgPatcher {
             addMapInfoToF8Menu = isPresetApplied(currentValuesByKey, addMapInfoToF8MenuPresetValues),
             disableClientErrorOverlay = isPresetApplied(currentValuesByKey, disableClientErrorOverlayPresetValues),
             addAdminGesturesToGameMenu = isPresetApplied(currentValuesByKey, addAdminGesturesToGameMenuPresetValues),
+            convenientSkinSorting = isPresetApplied(currentValuesByKey, convenientSkinSortingPresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -47,6 +48,7 @@ class CfgPatcher {
         addMapInfoToF8Menu: Boolean,
         disableClientErrorOverlay: Boolean,
         addAdminGesturesToGameMenu: Boolean,
+        convenientSkinSorting: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -62,6 +64,7 @@ class CfgPatcher {
         removeMapInfoFromF8Menu: Boolean = false,
         removeClientErrorOverlay: Boolean = false,
         removeAdminGesturesFromGameMenu: Boolean = false,
+        removeConvenientSkinSorting: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -80,6 +83,7 @@ class CfgPatcher {
             addMapInfoToF8Menu = addMapInfoToF8Menu,
             disableClientErrorOverlay = disableClientErrorOverlay,
             addAdminGesturesToGameMenu = addAdminGesturesToGameMenu,
+            convenientSkinSorting = convenientSkinSorting,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -97,6 +101,7 @@ class CfgPatcher {
             removeMapInfoFromF8Menu = removeMapInfoFromF8Menu,
             removeClientErrorOverlay = removeClientErrorOverlay,
             removeAdminGesturesFromGameMenu = removeAdminGesturesFromGameMenu,
+            removeConvenientSkinSorting = removeConvenientSkinSorting,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -236,6 +241,9 @@ class CfgPatcher {
         private val addAdminGesturesToGameMenuPresetValues = linkedMapOf(
             "gesturecollection.showadmincinematicgesturesinbindings" to "\"True\"",
         )
+        private val convenientSkinSortingPresetValues = linkedMapOf(
+            "client.sortskinsrecentlyused" to "\"True\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -266,6 +274,7 @@ class CfgPatcher {
         private val addMapInfoToF8MenuPresetLinesByKey = canonicalPresetLinesByKey(addMapInfoToF8MenuPresetValues)
         private val disableClientErrorOverlayPresetLinesByKey = canonicalPresetLinesByKey(disableClientErrorOverlayPresetValues)
         private val addAdminGesturesToGameMenuPresetLinesByKey = canonicalPresetLinesByKey(addAdminGesturesToGameMenuPresetValues)
+        private val convenientSkinSortingPresetLinesByKey = canonicalPresetLinesByKey(convenientSkinSortingPresetValues)
         private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
         private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
         private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
@@ -283,6 +292,7 @@ class CfgPatcher {
             removeMapInfoFromF8Menu: Boolean,
             removeClientErrorOverlay: Boolean,
             removeAdminGesturesFromGameMenu: Boolean,
+            removeConvenientSkinSorting: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -301,6 +311,7 @@ class CfgPatcher {
                 removeMapInfoFromF8Menu to addMapInfoToF8MenuPresetLinesByKey.keys,
                 removeClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey.keys,
                 removeAdminGesturesFromGameMenu to addAdminGesturesToGameMenuPresetLinesByKey.keys,
+                removeConvenientSkinSorting to convenientSkinSortingPresetLinesByKey.keys,
                 removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
                 removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
                 removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
@@ -323,6 +334,7 @@ class CfgPatcher {
             addMapInfoToF8Menu: Boolean,
             disableClientErrorOverlay: Boolean,
             addAdminGesturesToGameMenu: Boolean,
+            convenientSkinSorting: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -341,6 +353,7 @@ class CfgPatcher {
                 addMapInfoToF8Menu to addMapInfoToF8MenuPresetLinesByKey,
                 disableClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey,
                 addAdminGesturesToGameMenu to addAdminGesturesToGameMenuPresetLinesByKey,
+                convenientSkinSorting to convenientSkinSortingPresetLinesByKey,
                 reduceCameraShake to reduceCameraShakePresetLinesByKey,
                 improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
                 disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,

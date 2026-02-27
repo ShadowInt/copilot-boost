@@ -72,6 +72,7 @@ fun App() {
                             onAddMapInfoToF8MenuChanged = store::onAddMapInfoToF8MenuChanged,
                             onDisableClientErrorOverlayChanged = store::onDisableClientErrorOverlayChanged,
                             onAddAdminGesturesToGameMenuChanged = store::onAddAdminGesturesToGameMenuChanged,
+                            onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
                             onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
                             onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
                             onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,

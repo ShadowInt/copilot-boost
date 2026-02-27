@@ -19,6 +19,7 @@ data class CfgEditorUiState(
     val addMapInfoToF8Menu: Boolean = false,
     val disableClientErrorOverlay: Boolean = false,
     val addAdminGesturesToGameMenu: Boolean = false,
+    val convenientSkinSorting: Boolean = false,
     val reduceCameraShake: Boolean = false,
     val improveTreeMarkerVisibility: Boolean = false,
     val disableOcclusionCullingSafeMode: Boolean = false,
@@ -40,6 +41,7 @@ data class CfgEditorUiState(
             addMapInfoToF8Menu ||
             disableClientErrorOverlay ||
             addAdminGesturesToGameMenu ||
+            convenientSkinSorting ||
             reduceCameraShake ||
             improveTreeMarkerVisibility ||
             disableOcclusionCullingSafeMode ||

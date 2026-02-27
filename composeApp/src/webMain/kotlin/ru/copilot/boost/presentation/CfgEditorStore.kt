@@ -46,6 +46,7 @@ class CfgEditorStore(
             addMapInfoToF8Menu = appliedPresets.addMapInfoToF8Menu,
             disableClientErrorOverlay = appliedPresets.disableClientErrorOverlay,
             addAdminGesturesToGameMenu = appliedPresets.addAdminGesturesToGameMenu,
+            convenientSkinSorting = appliedPresets.convenientSkinSorting,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -120,6 +121,12 @@ class CfgEditorStore(
         }
     }
 
+    fun onConvenientSkinSortingChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.convenientSkinSorting) {
+            it.copy(convenientSkinSorting = enabled)
+        }
+    }
+
     fun onReduceCameraShakeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
             it.copy(reduceCameraShake = enabled)
@@ -169,6 +176,7 @@ class CfgEditorStore(
             addMapInfoToF8Menu = state.addMapInfoToF8Menu,
             disableClientErrorOverlay = state.disableClientErrorOverlay,
             addAdminGesturesToGameMenu = state.addAdminGesturesToGameMenu,
+            convenientSkinSorting = state.convenientSkinSorting,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -184,6 +192,7 @@ class CfgEditorStore(
             removeMapInfoFromF8Menu = initial?.addMapInfoToF8Menu == true && !state.addMapInfoToF8Menu,
             removeClientErrorOverlay = initial?.disableClientErrorOverlay == true && !state.disableClientErrorOverlay,
             removeAdminGesturesFromGameMenu = initial?.addAdminGesturesToGameMenu == true && !state.addAdminGesturesToGameMenu,
+            removeConvenientSkinSorting = initial?.convenientSkinSorting == true && !state.convenientSkinSorting,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,

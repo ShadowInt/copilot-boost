@@ -48,6 +48,7 @@ fun CfgEditorScreen(
     onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
+    onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -131,6 +132,7 @@ fun CfgEditorScreen(
                 onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
                 onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
                 onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
+                onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -159,6 +161,7 @@ private fun ThreeColumnEditorWithDownload(
     onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
+    onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -194,6 +197,7 @@ private fun ThreeColumnEditorWithDownload(
                     onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
                     onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
                     onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
+                    onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -239,6 +243,7 @@ private fun SettingsColumn(
     onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
+    onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -306,6 +311,11 @@ private fun SettingsColumn(
                     "Добавить админские жесты в игровое меню",
                     state.addAdminGesturesToGameMenu,
                     onAddAdminGesturesToGameMenuChanged,
+                )
+                SettingRow(
+                    "Удобная сортировка скинов",
+                    state.convenientSkinSorting,
+                    onConvenientSkinSortingChanged,
                 )
 
             }
