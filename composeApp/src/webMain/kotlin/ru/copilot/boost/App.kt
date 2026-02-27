@@ -1,16 +1,10 @@
 package ru.copilot.boost
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
@@ -22,7 +16,11 @@ import ru.copilot.boost.ui.TopNavigation
 @Composable
 fun App() {
     val store = remember { CfgEditorStore() }
-    var currentScreen by remember { mutableStateOf(AppScreen.Home) }
+    var currentScreen by remember { mutableStateOf(loadSavedScreen()) }
+
+    LaunchedEffect(currentScreen) {
+        saveScreen(currentScreen)
+    }
 
     if (currentScreen == AppScreen.Tweaks) {
         DisposableEffect(store) {

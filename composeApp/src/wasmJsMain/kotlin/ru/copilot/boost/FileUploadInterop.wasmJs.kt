@@ -91,6 +91,12 @@ actual fun downloadCfgFile(fileName: String, content: String) {
     anchor.remove()
 }
 
+actual fun readLocalStorage(key: String): String? = window.localStorage.getItem(key)
+
+actual fun writeLocalStorage(key: String, value: String) {
+    window.localStorage.setItem(key, value)
+}
+
 @OptIn(ExperimentalWasmJsInterop::class)
 private fun readFileAsText(file: File, onRead: (String) -> Unit) {
     val reader = FileReader()

@@ -14,3 +14,7 @@ expect fun openFilePicker(
 )
 
 expect fun downloadCfgFile(fileName: String, content: String)
+
+expect fun readLocalStorage(key: String): String?
+
+expect fun writeLocalStorage(key: String, value: String)

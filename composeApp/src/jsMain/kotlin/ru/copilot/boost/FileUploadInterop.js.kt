@@ -90,6 +90,12 @@ actual fun downloadCfgFile(fileName: String, content: String) {
     anchor.remove()
 }
 
+actual fun readLocalStorage(key: String): String? = window.localStorage.getItem(key)
+
+actual fun writeLocalStorage(key: String, value: String) {
+    window.localStorage.setItem(key, value)
+}
+
 private fun readFileAsText(file: File, onRead: (String) -> Unit) {
     val reader = FileReader()
     reader.onload = {
