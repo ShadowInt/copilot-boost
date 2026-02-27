@@ -343,11 +343,13 @@ private fun SettingsColumn(
                     "Снизить задержку вызова радиального меню",
                     state.reduceRadialMenuCallDelay,
                     onReduceRadialMenuCallDelayChanged,
+                    hint = "Немного ускоряет появление радиального меню при зажатии кнопки взаимодействия. Может быть не привычно. Не рекомендуется игрокам с низким FPS.",
                 )
                 SettingRow(
                     "Режим левой руки",
                     state.leftHandMode,
                     onLeftHandModeChanged,
+                    hint = "Переносит оружие и предметы в левую руку персонажа",
                 )
 
             }
@@ -369,18 +371,29 @@ private fun SettingRow(
     label: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    hint: String? = null,
 ) {
     Row(
         modifier = Modifier
             .padding(top = 6.dp)
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = if (hint == null) Alignment.CenterVertically else Alignment.Top,
     ) {
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange,
         )
-        Text(label)
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(label)
+            if (hint != null) {
+                Text(
+                    text = hint,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp, end = 8.dp),
+                )
+            }
+        }
     }
 }
 
