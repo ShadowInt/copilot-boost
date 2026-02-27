@@ -51,4 +51,24 @@ kotlin {
     }
 }
 
+tasks.register("updateVersionInFiles") {
+    val dockerComposeFile = File(project.rootDir, "docker-compose.yml")
+    val newComposeFileContent = dockerComposeFile
+        .readText()
+        .replace("""$projectName:\d+\.\d+\.\d+""".toRegex(), "$projectName:$projectVersion")
+    dockerComposeFile.writeText(newComposeFileContent)
 
+    val readmeFile = File(project.rootDir, "README.md")
+    val newReadmeFileContent = readmeFile
+        .readText()
+        .replace("""$projectName:\d+\.\d+\.\d+""".toRegex(), "$projectName:$projectVersion")
+    readmeFile.writeText(newReadmeFileContent)
+}
+
+tasks.named("wasmJsBrowserDistribution") {
+    dependsOn("updateVersionInFiles")
+}
+
+//tasks.named("jsBrowserDistribution") {
+//    dependsOn("updateVersionInFiles")
+//}

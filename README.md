@@ -40,3 +40,14 @@ Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-mu
 
 We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
 If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+
+### Сборка и развертывание
+
+```shell
+#./gradlew :composeApp:jsBrowserDistribution
+./gradlew :composeApp:wasmJsBrowserDistribution
+```
+
+```shell
+sudo docker image build -t registry.rust-copilot.ru/copilot-boost:0.0.1 . && sudo docker image push registry.rust-copilot.ru/copilot-boost:0.0.1
+```

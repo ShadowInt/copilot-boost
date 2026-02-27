@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  copilot-boost:
+    image: "registry.rust-copilot.ru/copilot-boost:0.0.1"
+    container_name: "copilot-boost"
+    restart: always
+    networks:
+      - traefik_default
+    deploy:
+      replicas: 1
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.copilot-boost-router.rule=Host(`rust-copilot.ru`)"
+      - "traefik.http.routers.copilot-boost-router.entrypoints=websecure"
+      - "traefik.http.routers.copilot-boost-router.tls.certresolver=sergey"
+      - "traefik.http.services.copilot-boost-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.copilot-boost-router.service=copilot-boost-service"
+
+networks:
+  traefik_default:
+    external:
+      name: traefik_default
