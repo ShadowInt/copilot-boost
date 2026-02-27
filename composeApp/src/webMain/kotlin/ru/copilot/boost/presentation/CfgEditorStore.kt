@@ -41,6 +41,7 @@ class CfgEditorStore(
             disableStrobeLights = appliedPresets.disableStrobeLights,
             reduceHeldItemSize = appliedPresets.reduceHeldItemSize,
             restoreEventTextNotifications = appliedPresets.restoreEventTextNotifications,
+            removeAutocraftMenuDelay = appliedPresets.removeAutocraftMenuDelay,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -82,6 +83,12 @@ class CfgEditorStore(
     fun onRestoreEventTextNotificationsChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.restoreEventTextNotifications) {
             it.copy(restoreEventTextNotifications = enabled)
+        }
+    }
+
+    fun onRemoveAutocraftMenuDelayChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.removeAutocraftMenuDelay) {
+            it.copy(removeAutocraftMenuDelay = enabled)
         }
     }
 
@@ -129,6 +136,7 @@ class CfgEditorStore(
             disableStrobeLights = state.disableStrobeLights,
             reduceHeldItemSize = state.reduceHeldItemSize,
             restoreEventTextNotifications = state.restoreEventTextNotifications,
+            removeAutocraftMenuDelay = state.removeAutocraftMenuDelay,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -139,6 +147,7 @@ class CfgEditorStore(
             removeStrobeLights = initial?.disableStrobeLights == true && !state.disableStrobeLights,
             removeHeldItemSize = initial?.reduceHeldItemSize == true && !state.reduceHeldItemSize,
             removeEventTextNotifications = initial?.restoreEventTextNotifications == true && !state.restoreEventTextNotifications,
+            removeQuickCraftDelay = initial?.removeAutocraftMenuDelay == true && !state.removeAutocraftMenuDelay,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,

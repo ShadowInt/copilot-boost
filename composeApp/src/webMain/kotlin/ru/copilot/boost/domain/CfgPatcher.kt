@@ -22,6 +22,7 @@ class CfgPatcher {
             disableStrobeLights = isPresetApplied(currentValuesByKey, disableStrobeLightsPresetValues),
             reduceHeldItemSize = isPresetApplied(currentValuesByKey, reduceHeldItemSizePresetValues),
             restoreEventTextNotifications = isPresetApplied(currentValuesByKey, restoreEventTextNotificationsPresetValues),
+            removeAutocraftMenuDelay = isPresetApplied(currentValuesByKey, removeAutocraftMenuDelayPresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -37,6 +38,7 @@ class CfgPatcher {
         disableStrobeLights: Boolean,
         reduceHeldItemSize: Boolean,
         restoreEventTextNotifications: Boolean,
+        removeAutocraftMenuDelay: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -47,6 +49,7 @@ class CfgPatcher {
         removeStrobeLights: Boolean = false,
         removeHeldItemSize: Boolean = false,
         removeEventTextNotifications: Boolean = false,
+        removeQuickCraftDelay: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -60,6 +63,7 @@ class CfgPatcher {
             disableStrobeLights = disableStrobeLights,
             reduceHeldItemSize = reduceHeldItemSize,
             restoreEventTextNotifications = restoreEventTextNotifications,
+            removeAutocraftMenuDelay = removeAutocraftMenuDelay,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -72,6 +76,7 @@ class CfgPatcher {
             removeStrobeLights = removeStrobeLights,
             removeHeldItemSize = removeHeldItemSize,
             removeEventTextNotifications = removeEventTextNotifications,
+            removeQuickCraftDelay = removeQuickCraftDelay,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -196,6 +201,9 @@ class CfgPatcher {
         private val restoreEventTextNotificationsPresetValues = linkedMapOf(
             "ui.monumentnotificationtoasts" to "\"True\"",
         )
+        private val removeAutocraftMenuDelayPresetValues = linkedMapOf(
+            "inventory.quickcraftdelay" to "\"0\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -221,6 +229,7 @@ class CfgPatcher {
         private val disableStrobeLightsPresetLinesByKey = canonicalPresetLinesByKey(disableStrobeLightsPresetValues)
         private val reduceHeldItemSizePresetLinesByKey = canonicalPresetLinesByKey(reduceHeldItemSizePresetValues)
         private val restoreEventTextNotificationsPresetLinesByKey = canonicalPresetLinesByKey(restoreEventTextNotificationsPresetValues)
+        private val removeAutocraftMenuDelayPresetLinesByKey = canonicalPresetLinesByKey(removeAutocraftMenuDelayPresetValues)
         private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
         private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
         private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
@@ -233,6 +242,7 @@ class CfgPatcher {
             removeStrobeLights: Boolean,
             removeHeldItemSize: Boolean,
             removeEventTextNotifications: Boolean,
+            removeQuickCraftDelay: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -246,6 +256,7 @@ class CfgPatcher {
                 removeStrobeLights to disableStrobeLightsPresetLinesByKey.keys,
                 removeHeldItemSize to reduceHeldItemSizePresetLinesByKey.keys,
                 removeEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey.keys,
+                removeQuickCraftDelay to removeAutocraftMenuDelayPresetLinesByKey.keys,
                 removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
                 removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
                 removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
@@ -263,6 +274,7 @@ class CfgPatcher {
             disableStrobeLights: Boolean,
             reduceHeldItemSize: Boolean,
             restoreEventTextNotifications: Boolean,
+            removeAutocraftMenuDelay: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -276,6 +288,7 @@ class CfgPatcher {
                 disableStrobeLights to disableStrobeLightsPresetLinesByKey,
                 reduceHeldItemSize to reduceHeldItemSizePresetLinesByKey,
                 restoreEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey,
+                removeAutocraftMenuDelay to removeAutocraftMenuDelayPresetLinesByKey,
                 reduceCameraShake to reduceCameraShakePresetLinesByKey,
                 improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
                 disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,

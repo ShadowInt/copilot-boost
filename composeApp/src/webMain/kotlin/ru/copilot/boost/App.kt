@@ -67,6 +67,7 @@ fun App() {
                             onDisableStrobeLightsChanged = store::onDisableStrobeLightsChanged,
                             onReduceHeldItemSizeChanged = store::onReduceHeldItemSizeChanged,
                             onRestoreEventTextNotificationsChanged = store::onRestoreEventTextNotificationsChanged,
+                            onRemoveAutocraftMenuDelayChanged = store::onRemoveAutocraftMenuDelayChanged,
                             onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
                             onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
                             onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,
