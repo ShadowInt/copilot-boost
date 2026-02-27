@@ -12,6 +12,8 @@ class CfgPatcher {
             disableParasiticParameters = isPresetApplied(currentValuesByKey, parasiticPresetValues),
             disableLegsRendering = isPresetApplied(currentValuesByKey, legsPresetValues),
             disableLegsDeformation = isPresetApplied(currentValuesByKey, legsDeformationPresetValues),
+            disableStrobeLights = isPresetApplied(currentValuesByKey, disableStrobeLightsPresetValues),
+            reduceHeldItemSize = isPresetApplied(currentValuesByKey, reduceHeldItemSizePresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -24,6 +26,8 @@ class CfgPatcher {
         disableParasiticParameters: Boolean,
         disableLegsRendering: Boolean,
         disableLegsDeformation: Boolean,
+        disableStrobeLights: Boolean,
+        reduceHeldItemSize: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -33,6 +37,8 @@ class CfgPatcher {
             disableParasiticParameters = disableParasiticParameters,
             disableLegsRendering = disableLegsRendering,
             disableLegsDeformation = disableLegsDeformation,
+            disableStrobeLights = disableStrobeLights,
+            reduceHeldItemSize = reduceHeldItemSize,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -154,6 +160,12 @@ class CfgPatcher {
         private val legsDeformationPresetValues = linkedMapOf(
             "player.footik" to "\"False\"",
         )
+        private val disableStrobeLightsPresetValues = linkedMapOf(
+            "strobelight.forceoff" to "\"True\"",
+        )
+        private val reduceHeldItemSizePresetValues = linkedMapOf(
+            "graphics.vm_fov_scale" to "\"False\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -183,6 +195,12 @@ class CfgPatcher {
         private val legsDeformationPresetLinesByKey = legsDeformationPresetValues
             .mapKeys { it.key.lowercase() }
             .mapValues { (key, value) -> "$key $value" }
+        private val disableStrobeLightsPresetLinesByKey = disableStrobeLightsPresetValues
+            .mapKeys { it.key.lowercase() }
+            .mapValues { (key, value) -> "$key $value" }
+        private val reduceHeldItemSizePresetLinesByKey = reduceHeldItemSizePresetValues
+            .mapKeys { it.key.lowercase() }
+            .mapValues { (key, value) -> "$key $value" }
         private val reduceCameraShakePresetLinesByKey = reduceCameraShakePresetValues
             .mapKeys { it.key.lowercase() }
             .mapValues { (key, value) -> "$key $value" }
@@ -200,6 +218,8 @@ class CfgPatcher {
             disableParasiticParameters: Boolean,
             disableLegsRendering: Boolean,
             disableLegsDeformation: Boolean,
+            disableStrobeLights: Boolean,
+            reduceHeldItemSize: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -214,6 +234,12 @@ class CfgPatcher {
             }
             if (disableLegsDeformation) {
                 activePresets.putAll(legsDeformationPresetLinesByKey)
+            }
+            if (disableStrobeLights) {
+                activePresets.putAll(disableStrobeLightsPresetLinesByKey)
+            }
+            if (reduceHeldItemSize) {
+                activePresets.putAll(reduceHeldItemSizePresetLinesByKey)
             }
             if (reduceCameraShake) {
                 activePresets.putAll(reduceCameraShakePresetLinesByKey)

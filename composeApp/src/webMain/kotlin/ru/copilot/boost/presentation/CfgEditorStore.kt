@@ -30,6 +30,8 @@ class CfgEditorStore(
             disableParasiticParameters = appliedPresets.disableParasiticParameters,
             disableLegsRendering = appliedPresets.disableLegsRendering,
             disableLegsDeformation = appliedPresets.disableLegsDeformation,
+            disableStrobeLights = appliedPresets.disableStrobeLights,
+            reduceHeldItemSize = appliedPresets.reduceHeldItemSize,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -50,6 +52,16 @@ class CfgEditorStore(
 
     fun onDisableLegsDeformationChanged(enabled: Boolean) {
         state = state.copy(disableLegsDeformation = enabled)
+        recalculatePatch()
+    }
+
+    fun onDisableStrobeLightsChanged(enabled: Boolean) {
+        state = state.copy(disableStrobeLights = enabled)
+        recalculatePatch()
+    }
+
+    fun onReduceHeldItemSizeChanged(enabled: Boolean) {
+        state = state.copy(reduceHeldItemSize = enabled)
         recalculatePatch()
     }
 
@@ -87,6 +99,8 @@ class CfgEditorStore(
             disableParasiticParameters = state.disableParasiticParameters,
             disableLegsRendering = state.disableLegsRendering,
             disableLegsDeformation = state.disableLegsDeformation,
+            disableStrobeLights = state.disableStrobeLights,
+            reduceHeldItemSize = state.reduceHeldItemSize,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,

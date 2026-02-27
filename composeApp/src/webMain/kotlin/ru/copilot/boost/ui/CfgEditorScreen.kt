@@ -40,6 +40,8 @@ fun CfgEditorScreen(
     onDisableParasiticChanged: (Boolean) -> Unit,
     onDisableLegsRenderingChanged: (Boolean) -> Unit,
     onDisableLegsDeformationChanged: (Boolean) -> Unit,
+    onDisableStrobeLightsChanged: (Boolean) -> Unit,
+    onReduceHeldItemSizeChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -115,6 +117,8 @@ fun CfgEditorScreen(
                 onDisableParasiticChanged = onDisableParasiticChanged,
                 onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
                 onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
+                onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
+                onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -135,6 +139,8 @@ private fun ThreeColumnEditorWithDownload(
     onDisableParasiticChanged: (Boolean) -> Unit,
     onDisableLegsRenderingChanged: (Boolean) -> Unit,
     onDisableLegsDeformationChanged: (Boolean) -> Unit,
+    onDisableStrobeLightsChanged: (Boolean) -> Unit,
+    onReduceHeldItemSizeChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -161,6 +167,8 @@ private fun ThreeColumnEditorWithDownload(
                     onDisableParasiticChanged = onDisableParasiticChanged,
                     onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
                     onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
+                    onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
+                    onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -198,6 +206,8 @@ private fun SettingsColumn(
     onDisableParasiticChanged: (Boolean) -> Unit,
     onDisableLegsRenderingChanged: (Boolean) -> Unit,
     onDisableLegsDeformationChanged: (Boolean) -> Unit,
+    onDisableStrobeLightsChanged: (Boolean) -> Unit,
+    onReduceHeldItemSizeChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -222,16 +232,31 @@ private fun SettingsColumn(
                 .verticalScroll(rememberScrollState()),
         ) {
             Column {
+                SettingsGroupTitle("Рекомендуемые")
                 SettingRow("Отключить все паразитные параметры", state.disableParasiticParameters, onDisableParasiticChanged)
                 SettingRow("Отключить отображение ног", state.disableLegsRendering, onDisableLegsRenderingChanged)
-                SettingRow("Отключить деформацию ног", state.disableLegsDeformation, onDisableLegsDeformationChanged)
                 SettingRow("Уменьшить тряску камеры", state.reduceCameraShake, onReduceCameraShakeChanged)
                 SettingRow("Улучшить видимость крестиков на деревьях", state.improveTreeMarkerVisibility, onImproveTreeMarkerVisibilityChanged)
-                SettingRow("Отключить безопасный режим механизма отсечения окклюзий", state.disableOcclusionCullingSafeMode, onDisableOcclusionCullingSafeModeChanged)
+                SettingRow("Отключить безопасный режим механизма отсечению окклюзии", state.disableOcclusionCullingSafeMode, onDisableOcclusionCullingSafeModeChanged)
+
+                SettingsGroupTitle("Визуальные эффекты")
                 SettingRow("Полностью отключить обломки", state.disableGibsCompletely, onDisableGibsCompletelyChanged)
+                SettingRow("Отключить деформацию ног", state.disableLegsDeformation, onDisableLegsDeformationChanged)
+                SettingRow("Отключить стробоскопы", state.disableStrobeLights, onDisableStrobeLightsChanged)
+                SettingRow("Уменьшить предмет в руках", state.reduceHeldItemSize, onReduceHeldItemSizeChanged)
+
             }
         }
     }
+}
+
+@Composable
+private fun SettingsGroupTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(top = 10.dp, start = 4.dp),
+    )
 }
 
 @Composable

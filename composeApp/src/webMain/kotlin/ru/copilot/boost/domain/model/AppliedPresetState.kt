@@ -4,6 +4,8 @@ data class AppliedPresetState(
     val disableParasiticParameters: Boolean,
     val disableLegsRendering: Boolean,
     val disableLegsDeformation: Boolean,
+    val disableStrobeLights: Boolean,
+    val reduceHeldItemSize: Boolean,
     val reduceCameraShake: Boolean,
     val improveTreeMarkerVisibility: Boolean,
     val disableOcclusionCullingSafeMode: Boolean,

@@ -11,6 +11,8 @@ data class CfgEditorUiState(
     val disableParasiticParameters: Boolean = false,
     val disableLegsRendering: Boolean = false,
     val disableLegsDeformation: Boolean = false,
+    val disableStrobeLights: Boolean = false,
+    val reduceHeldItemSize: Boolean = false,
     val reduceCameraShake: Boolean = false,
     val improveTreeMarkerVisibility: Boolean = false,
     val disableOcclusionCullingSafeMode: Boolean = false,
@@ -24,6 +26,8 @@ data class CfgEditorUiState(
         disableParasiticParameters ||
             disableLegsRendering ||
             disableLegsDeformation ||
+            disableStrobeLights ||
+            reduceHeldItemSize ||
             reduceCameraShake ||
             improveTreeMarkerVisibility ||
             disableOcclusionCullingSafeMode ||
