@@ -193,7 +193,7 @@ private fun ThreeColumnEditorWithDownload(
                     .fillMaxWidth()
                     .fillMaxSize(),
             ) {
-                SettingsColumn(
+                SettingsCard(
                     state = state,
                     onDisableParasiticChanged = onDisableParasiticChanged,
                     onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
@@ -242,7 +242,7 @@ private fun ThreeColumnEditorWithDownload(
 }
 
 @Composable
-private fun SettingsColumn(
+internal fun SettingsCard(
     state: CfgEditorUiState,
     onDisableParasiticChanged: (Boolean) -> Unit,
     onDisableLegsRenderingChanged: (Boolean) -> Unit,
