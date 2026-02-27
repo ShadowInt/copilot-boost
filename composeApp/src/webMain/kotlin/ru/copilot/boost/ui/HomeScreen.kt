@@ -32,19 +32,19 @@ fun HomeScreen(
 
         ModuleCard(
             title = "Твики конфигурации",
-            description = "Изменение параметров cfg с diff-просмотром.",
+            description = "Изменение параметров client.cfg с diff-просмотром",
             onOpen = onOpenTweaks,
             modifier = Modifier.padding(top = 20.dp),
         )
         ModuleCard(
             title = "Функционал биндов",
-            description = "Настройка и управление биндами.",
+            description = "Настройка и управление биндами",
             onOpen = onOpenBinds,
             modifier = Modifier.padding(top = 12.dp),
         )
         ModuleCard(
             title = "Параметры запуска",
-            description = "Настройка аргументов запуска клиента.",
+            description = "Настройка аргументов запуска клиента",
             onOpen = onOpenLaunchArgs,
             modifier = Modifier.padding(top = 12.dp),
         )
