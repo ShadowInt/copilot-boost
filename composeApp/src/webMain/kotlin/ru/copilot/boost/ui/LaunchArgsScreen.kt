@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -202,28 +201,12 @@ private fun LaunchArgSettingRow(
     onCheckedChange: (Boolean) -> Unit,
     hint: String? = null,
 ) {
-    Row(
-        modifier = Modifier
-            .padding(top = 6.dp)
-            .fillMaxWidth(),
-        verticalAlignment = if (hint == null) Alignment.CenterVertically else Alignment.Top,
-    ) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-        )
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(label)
-            if (hint != null) {
-                Text(
-                    text = hint,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp, end = 8.dp),
-                )
-            }
-        }
-    }
+    SettingsCheckboxRow(
+        label = label,
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        hint = hint,
+    )
 }
 
 @Composable
