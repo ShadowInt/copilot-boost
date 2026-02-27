@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import ru.copilot.boost.domain.CfgPatcher
+import ru.copilot.boost.domain.model.AppliedPresetState
 import ru.copilot.boost.domain.model.CfgPatchResult
 import ru.copilot.boost.model.UploadedFileData
 import ru.copilot.boost.presentation.model.CfgEditorUiState
@@ -13,6 +14,7 @@ class CfgEditorStore(
 ) {
     var state by mutableStateOf(CfgEditorUiState())
         private set
+    private var initiallyAppliedPresets: AppliedPresetState? = null
 
     fun onDragStateChanged(isDragging: Boolean) {
         state = state.copy(isDragging = isDragging)
@@ -24,6 +26,7 @@ class CfgEditorStore(
 
     fun onFileSelected(fileData: UploadedFileData) {
         val appliedPresets = cfgPatcher.detectAppliedPresets(fileData.content)
+        initiallyAppliedPresets = appliedPresets
         state = state.copy(
             uploadedFile = fileData,
             uploadError = null,
@@ -91,8 +94,10 @@ class CfgEditorStore(
                 patchedContent = "",
                 diffRows = emptyList(),
             )
+            initiallyAppliedPresets = null
             return
         }
+        val initial = initiallyAppliedPresets
 
         val patchResult: CfgPatchResult = cfgPatcher.applyPresets(
             content = file.content,
@@ -105,6 +110,15 @@ class CfgEditorStore(
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
             disableGibsCompletely = state.disableGibsCompletely,
+            removeParasiticParameters = initial?.disableParasiticParameters == true && !state.disableParasiticParameters,
+            removeLegsRendering = initial?.disableLegsRendering == true && !state.disableLegsRendering,
+            removeLegsDeformation = initial?.disableLegsDeformation == true && !state.disableLegsDeformation,
+            removeStrobeLights = initial?.disableStrobeLights == true && !state.disableStrobeLights,
+            removeHeldItemSize = initial?.reduceHeldItemSize == true && !state.reduceHeldItemSize,
+            removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
+            removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
+            removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,
+            removeGibsCompletely = initial?.disableGibsCompletely == true && !state.disableGibsCompletely,
         )
 
         state = state.copy(

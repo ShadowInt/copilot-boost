@@ -328,7 +328,7 @@ private fun DiffColumn(
                             if (isNewColumn) Color(0x1A00AA00) else Color.Transparent
                         }
                         DiffRowType.REMOVED -> {
-                            if (isNewColumn) Color.Transparent else Color(0x1AAA0000)
+                            if (isNewColumn) Color(0x10AA0000) else Color(0x1AAA0000)
                         }
                         DiffRowType.UNCHANGED -> Color.Transparent
                     }

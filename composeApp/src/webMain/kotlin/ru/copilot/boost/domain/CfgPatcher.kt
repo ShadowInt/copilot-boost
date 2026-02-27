@@ -32,6 +32,15 @@ class CfgPatcher {
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
         disableGibsCompletely: Boolean,
+        removeParasiticParameters: Boolean = false,
+        removeLegsRendering: Boolean = false,
+        removeLegsDeformation: Boolean = false,
+        removeStrobeLights: Boolean = false,
+        removeHeldItemSize: Boolean = false,
+        removeCameraShake: Boolean = false,
+        removeTreeMarkerVisibility: Boolean = false,
+        removeOcclusionCullingSafeMode: Boolean = false,
+        removeGibsCompletely: Boolean = false,
     ): CfgPatchResult {
         val activePresetLinesByKey = buildActivePresetLinesByKey(
             disableParasiticParameters = disableParasiticParameters,
@@ -44,20 +53,17 @@ class CfgPatcher {
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
             disableGibsCompletely = disableGibsCompletely,
         )
-
-        if (activePresetLinesByKey.isEmpty()) {
-            val originalLines = content.lines()
-            return CfgPatchResult(
-                updatedContent = content,
-                diffRows = originalLines.map { line ->
-                    DiffRow(
-                        type = DiffRowType.UNCHANGED,
-                        oldLine = line,
-                        newLine = line,
-                    )
-                },
-            )
-        }
+        val keysToRemove = buildKeysToRemove(
+            removeParasiticParameters = removeParasiticParameters,
+            removeLegsRendering = removeLegsRendering,
+            removeLegsDeformation = removeLegsDeformation,
+            removeStrobeLights = removeStrobeLights,
+            removeHeldItemSize = removeHeldItemSize,
+            removeCameraShake = removeCameraShake,
+            removeTreeMarkerVisibility = removeTreeMarkerVisibility,
+            removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
+            removeGibsCompletely = removeGibsCompletely,
+        )
 
         val originalLines = content.lines()
         val updatedLines = mutableListOf<String>()
@@ -67,6 +73,14 @@ class CfgPatcher {
         originalLines.forEach { line ->
             val key = parseCfgKey(line)
             if (key == null || key !in activePresetLinesByKey.keys) {
+                if (key != null && key in keysToRemove) {
+                    diffRows += DiffRow(
+                        type = DiffRowType.REMOVED,
+                        oldLine = line,
+                        newLine = null,
+                    )
+                    return@forEach
+                }
                 updatedLines += line
                 diffRows += DiffRow(
                     type = DiffRowType.UNCHANGED,
@@ -105,13 +119,11 @@ class CfgPatcher {
 
         val keysToAppend = activePresetLinesByKey.keys - processedPresetKeys
         if (keysToAppend.isNotEmpty()) {
-            if (updatedLines.isNotEmpty() && updatedLines.last().isNotBlank()) {
-                updatedLines += ""
-                diffRows += DiffRow(
-                    type = DiffRowType.ADDED,
-                    oldLine = null,
-                    newLine = "",
-                )
+            while (updatedLines.isNotEmpty() && updatedLines.last().isBlank()) {
+                updatedLines.removeAt(updatedLines.lastIndex)
+                if (diffRows.isNotEmpty()) {
+                    diffRows.removeAt(diffRows.lastIndex)
+                }
             }
             keysToAppend.forEach { key ->
                 val line = activePresetLinesByKey.getValue(key)
@@ -213,6 +225,30 @@ class CfgPatcher {
         private val disableGibsCompletelyPresetLinesByKey = disableGibsCompletelyPresetValues
             .mapKeys { it.key.lowercase() }
             .mapValues { (key, value) -> "$key $value" }
+
+        private fun buildKeysToRemove(
+            removeParasiticParameters: Boolean,
+            removeLegsRendering: Boolean,
+            removeLegsDeformation: Boolean,
+            removeStrobeLights: Boolean,
+            removeHeldItemSize: Boolean,
+            removeCameraShake: Boolean,
+            removeTreeMarkerVisibility: Boolean,
+            removeOcclusionCullingSafeMode: Boolean,
+            removeGibsCompletely: Boolean,
+        ): Set<String> {
+            val keysToRemove = linkedSetOf<String>()
+            if (removeParasiticParameters) keysToRemove += parasiticPresetLinesByKey.keys
+            if (removeLegsRendering) keysToRemove += legsPresetLinesByKey.keys
+            if (removeLegsDeformation) keysToRemove += legsDeformationPresetLinesByKey.keys
+            if (removeStrobeLights) keysToRemove += disableStrobeLightsPresetLinesByKey.keys
+            if (removeHeldItemSize) keysToRemove += reduceHeldItemSizePresetLinesByKey.keys
+            if (removeCameraShake) keysToRemove += reduceCameraShakePresetLinesByKey.keys
+            if (removeTreeMarkerVisibility) keysToRemove += improveTreeMarkerVisibilityPresetLinesByKey.keys
+            if (removeOcclusionCullingSafeMode) keysToRemove += disableOcclusionCullingSafeModePresetLinesByKey.keys
+            if (removeGibsCompletely) keysToRemove += disableGibsCompletelyPresetLinesByKey.keys
+            return keysToRemove
+        }
 
         private fun buildActivePresetLinesByKey(
             disableParasiticParameters: Boolean,
