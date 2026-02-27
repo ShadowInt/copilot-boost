@@ -6,6 +6,17 @@ import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
 
 class CfgPatcher {
+    data class PreparedCfgContent(
+        val lines: List<String>,
+        val keys: List<String?>,
+    )
+
+    fun prepareContent(content: String): PreparedCfgContent {
+        val lines = content.lines()
+        val keys = lines.map(::parseCfgKey)
+        return PreparedCfgContent(lines = lines, keys = keys)
+    }
+
     fun detectAppliedPresets(content: String): AppliedPresetState {
         val currentValuesByKey = parseCurrentValuesByKey(content)
         return AppliedPresetState(
@@ -41,6 +52,7 @@ class CfgPatcher {
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
         removeGibsCompletely: Boolean = false,
+        preparedContent: PreparedCfgContent? = null,
     ): CfgPatchResult {
         val activePresetLinesByKey = buildActivePresetLinesByKey(
             disableParasiticParameters = disableParasiticParameters,
@@ -65,21 +77,23 @@ class CfgPatcher {
             removeGibsCompletely = removeGibsCompletely,
         )
 
-        val originalLines = content.lines()
+        val prepared = preparedContent ?: prepareContent(content)
+        val originalLines = prepared.lines
+        val originalKeys = prepared.keys
         val updatedLines = mutableListOf<String>()
         val diffRows = mutableListOf<DiffRow>()
         val processedPresetKeys = mutableSetOf<String>()
 
-        originalLines.forEach { line ->
-            val key = parseCfgKey(line)
-            if (key == null || key !in activePresetLinesByKey.keys) {
+        originalLines.forEachIndexed { index, line ->
+            val key = originalKeys.getOrNull(index)
+            if (key == null || !activePresetLinesByKey.containsKey(key)) {
                 if (key != null && key in keysToRemove) {
                     diffRows += DiffRow(
                         type = DiffRowType.REMOVED,
                         oldLine = line,
                         newLine = null,
                     )
-                    return@forEach
+                    return@forEachIndexed
                 }
                 updatedLines += line
                 diffRows += DiffRow(
@@ -87,7 +101,7 @@ class CfgPatcher {
                     oldLine = line,
                     newLine = line,
                 )
-                return@forEach
+                return@forEachIndexed
             }
 
             if (key in processedPresetKeys) {
@@ -96,7 +110,7 @@ class CfgPatcher {
                     oldLine = line,
                     newLine = null,
                 )
-                return@forEach
+                return@forEachIndexed
             }
 
             val canonicalLine = activePresetLinesByKey.getValue(key)
@@ -322,9 +336,9 @@ class CfgPatcher {
             val value = if ('=' in trimmed) {
                 trimmed.substringAfter('=').trim()
             } else {
-                val parts = trimmed.split(Regex("\\s+"), limit = 2)
-                if (parts.size < 2) return null
-                parts[1].trim()
+                val firstWhitespaceIndex = trimmed.indexOfFirst { it.isWhitespace() }
+                if (firstWhitespaceIndex < 0) return null
+                trimmed.substring(firstWhitespaceIndex).trim()
             }
             if (value.isEmpty()) return null
             return key to value

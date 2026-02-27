@@ -15,18 +15,22 @@ class CfgEditorStore(
     var state by mutableStateOf(CfgEditorUiState())
         private set
     private var initiallyAppliedPresets: AppliedPresetState? = null
+    private var preparedContent: CfgPatcher.PreparedCfgContent? = null
 
     fun onDragStateChanged(isDragging: Boolean) {
+        if (state.isDragging == isDragging) return
         state = state.copy(isDragging = isDragging)
     }
 
     fun onInvalidFile() {
+        if (state.uploadError == INVALID_FILE_ERROR) return
         state = state.copy(uploadError = INVALID_FILE_ERROR)
     }
 
     fun onFileSelected(fileData: UploadedFileData) {
         val appliedPresets = cfgPatcher.detectAppliedPresets(fileData.content)
         initiallyAppliedPresets = appliedPresets
+        preparedContent = cfgPatcher.prepareContent(fileData.content)
         state = state.copy(
             uploadedFile = fileData,
             uploadError = null,
@@ -44,48 +48,57 @@ class CfgEditorStore(
     }
 
     fun onDisableParasiticChanged(enabled: Boolean) {
-        state = state.copy(disableParasiticParameters = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.disableParasiticParameters) {
+            it.copy(disableParasiticParameters = enabled)
+        }
     }
 
     fun onDisableLegsRenderingChanged(enabled: Boolean) {
-        state = state.copy(disableLegsRendering = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.disableLegsRendering) {
+            it.copy(disableLegsRendering = enabled)
+        }
     }
 
     fun onDisableLegsDeformationChanged(enabled: Boolean) {
-        state = state.copy(disableLegsDeformation = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.disableLegsDeformation) {
+            it.copy(disableLegsDeformation = enabled)
+        }
     }
 
     fun onDisableStrobeLightsChanged(enabled: Boolean) {
-        state = state.copy(disableStrobeLights = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.disableStrobeLights) {
+            it.copy(disableStrobeLights = enabled)
+        }
     }
 
     fun onReduceHeldItemSizeChanged(enabled: Boolean) {
-        state = state.copy(reduceHeldItemSize = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.reduceHeldItemSize) {
+            it.copy(reduceHeldItemSize = enabled)
+        }
     }
 
     fun onReduceCameraShakeChanged(enabled: Boolean) {
-        state = state.copy(reduceCameraShake = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
+            it.copy(reduceCameraShake = enabled)
+        }
     }
 
     fun onImproveTreeMarkerVisibilityChanged(enabled: Boolean) {
-        state = state.copy(improveTreeMarkerVisibility = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.improveTreeMarkerVisibility) {
+            it.copy(improveTreeMarkerVisibility = enabled)
+        }
     }
 
     fun onDisableOcclusionCullingSafeModeChanged(enabled: Boolean) {
-        state = state.copy(disableOcclusionCullingSafeMode = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.disableOcclusionCullingSafeMode) {
+            it.copy(disableOcclusionCullingSafeMode = enabled)
+        }
     }
 
     fun onDisableGibsCompletelyChanged(enabled: Boolean) {
-        state = state.copy(disableGibsCompletely = enabled)
-        recalculatePatch()
+        updateAndRecalculateIfChanged(enabled, state.disableGibsCompletely) {
+            it.copy(disableGibsCompletely = enabled)
+        }
     }
 
     private fun recalculatePatch() {
@@ -95,6 +108,7 @@ class CfgEditorStore(
                 diffRows = emptyList(),
             )
             initiallyAppliedPresets = null
+            preparedContent = null
             return
         }
         val initial = initiallyAppliedPresets
@@ -119,12 +133,23 @@ class CfgEditorStore(
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,
             removeGibsCompletely = initial?.disableGibsCompletely == true && !state.disableGibsCompletely,
+            preparedContent = preparedContent,
         )
 
         state = state.copy(
             patchedContent = patchResult.updatedContent,
             diffRows = patchResult.diffRows,
         )
+    }
+
+    private inline fun updateAndRecalculateIfChanged(
+        newValue: Boolean,
+        currentValue: Boolean,
+        update: (CfgEditorUiState) -> CfgEditorUiState,
+    ) {
+        if (newValue == currentValue) return
+        state = update(state)
+        recalculatePatch()
     }
 
     companion object {

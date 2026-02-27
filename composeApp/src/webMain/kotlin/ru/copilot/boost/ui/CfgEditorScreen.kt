@@ -149,6 +149,7 @@ private fun ThreeColumnEditorWithDownload(
     modifier: Modifier = Modifier,
 ) {
     val sharedScrollState = rememberScrollState()
+
     BoxWithConstraints(modifier = modifier) {
         val gaps = 16.dp
         val baseLeftWidth = maxWidth * 0.33f
