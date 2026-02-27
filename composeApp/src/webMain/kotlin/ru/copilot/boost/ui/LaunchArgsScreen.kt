@@ -150,11 +150,7 @@ private fun LaunchArgsSettingsCard(
                 .padding(12.dp),
         ) {
             Column {
-                Text(
-                    text = "Рекомендуемые",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
-                )
+                LaunchArgsSectionTitle("Рекомендуемые")
                 LaunchArgSettingRow(
                     label = "Админский телепорт",
                     checked = adminTeleport,
@@ -162,11 +158,7 @@ private fun LaunchArgsSettingsCard(
                     hint = "При наличии админки автоматически телепортирует игрока в точку установки маркера на карте.",
                 )
 
-                Text(
-                    text = "Визуальные эффекты",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 10.dp, start = 4.dp, bottom = 6.dp),
-                )
+                LaunchArgsSectionTitle("Визуальные эффекты", withTopSpacing = true)
                 LaunchArgSettingRow(
                     label = "Ускорить поворот головы через ALT",
                     checked = fasterAltHeadTurn,
@@ -180,11 +172,7 @@ private fun LaunchArgsSettingsCard(
                     hint = "Полностью отключает анимацию и моргания глаз у всех персонажей.",
                 )
 
-                Text(
-                    text = "Экспериментальные",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 10.dp, start = 4.dp, bottom = 6.dp),
-                )
+                LaunchArgsSectionTitle("Экспериментальные", withTopSpacing = true)
                 LaunchArgSettingRow(
                     label = "Серверный хитмаркер",
                     checked = serverHitmarker,
@@ -200,6 +188,22 @@ private fun LaunchArgsSettingsCard(
             }
         }
     }
+}
+
+@Composable
+private fun LaunchArgsSectionTitle(
+    text: String,
+    withTopSpacing: Boolean = false,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(
+            top = if (withTopSpacing) 10.dp else 0.dp,
+            start = 4.dp,
+            bottom = 6.dp,
+        ),
+    )
 }
 
 @Composable
@@ -297,24 +301,21 @@ private fun SteamWindowTopBar() {
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .background(Color(0xFFE35B5B), RoundedCornerShape(50)),
-        )
+        WindowControlDot(Color(0xFFE35B5B))
         Spacer(modifier = Modifier.width(6.dp))
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .background(Color(0xFFE3C35B), RoundedCornerShape(50)),
-        )
+        WindowControlDot(Color(0xFFE3C35B))
         Spacer(modifier = Modifier.width(6.dp))
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .background(Color(0xFF6BCB77), RoundedCornerShape(50)),
-        )
+        WindowControlDot(Color(0xFF6BCB77))
     }
+}
+
+@Composable
+private fun WindowControlDot(color: Color) {
+    Box(
+        modifier = Modifier
+            .size(10.dp)
+            .background(color, RoundedCornerShape(50)),
+    )
 }
 
 @Composable
