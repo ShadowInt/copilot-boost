@@ -47,6 +47,7 @@ fun CfgEditorScreen(
     onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
     onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
+    onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -129,6 +130,7 @@ fun CfgEditorScreen(
                 onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
                 onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
                 onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
+                onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -156,6 +158,7 @@ private fun ThreeColumnEditorWithDownload(
     onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
     onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
+    onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -190,6 +193,7 @@ private fun ThreeColumnEditorWithDownload(
                     onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
                     onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
                     onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
+                    onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -234,6 +238,7 @@ private fun SettingsColumn(
     onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
     onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
+    onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -296,6 +301,11 @@ private fun SettingsColumn(
                     "Отключить отображение клиентских ошибок",
                     state.disableClientErrorOverlay,
                     onDisableClientErrorOverlayChanged,
+                )
+                SettingRow(
+                    "Добавить админские жесты в игровое меню",
+                    state.addAdminGesturesToGameMenu,
+                    onAddAdminGesturesToGameMenuChanged,
                 )
 
             }

@@ -26,6 +26,7 @@ class CfgPatcher {
             reduceSleepingBagRemovalDelay = isPresetApplied(currentValuesByKey, reduceSleepingBagRemovalDelayPresetValues),
             addMapInfoToF8Menu = isPresetApplied(currentValuesByKey, addMapInfoToF8MenuPresetValues),
             disableClientErrorOverlay = isPresetApplied(currentValuesByKey, disableClientErrorOverlayPresetValues),
+            addAdminGesturesToGameMenu = isPresetApplied(currentValuesByKey, addAdminGesturesToGameMenuPresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -45,6 +46,7 @@ class CfgPatcher {
         reduceSleepingBagRemovalDelay: Boolean,
         addMapInfoToF8Menu: Boolean,
         disableClientErrorOverlay: Boolean,
+        addAdminGesturesToGameMenu: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -59,6 +61,7 @@ class CfgPatcher {
         removeSleepingBagRemovalDelay: Boolean = false,
         removeMapInfoFromF8Menu: Boolean = false,
         removeClientErrorOverlay: Boolean = false,
+        removeAdminGesturesFromGameMenu: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -76,6 +79,7 @@ class CfgPatcher {
             reduceSleepingBagRemovalDelay = reduceSleepingBagRemovalDelay,
             addMapInfoToF8Menu = addMapInfoToF8Menu,
             disableClientErrorOverlay = disableClientErrorOverlay,
+            addAdminGesturesToGameMenu = addAdminGesturesToGameMenu,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -92,6 +96,7 @@ class CfgPatcher {
             removeSleepingBagRemovalDelay = removeSleepingBagRemovalDelay,
             removeMapInfoFromF8Menu = removeMapInfoFromF8Menu,
             removeClientErrorOverlay = removeClientErrorOverlay,
+            removeAdminGesturesFromGameMenu = removeAdminGesturesFromGameMenu,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -228,6 +233,9 @@ class CfgPatcher {
         private val disableClientErrorOverlayPresetValues = linkedMapOf(
             "console.erroroverlay" to "\"False\"",
         )
+        private val addAdminGesturesToGameMenuPresetValues = linkedMapOf(
+            "gesturecollection.showadmincinematicgesturesinbindings" to "\"True\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -257,6 +265,7 @@ class CfgPatcher {
         private val reduceSleepingBagRemovalDelayPresetLinesByKey = canonicalPresetLinesByKey(reduceSleepingBagRemovalDelayPresetValues)
         private val addMapInfoToF8MenuPresetLinesByKey = canonicalPresetLinesByKey(addMapInfoToF8MenuPresetValues)
         private val disableClientErrorOverlayPresetLinesByKey = canonicalPresetLinesByKey(disableClientErrorOverlayPresetValues)
+        private val addAdminGesturesToGameMenuPresetLinesByKey = canonicalPresetLinesByKey(addAdminGesturesToGameMenuPresetValues)
         private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
         private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
         private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
@@ -273,6 +282,7 @@ class CfgPatcher {
             removeSleepingBagRemovalDelay: Boolean,
             removeMapInfoFromF8Menu: Boolean,
             removeClientErrorOverlay: Boolean,
+            removeAdminGesturesFromGameMenu: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -290,6 +300,7 @@ class CfgPatcher {
                 removeSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey.keys,
                 removeMapInfoFromF8Menu to addMapInfoToF8MenuPresetLinesByKey.keys,
                 removeClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey.keys,
+                removeAdminGesturesFromGameMenu to addAdminGesturesToGameMenuPresetLinesByKey.keys,
                 removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
                 removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
                 removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
@@ -311,6 +322,7 @@ class CfgPatcher {
             reduceSleepingBagRemovalDelay: Boolean,
             addMapInfoToF8Menu: Boolean,
             disableClientErrorOverlay: Boolean,
+            addAdminGesturesToGameMenu: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -328,6 +340,7 @@ class CfgPatcher {
                 reduceSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey,
                 addMapInfoToF8Menu to addMapInfoToF8MenuPresetLinesByKey,
                 disableClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey,
+                addAdminGesturesToGameMenu to addAdminGesturesToGameMenuPresetLinesByKey,
                 reduceCameraShake to reduceCameraShakePresetLinesByKey,
                 improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
                 disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,

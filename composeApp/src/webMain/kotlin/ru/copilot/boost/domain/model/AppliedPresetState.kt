@@ -11,6 +11,7 @@ data class AppliedPresetState(
     val reduceSleepingBagRemovalDelay: Boolean,
     val addMapInfoToF8Menu: Boolean,
     val disableClientErrorOverlay: Boolean,
+    val addAdminGesturesToGameMenu: Boolean,
     val reduceCameraShake: Boolean,
     val improveTreeMarkerVisibility: Boolean,
     val disableOcclusionCullingSafeMode: Boolean,
