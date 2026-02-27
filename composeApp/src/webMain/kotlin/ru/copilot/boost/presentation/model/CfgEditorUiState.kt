@@ -20,6 +20,7 @@ data class CfgEditorUiState(
     val disableClientErrorOverlay: Boolean = false,
     val addAdminGesturesToGameMenu: Boolean = false,
     val convenientSkinSorting: Boolean = false,
+    val enlargedConsole: Boolean = false,
     val reduceCameraShake: Boolean = false,
     val improveTreeMarkerVisibility: Boolean = false,
     val disableOcclusionCullingSafeMode: Boolean = false,
@@ -42,6 +43,7 @@ data class CfgEditorUiState(
             disableClientErrorOverlay ||
             addAdminGesturesToGameMenu ||
             convenientSkinSorting ||
+            enlargedConsole ||
             reduceCameraShake ||
             improveTreeMarkerVisibility ||
             disableOcclusionCullingSafeMode ||

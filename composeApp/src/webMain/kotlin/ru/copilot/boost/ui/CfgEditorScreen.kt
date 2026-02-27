@@ -49,6 +49,7 @@ fun CfgEditorScreen(
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
+    onEnlargedConsoleChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -133,6 +134,7 @@ fun CfgEditorScreen(
                 onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
                 onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
                 onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
+                onEnlargedConsoleChanged = onEnlargedConsoleChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -162,6 +164,7 @@ private fun ThreeColumnEditorWithDownload(
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
+    onEnlargedConsoleChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -198,6 +201,7 @@ private fun ThreeColumnEditorWithDownload(
                     onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
                     onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
                     onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
+                    onEnlargedConsoleChanged = onEnlargedConsoleChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -244,6 +248,7 @@ private fun SettingsColumn(
     onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
     onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
+    onEnlargedConsoleChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -316,6 +321,11 @@ private fun SettingsColumn(
                     "Удобная сортировка скинов",
                     state.convenientSkinSorting,
                     onConvenientSkinSortingChanged,
+                )
+                SettingRow(
+                    "Увеличенная консоль",
+                    state.enlargedConsole,
+                    onEnlargedConsoleChanged,
                 )
 
             }

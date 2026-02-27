@@ -13,6 +13,7 @@ data class AppliedPresetState(
     val disableClientErrorOverlay: Boolean,
     val addAdminGesturesToGameMenu: Boolean,
     val convenientSkinSorting: Boolean,
+    val enlargedConsole: Boolean,
     val reduceCameraShake: Boolean,
     val improveTreeMarkerVisibility: Boolean,
     val disableOcclusionCullingSafeMode: Boolean,

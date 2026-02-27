@@ -47,6 +47,7 @@ class CfgEditorStore(
             disableClientErrorOverlay = appliedPresets.disableClientErrorOverlay,
             addAdminGesturesToGameMenu = appliedPresets.addAdminGesturesToGameMenu,
             convenientSkinSorting = appliedPresets.convenientSkinSorting,
+            enlargedConsole = appliedPresets.enlargedConsole,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -127,6 +128,12 @@ class CfgEditorStore(
         }
     }
 
+    fun onEnlargedConsoleChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.enlargedConsole) {
+            it.copy(enlargedConsole = enabled)
+        }
+    }
+
     fun onReduceCameraShakeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
             it.copy(reduceCameraShake = enabled)
@@ -177,6 +184,7 @@ class CfgEditorStore(
             disableClientErrorOverlay = state.disableClientErrorOverlay,
             addAdminGesturesToGameMenu = state.addAdminGesturesToGameMenu,
             convenientSkinSorting = state.convenientSkinSorting,
+            enlargedConsole = state.enlargedConsole,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -193,6 +201,7 @@ class CfgEditorStore(
             removeClientErrorOverlay = initial?.disableClientErrorOverlay == true && !state.disableClientErrorOverlay,
             removeAdminGesturesFromGameMenu = initial?.addAdminGesturesToGameMenu == true && !state.addAdminGesturesToGameMenu,
             removeConvenientSkinSorting = initial?.convenientSkinSorting == true && !state.convenientSkinSorting,
+            removeEnlargedConsole = initial?.enlargedConsole == true && !state.enlargedConsole,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,

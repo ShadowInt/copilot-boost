@@ -73,6 +73,7 @@ fun App() {
                             onDisableClientErrorOverlayChanged = store::onDisableClientErrorOverlayChanged,
                             onAddAdminGesturesToGameMenuChanged = store::onAddAdminGesturesToGameMenuChanged,
                             onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
+                            onEnlargedConsoleChanged = store::onEnlargedConsoleChanged,
                             onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
                             onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
                             onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,
