@@ -219,37 +219,16 @@ class CfgPatcher {
             "effects.mingiblife" to "\"0\"",
         )
 
-        private val parasiticPresetLinesByKey = parasiticPresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-
-        private val legsPresetLinesByKey = legsPresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val legsDeformationPresetLinesByKey = legsDeformationPresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val disableStrobeLightsPresetLinesByKey = disableStrobeLightsPresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val reduceHeldItemSizePresetLinesByKey = reduceHeldItemSizePresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val restoreEventTextNotificationsPresetLinesByKey = restoreEventTextNotificationsPresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val reduceCameraShakePresetLinesByKey = reduceCameraShakePresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val improveTreeMarkerVisibilityPresetLinesByKey = improveTreeMarkerVisibilityPresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val disableOcclusionCullingSafeModePresetLinesByKey = disableOcclusionCullingSafeModePresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
-        private val disableGibsCompletelyPresetLinesByKey = disableGibsCompletelyPresetValues
-            .mapKeys { it.key.lowercase() }
-            .mapValues { (key, value) -> "$key $value" }
+        private val parasiticPresetLinesByKey = canonicalPresetLinesByKey(parasiticPresetValues)
+        private val legsPresetLinesByKey = canonicalPresetLinesByKey(legsPresetValues)
+        private val legsDeformationPresetLinesByKey = canonicalPresetLinesByKey(legsDeformationPresetValues)
+        private val disableStrobeLightsPresetLinesByKey = canonicalPresetLinesByKey(disableStrobeLightsPresetValues)
+        private val reduceHeldItemSizePresetLinesByKey = canonicalPresetLinesByKey(reduceHeldItemSizePresetValues)
+        private val restoreEventTextNotificationsPresetLinesByKey = canonicalPresetLinesByKey(restoreEventTextNotificationsPresetValues)
+        private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
+        private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
+        private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
+        private val disableGibsCompletelyPresetLinesByKey = canonicalPresetLinesByKey(disableGibsCompletelyPresetValues)
 
         private fun buildKeysToRemove(
             removeParasiticParameters: Boolean,
@@ -264,16 +243,20 @@ class CfgPatcher {
             removeGibsCompletely: Boolean,
         ): Set<String> {
             val keysToRemove = linkedSetOf<String>()
-            if (removeParasiticParameters) keysToRemove += parasiticPresetLinesByKey.keys
-            if (removeLegsRendering) keysToRemove += legsPresetLinesByKey.keys
-            if (removeLegsDeformation) keysToRemove += legsDeformationPresetLinesByKey.keys
-            if (removeStrobeLights) keysToRemove += disableStrobeLightsPresetLinesByKey.keys
-            if (removeHeldItemSize) keysToRemove += reduceHeldItemSizePresetLinesByKey.keys
-            if (removeEventTextNotifications) keysToRemove += restoreEventTextNotificationsPresetLinesByKey.keys
-            if (removeCameraShake) keysToRemove += reduceCameraShakePresetLinesByKey.keys
-            if (removeTreeMarkerVisibility) keysToRemove += improveTreeMarkerVisibilityPresetLinesByKey.keys
-            if (removeOcclusionCullingSafeMode) keysToRemove += disableOcclusionCullingSafeModePresetLinesByKey.keys
-            if (removeGibsCompletely) keysToRemove += disableGibsCompletelyPresetLinesByKey.keys
+            listOf(
+                removeParasiticParameters to parasiticPresetLinesByKey.keys,
+                removeLegsRendering to legsPresetLinesByKey.keys,
+                removeLegsDeformation to legsDeformationPresetLinesByKey.keys,
+                removeStrobeLights to disableStrobeLightsPresetLinesByKey.keys,
+                removeHeldItemSize to reduceHeldItemSizePresetLinesByKey.keys,
+                removeEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey.keys,
+                removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
+                removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
+                removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
+                removeGibsCompletely to disableGibsCompletelyPresetLinesByKey.keys,
+            ).forEach { (enabled, keys) ->
+                if (enabled) keysToRemove += keys
+            }
             return keysToRemove
         }
 
@@ -290,37 +273,26 @@ class CfgPatcher {
             disableGibsCompletely: Boolean,
         ): Map<String, String> {
             val activePresets = linkedMapOf<String, String>()
-            if (disableParasiticParameters) {
-                activePresets.putAll(parasiticPresetLinesByKey)
-            }
-            if (disableLegsRendering) {
-                activePresets.putAll(legsPresetLinesByKey)
-            }
-            if (disableLegsDeformation) {
-                activePresets.putAll(legsDeformationPresetLinesByKey)
-            }
-            if (disableStrobeLights) {
-                activePresets.putAll(disableStrobeLightsPresetLinesByKey)
-            }
-            if (reduceHeldItemSize) {
-                activePresets.putAll(reduceHeldItemSizePresetLinesByKey)
-            }
-            if (restoreEventTextNotifications) {
-                activePresets.putAll(restoreEventTextNotificationsPresetLinesByKey)
-            }
-            if (reduceCameraShake) {
-                activePresets.putAll(reduceCameraShakePresetLinesByKey)
-            }
-            if (improveTreeMarkerVisibility) {
-                activePresets.putAll(improveTreeMarkerVisibilityPresetLinesByKey)
-            }
-            if (disableOcclusionCullingSafeMode) {
-                activePresets.putAll(disableOcclusionCullingSafeModePresetLinesByKey)
-            }
-            if (disableGibsCompletely) {
-                activePresets.putAll(disableGibsCompletelyPresetLinesByKey)
+            listOf(
+                disableParasiticParameters to parasiticPresetLinesByKey,
+                disableLegsRendering to legsPresetLinesByKey,
+                disableLegsDeformation to legsDeformationPresetLinesByKey,
+                disableStrobeLights to disableStrobeLightsPresetLinesByKey,
+                reduceHeldItemSize to reduceHeldItemSizePresetLinesByKey,
+                restoreEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey,
+                reduceCameraShake to reduceCameraShakePresetLinesByKey,
+                improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
+                disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,
+                disableGibsCompletely to disableGibsCompletelyPresetLinesByKey,
+            ).forEach { (enabled, presetLinesByKey) ->
+                if (enabled) activePresets.putAll(presetLinesByKey)
             }
             return activePresets
+        }
+
+        private fun canonicalPresetLinesByKey(values: Map<String, String>): Map<String, String> {
+            return values.mapKeys { it.key.lowercase() }
+                .mapValues { (key, value) -> "$key $value" }
         }
 
         private fun parseCfgKey(line: String): String? {
