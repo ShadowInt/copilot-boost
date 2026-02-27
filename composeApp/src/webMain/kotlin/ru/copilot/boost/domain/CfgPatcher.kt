@@ -4,13 +4,9 @@ import ru.copilot.boost.domain.model.AppliedPresetState
 import ru.copilot.boost.domain.model.CfgPatchResult
 import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
+import ru.copilot.boost.domain.model.PreparedCfgContent
 
 class CfgPatcher {
-    data class PreparedCfgContent(
-        val lines: List<String>,
-        val keys: List<String?>,
-    )
-
     fun prepareContent(content: String): PreparedCfgContent {
         val lines = content.lines()
         val keys = lines.map(::parseCfgKey)

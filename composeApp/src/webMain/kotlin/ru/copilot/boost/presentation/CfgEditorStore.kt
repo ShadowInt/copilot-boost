@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import ru.copilot.boost.domain.CfgPatcher
 import ru.copilot.boost.domain.model.AppliedPresetState
 import ru.copilot.boost.domain.model.CfgPatchResult
+import ru.copilot.boost.domain.model.PreparedCfgContent
 import ru.copilot.boost.model.UploadedFileData
 import ru.copilot.boost.presentation.model.CfgEditorUiState
 
@@ -15,7 +16,7 @@ class CfgEditorStore(
     var state by mutableStateOf(CfgEditorUiState())
         private set
     private var initiallyAppliedPresets: AppliedPresetState? = null
-    private var preparedContent: CfgPatcher.PreparedCfgContent? = null
+    private var preparedContent: PreparedCfgContent? = null
 
     fun onDragStateChanged(isDragging: Boolean) {
         if (state.isDragging == isDragging) return
