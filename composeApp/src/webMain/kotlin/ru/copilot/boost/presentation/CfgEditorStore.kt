@@ -39,6 +39,7 @@ class CfgEditorStore(
             disableLegsDeformation = appliedPresets.disableLegsDeformation,
             disableStrobeLights = appliedPresets.disableStrobeLights,
             reduceHeldItemSize = appliedPresets.reduceHeldItemSize,
+            restoreEventTextNotifications = appliedPresets.restoreEventTextNotifications,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -74,6 +75,12 @@ class CfgEditorStore(
     fun onReduceHeldItemSizeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceHeldItemSize) {
             it.copy(reduceHeldItemSize = enabled)
+        }
+    }
+
+    fun onRestoreEventTextNotificationsChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.restoreEventTextNotifications) {
+            it.copy(restoreEventTextNotifications = enabled)
         }
     }
 
@@ -120,6 +127,7 @@ class CfgEditorStore(
             disableLegsDeformation = state.disableLegsDeformation,
             disableStrobeLights = state.disableStrobeLights,
             reduceHeldItemSize = state.reduceHeldItemSize,
+            restoreEventTextNotifications = state.restoreEventTextNotifications,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -129,6 +137,7 @@ class CfgEditorStore(
             removeLegsDeformation = initial?.disableLegsDeformation == true && !state.disableLegsDeformation,
             removeStrobeLights = initial?.disableStrobeLights == true && !state.disableStrobeLights,
             removeHeldItemSize = initial?.reduceHeldItemSize == true && !state.reduceHeldItemSize,
+            removeEventTextNotifications = initial?.restoreEventTextNotifications == true && !state.restoreEventTextNotifications,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,

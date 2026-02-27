@@ -42,6 +42,7 @@ fun CfgEditorScreen(
     onDisableLegsDeformationChanged: (Boolean) -> Unit,
     onDisableStrobeLightsChanged: (Boolean) -> Unit,
     onReduceHeldItemSizeChanged: (Boolean) -> Unit,
+    onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -119,6 +120,7 @@ fun CfgEditorScreen(
                 onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
                 onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
                 onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
+                onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -141,6 +143,7 @@ private fun ThreeColumnEditorWithDownload(
     onDisableLegsDeformationChanged: (Boolean) -> Unit,
     onDisableStrobeLightsChanged: (Boolean) -> Unit,
     onReduceHeldItemSizeChanged: (Boolean) -> Unit,
+    onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -170,6 +173,7 @@ private fun ThreeColumnEditorWithDownload(
                     onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
                     onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
                     onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
+                    onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -209,6 +213,7 @@ private fun SettingsColumn(
     onDisableLegsDeformationChanged: (Boolean) -> Unit,
     onDisableStrobeLightsChanged: (Boolean) -> Unit,
     onReduceHeldItemSizeChanged: (Boolean) -> Unit,
+    onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -245,6 +250,13 @@ private fun SettingsColumn(
                 SettingRow("Отключить деформацию ног", state.disableLegsDeformation, onDisableLegsDeformationChanged)
                 SettingRow("Отключить стробоскопы", state.disableStrobeLights, onDisableStrobeLightsChanged)
                 SettingRow("Уменьшить предмет в руках", state.reduceHeldItemSize, onReduceHeldItemSizeChanged)
+
+                SettingsGroupTitle("Интерфейс")
+                SettingRow(
+                    "Вернуть текстовые уведомления об ивентах",
+                    state.restoreEventTextNotifications,
+                    onRestoreEventTextNotificationsChanged,
+                )
 
             }
         }

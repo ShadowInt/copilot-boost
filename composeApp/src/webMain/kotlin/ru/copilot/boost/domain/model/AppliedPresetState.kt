@@ -6,6 +6,7 @@ data class AppliedPresetState(
     val disableLegsDeformation: Boolean,
     val disableStrobeLights: Boolean,
     val reduceHeldItemSize: Boolean,
+    val restoreEventTextNotifications: Boolean,
     val reduceCameraShake: Boolean,
     val improveTreeMarkerVisibility: Boolean,
     val disableOcclusionCullingSafeMode: Boolean,

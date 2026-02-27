@@ -25,6 +25,7 @@ class CfgPatcher {
             disableLegsDeformation = isPresetApplied(currentValuesByKey, legsDeformationPresetValues),
             disableStrobeLights = isPresetApplied(currentValuesByKey, disableStrobeLightsPresetValues),
             reduceHeldItemSize = isPresetApplied(currentValuesByKey, reduceHeldItemSizePresetValues),
+            restoreEventTextNotifications = isPresetApplied(currentValuesByKey, restoreEventTextNotificationsPresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -39,6 +40,7 @@ class CfgPatcher {
         disableLegsDeformation: Boolean,
         disableStrobeLights: Boolean,
         reduceHeldItemSize: Boolean,
+        restoreEventTextNotifications: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -48,6 +50,7 @@ class CfgPatcher {
         removeLegsDeformation: Boolean = false,
         removeStrobeLights: Boolean = false,
         removeHeldItemSize: Boolean = false,
+        removeEventTextNotifications: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -60,6 +63,7 @@ class CfgPatcher {
             disableLegsDeformation = disableLegsDeformation,
             disableStrobeLights = disableStrobeLights,
             reduceHeldItemSize = reduceHeldItemSize,
+            restoreEventTextNotifications = restoreEventTextNotifications,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -71,6 +75,7 @@ class CfgPatcher {
             removeLegsDeformation = removeLegsDeformation,
             removeStrobeLights = removeStrobeLights,
             removeHeldItemSize = removeHeldItemSize,
+            removeEventTextNotifications = removeEventTextNotifications,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -192,6 +197,9 @@ class CfgPatcher {
         private val reduceHeldItemSizePresetValues = linkedMapOf(
             "graphics.vm_fov_scale" to "\"False\"",
         )
+        private val restoreEventTextNotificationsPresetValues = linkedMapOf(
+            "ui.monumentnotificationtoasts" to "\"True\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -227,6 +235,9 @@ class CfgPatcher {
         private val reduceHeldItemSizePresetLinesByKey = reduceHeldItemSizePresetValues
             .mapKeys { it.key.lowercase() }
             .mapValues { (key, value) -> "$key $value" }
+        private val restoreEventTextNotificationsPresetLinesByKey = restoreEventTextNotificationsPresetValues
+            .mapKeys { it.key.lowercase() }
+            .mapValues { (key, value) -> "$key $value" }
         private val reduceCameraShakePresetLinesByKey = reduceCameraShakePresetValues
             .mapKeys { it.key.lowercase() }
             .mapValues { (key, value) -> "$key $value" }
@@ -246,6 +257,7 @@ class CfgPatcher {
             removeLegsDeformation: Boolean,
             removeStrobeLights: Boolean,
             removeHeldItemSize: Boolean,
+            removeEventTextNotifications: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -257,6 +269,7 @@ class CfgPatcher {
             if (removeLegsDeformation) keysToRemove += legsDeformationPresetLinesByKey.keys
             if (removeStrobeLights) keysToRemove += disableStrobeLightsPresetLinesByKey.keys
             if (removeHeldItemSize) keysToRemove += reduceHeldItemSizePresetLinesByKey.keys
+            if (removeEventTextNotifications) keysToRemove += restoreEventTextNotificationsPresetLinesByKey.keys
             if (removeCameraShake) keysToRemove += reduceCameraShakePresetLinesByKey.keys
             if (removeTreeMarkerVisibility) keysToRemove += improveTreeMarkerVisibilityPresetLinesByKey.keys
             if (removeOcclusionCullingSafeMode) keysToRemove += disableOcclusionCullingSafeModePresetLinesByKey.keys
@@ -270,6 +283,7 @@ class CfgPatcher {
             disableLegsDeformation: Boolean,
             disableStrobeLights: Boolean,
             reduceHeldItemSize: Boolean,
+            restoreEventTextNotifications: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -290,6 +304,9 @@ class CfgPatcher {
             }
             if (reduceHeldItemSize) {
                 activePresets.putAll(reduceHeldItemSizePresetLinesByKey)
+            }
+            if (restoreEventTextNotifications) {
+                activePresets.putAll(restoreEventTextNotificationsPresetLinesByKey)
             }
             if (reduceCameraShake) {
                 activePresets.putAll(reduceCameraShakePresetLinesByKey)

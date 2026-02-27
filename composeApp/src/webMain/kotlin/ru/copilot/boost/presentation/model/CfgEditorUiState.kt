@@ -13,6 +13,7 @@ data class CfgEditorUiState(
     val disableLegsDeformation: Boolean = false,
     val disableStrobeLights: Boolean = false,
     val reduceHeldItemSize: Boolean = false,
+    val restoreEventTextNotifications: Boolean = false,
     val reduceCameraShake: Boolean = false,
     val improveTreeMarkerVisibility: Boolean = false,
     val disableOcclusionCullingSafeMode: Boolean = false,
@@ -28,6 +29,7 @@ data class CfgEditorUiState(
             disableLegsDeformation ||
             disableStrobeLights ||
             reduceHeldItemSize ||
+            restoreEventTextNotifications ||
             reduceCameraShake ||
             improveTreeMarkerVisibility ||
             disableOcclusionCullingSafeMode ||
