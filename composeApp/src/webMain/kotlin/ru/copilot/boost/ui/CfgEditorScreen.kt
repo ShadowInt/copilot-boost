@@ -51,6 +51,7 @@ fun CfgEditorScreen(
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onEnlargedConsoleChanged: (Boolean) -> Unit,
     onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
+    onLeftHandModeChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -137,6 +138,7 @@ fun CfgEditorScreen(
                 onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
                 onEnlargedConsoleChanged = onEnlargedConsoleChanged,
                 onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
+                onLeftHandModeChanged = onLeftHandModeChanged,
                 onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                 onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                 onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -168,6 +170,7 @@ private fun ThreeColumnEditorWithDownload(
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onEnlargedConsoleChanged: (Boolean) -> Unit,
     onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
+    onLeftHandModeChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -206,6 +209,7 @@ private fun ThreeColumnEditorWithDownload(
                     onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
                     onEnlargedConsoleChanged = onEnlargedConsoleChanged,
                     onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
+                    onLeftHandModeChanged = onLeftHandModeChanged,
                     onReduceCameraShakeChanged = onReduceCameraShakeChanged,
                     onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
                     onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
@@ -254,6 +258,7 @@ private fun SettingsColumn(
     onConvenientSkinSortingChanged: (Boolean) -> Unit,
     onEnlargedConsoleChanged: (Boolean) -> Unit,
     onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
+    onLeftHandModeChanged: (Boolean) -> Unit,
     onReduceCameraShakeChanged: (Boolean) -> Unit,
     onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
     onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
@@ -338,6 +343,11 @@ private fun SettingsColumn(
                     "Снизить задержку вызова радиального меню",
                     state.reduceRadialMenuCallDelay,
                     onReduceRadialMenuCallDelayChanged,
+                )
+                SettingRow(
+                    "Режим левой руки",
+                    state.leftHandMode,
+                    onLeftHandModeChanged,
                 )
 
             }

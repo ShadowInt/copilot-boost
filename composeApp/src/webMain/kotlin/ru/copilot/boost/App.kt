@@ -75,6 +75,7 @@ fun App() {
                             onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
                             onEnlargedConsoleChanged = store::onEnlargedConsoleChanged,
                             onReduceRadialMenuCallDelayChanged = store::onReduceRadialMenuCallDelayChanged,
+                            onLeftHandModeChanged = store::onLeftHandModeChanged,
                             onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
                             onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
                             onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,

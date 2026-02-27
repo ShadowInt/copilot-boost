@@ -22,6 +22,7 @@ data class CfgEditorUiState(
     val convenientSkinSorting: Boolean = false,
     val enlargedConsole: Boolean = false,
     val reduceRadialMenuCallDelay: Boolean = false,
+    val leftHandMode: Boolean = false,
     val reduceCameraShake: Boolean = false,
     val improveTreeMarkerVisibility: Boolean = false,
     val disableOcclusionCullingSafeMode: Boolean = false,
@@ -46,6 +47,7 @@ data class CfgEditorUiState(
             convenientSkinSorting ||
             enlargedConsole ||
             reduceRadialMenuCallDelay ||
+            leftHandMode ||
             reduceCameraShake ||
             improveTreeMarkerVisibility ||
             disableOcclusionCullingSafeMode ||

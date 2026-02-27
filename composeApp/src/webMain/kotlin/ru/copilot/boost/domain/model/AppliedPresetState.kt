@@ -15,6 +15,7 @@ data class AppliedPresetState(
     val convenientSkinSorting: Boolean,
     val enlargedConsole: Boolean,
     val reduceRadialMenuCallDelay: Boolean,
+    val leftHandMode: Boolean,
     val reduceCameraShake: Boolean,
     val improveTreeMarkerVisibility: Boolean,
     val disableOcclusionCullingSafeMode: Boolean,

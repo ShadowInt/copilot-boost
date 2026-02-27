@@ -30,6 +30,7 @@ class CfgPatcher {
             convenientSkinSorting = isPresetApplied(currentValuesByKey, convenientSkinSortingPresetValues),
             enlargedConsole = isPresetApplied(currentValuesByKey, enlargedConsolePresetValues),
             reduceRadialMenuCallDelay = isPresetApplied(currentValuesByKey, reduceRadialMenuCallDelayPresetValues),
+            leftHandMode = isPresetApplied(currentValuesByKey, leftHandModePresetValues),
             reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
             improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
             disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
@@ -53,6 +54,7 @@ class CfgPatcher {
         convenientSkinSorting: Boolean,
         enlargedConsole: Boolean,
         reduceRadialMenuCallDelay: Boolean,
+        leftHandMode: Boolean,
         reduceCameraShake: Boolean,
         improveTreeMarkerVisibility: Boolean,
         disableOcclusionCullingSafeMode: Boolean,
@@ -71,6 +73,7 @@ class CfgPatcher {
         removeConvenientSkinSorting: Boolean = false,
         removeEnlargedConsole: Boolean = false,
         removeRadialMenuCallDelay: Boolean = false,
+        removeLeftHandMode: Boolean = false,
         removeCameraShake: Boolean = false,
         removeTreeMarkerVisibility: Boolean = false,
         removeOcclusionCullingSafeMode: Boolean = false,
@@ -92,6 +95,7 @@ class CfgPatcher {
             convenientSkinSorting = convenientSkinSorting,
             enlargedConsole = enlargedConsole,
             reduceRadialMenuCallDelay = reduceRadialMenuCallDelay,
+            leftHandMode = leftHandMode,
             reduceCameraShake = reduceCameraShake,
             improveTreeMarkerVisibility = improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
@@ -112,6 +116,7 @@ class CfgPatcher {
             removeConvenientSkinSorting = removeConvenientSkinSorting,
             removeEnlargedConsole = removeEnlargedConsole,
             removeRadialMenuCallDelay = removeRadialMenuCallDelay,
+            removeLeftHandMode = removeLeftHandMode,
             removeCameraShake = removeCameraShake,
             removeTreeMarkerVisibility = removeTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
@@ -260,6 +265,9 @@ class CfgPatcher {
         private val reduceRadialMenuCallDelayPresetValues = linkedMapOf(
             "input.holdtime" to "\"0.15\"",
         )
+        private val leftHandModePresetValues = linkedMapOf(
+            "graphics.vm_horizontal_flip" to "\"True\"",
+        )
         private val reduceCameraShakePresetValues = linkedMapOf(
             "client.clampscreenshake" to "\"True\"",
             "client.allowcameratiltondpv" to "\"False\"",
@@ -293,6 +301,7 @@ class CfgPatcher {
         private val convenientSkinSortingPresetLinesByKey = canonicalPresetLinesByKey(convenientSkinSortingPresetValues)
         private val enlargedConsolePresetLinesByKey = canonicalPresetLinesByKey(enlargedConsolePresetValues)
         private val reduceRadialMenuCallDelayPresetLinesByKey = canonicalPresetLinesByKey(reduceRadialMenuCallDelayPresetValues)
+        private val leftHandModePresetLinesByKey = canonicalPresetLinesByKey(leftHandModePresetValues)
         private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
         private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
         private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
@@ -313,6 +322,7 @@ class CfgPatcher {
             removeConvenientSkinSorting: Boolean,
             removeEnlargedConsole: Boolean,
             removeRadialMenuCallDelay: Boolean,
+            removeLeftHandMode: Boolean,
             removeCameraShake: Boolean,
             removeTreeMarkerVisibility: Boolean,
             removeOcclusionCullingSafeMode: Boolean,
@@ -334,6 +344,7 @@ class CfgPatcher {
                 removeConvenientSkinSorting to convenientSkinSortingPresetLinesByKey.keys,
                 removeEnlargedConsole to enlargedConsolePresetLinesByKey.keys,
                 removeRadialMenuCallDelay to reduceRadialMenuCallDelayPresetLinesByKey.keys,
+                removeLeftHandMode to leftHandModePresetLinesByKey.keys,
                 removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
                 removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
                 removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
@@ -359,6 +370,7 @@ class CfgPatcher {
             convenientSkinSorting: Boolean,
             enlargedConsole: Boolean,
             reduceRadialMenuCallDelay: Boolean,
+            leftHandMode: Boolean,
             reduceCameraShake: Boolean,
             improveTreeMarkerVisibility: Boolean,
             disableOcclusionCullingSafeMode: Boolean,
@@ -380,6 +392,7 @@ class CfgPatcher {
                 convenientSkinSorting to convenientSkinSortingPresetLinesByKey,
                 enlargedConsole to enlargedConsolePresetLinesByKey,
                 reduceRadialMenuCallDelay to reduceRadialMenuCallDelayPresetLinesByKey,
+                leftHandMode to leftHandModePresetLinesByKey,
                 reduceCameraShake to reduceCameraShakePresetLinesByKey,
                 improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
                 disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,

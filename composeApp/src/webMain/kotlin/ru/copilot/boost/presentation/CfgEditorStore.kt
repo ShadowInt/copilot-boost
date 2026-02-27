@@ -49,6 +49,7 @@ class CfgEditorStore(
             convenientSkinSorting = appliedPresets.convenientSkinSorting,
             enlargedConsole = appliedPresets.enlargedConsole,
             reduceRadialMenuCallDelay = appliedPresets.reduceRadialMenuCallDelay,
+            leftHandMode = appliedPresets.leftHandMode,
             reduceCameraShake = appliedPresets.reduceCameraShake,
             improveTreeMarkerVisibility = appliedPresets.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = appliedPresets.disableOcclusionCullingSafeMode,
@@ -141,6 +142,12 @@ class CfgEditorStore(
         }
     }
 
+    fun onLeftHandModeChanged(enabled: Boolean) {
+        updateAndRecalculateIfChanged(enabled, state.leftHandMode) {
+            it.copy(leftHandMode = enabled)
+        }
+    }
+
     fun onReduceCameraShakeChanged(enabled: Boolean) {
         updateAndRecalculateIfChanged(enabled, state.reduceCameraShake) {
             it.copy(reduceCameraShake = enabled)
@@ -193,6 +200,7 @@ class CfgEditorStore(
             convenientSkinSorting = state.convenientSkinSorting,
             enlargedConsole = state.enlargedConsole,
             reduceRadialMenuCallDelay = state.reduceRadialMenuCallDelay,
+            leftHandMode = state.leftHandMode,
             reduceCameraShake = state.reduceCameraShake,
             improveTreeMarkerVisibility = state.improveTreeMarkerVisibility,
             disableOcclusionCullingSafeMode = state.disableOcclusionCullingSafeMode,
@@ -211,6 +219,7 @@ class CfgEditorStore(
             removeConvenientSkinSorting = initial?.convenientSkinSorting == true && !state.convenientSkinSorting,
             removeEnlargedConsole = initial?.enlargedConsole == true && !state.enlargedConsole,
             removeRadialMenuCallDelay = initial?.reduceRadialMenuCallDelay == true && !state.reduceRadialMenuCallDelay,
+            removeLeftHandMode = initial?.leftHandMode == true && !state.leftHandMode,
             removeCameraShake = initial?.reduceCameraShake == true && !state.reduceCameraShake,
             removeTreeMarkerVisibility = initial?.improveTreeMarkerVisibility == true && !state.improveTreeMarkerVisibility,
             removeOcclusionCullingSafeMode = initial?.disableOcclusionCullingSafeMode == true && !state.disableOcclusionCullingSafeMode,
