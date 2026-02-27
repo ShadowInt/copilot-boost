@@ -49,5 +49,5 @@ If you face any issues, please report them on [YouTrack](https://youtrack.jetbra
 ```
 
 ```shell
-sudo docker image build -t registry.rust-copilot.ru/copilot-boost:0.0.2 . && sudo docker image push registry.rust-copilot.ru/copilot-boost:0.0.2
+sudo docker image build -t registry.rust-copilot.ru/copilot-boost:0.0.3 . && sudo docker image push registry.rust-copilot.ru/copilot-boost:0.0.3
 ```
