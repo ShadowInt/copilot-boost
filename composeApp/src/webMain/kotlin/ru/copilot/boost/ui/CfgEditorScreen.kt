@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,12 +51,14 @@ fun CfgEditorScreen(
             .fillMaxSize()
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
     ) {
-        Text(
-            text = "Загрузка файла",
-            style = MaterialTheme.typography.headlineSmall,
-        )
+        if (!state.hasFile) {
+            Text(
+                text = "Загрузка файла",
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
 
         if (!state.hasFile) {
             Box(
@@ -94,11 +97,13 @@ fun CfgEditorScreen(
             )
         }
 
-        state.fileName?.let { fileName ->
-            Text(
-                text = "Файл: $fileName",
-                modifier = Modifier.padding(top = 12.dp),
-            )
+        if (!state.hasFile) {
+            state.fileName?.let { fileName ->
+                Text(
+                    text = "Файл: $fileName",
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+            }
         }
 
         if (state.hasFile) {
@@ -115,7 +120,7 @@ fun CfgEditorScreen(
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth()
-                    .height(410.dp),
+                    .fillMaxHeight(),
             )
         }
     }
@@ -137,15 +142,16 @@ private fun ThreeColumnEditorWithDownload(
     val sharedScrollState = rememberScrollState()
     BoxWithConstraints(modifier = modifier) {
         val gaps = 16.dp
-        val leftWidth = maxWidth * 0.33f
-        val remainingWidth = maxWidth - leftWidth - gaps
-        val fileColumnWidth = (remainingWidth - 8.dp) / 2
+        val baseLeftWidth = maxWidth * 0.33f
+        val baseRemainingWidth = maxWidth - baseLeftWidth - gaps
+        val fileColumnWidth = ((baseRemainingWidth - 8.dp) / 2) - 20.dp
+        val leftWidth = maxWidth - (fileColumnWidth * 2) - gaps
 
         Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(360.dp),
+                    .fillMaxSize(),
             ) {
                 SettingsColumn(
                     state = state,
@@ -164,6 +170,8 @@ private fun ThreeColumnEditorWithDownload(
                     diffRows = state.diffRows,
                     isNewColumn = false,
                     scrollState = sharedScrollState,
+                    showDownloadButton = false,
+                    onDownloadClick = null,
                     modifier = Modifier.width(fileColumnWidth),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -172,23 +180,10 @@ private fun ThreeColumnEditorWithDownload(
                     diffRows = state.diffRows,
                     isNewColumn = true,
                     scrollState = sharedScrollState,
+                    showDownloadButton = state.hasChanges,
+                    onDownloadClick = onDownloadClick,
                     modifier = Modifier.width(fileColumnWidth),
                 )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Spacer(modifier = Modifier.width(leftWidth + 8.dp + fileColumnWidth + 8.dp))
-                Box(
-                    modifier = Modifier.width(fileColumnWidth),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (state.hasChanges) {
-                        Button(onClick = onDownloadClick) {
-                            Text("Скачать измененный файл")
-                        }
-                    }
-                }
             }
         }
     }
@@ -206,22 +201,32 @@ private fun SettingsColumn(
     onDisableGibsCompletelyChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .border(1.dp, Color.Gray)
-            .padding(12.dp)
-            .verticalScroll(rememberScrollState()),
-    ) {
-        Column {
-            Text("Настройки", style = MaterialTheme.typography.titleSmall)
-            SettingRow("Отключить все паразитные параметры", state.disableParasiticParameters, onDisableParasiticChanged)
-            SettingRow("Отключить отображение ног", state.disableLegsRendering, onDisableLegsRenderingChanged)
-            SettingRow("Отключить деформацию ног", state.disableLegsDeformation, onDisableLegsDeformationChanged)
-            SettingRow("Уменьшить тряску камеры", state.reduceCameraShake, onReduceCameraShakeChanged)
-            SettingRow("Улучшить видимость крестиков на деревьях", state.improveTreeMarkerVisibility, onImproveTreeMarkerVisibilityChanged)
-            SettingRow("Отключить безопасный режим механизма отсечения окклюзий", state.disableOcclusionCullingSafeMode, onDisableOcclusionCullingSafeModeChanged)
-            SettingRow("Полностью отключить обломки", state.disableGibsCompletely, onDisableGibsCompletelyChanged)
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+                .padding(bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = "Настройки")
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(1.dp, Color.Gray)
+                .padding(12.dp)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Column {
+                SettingRow("Отключить все паразитные параметры", state.disableParasiticParameters, onDisableParasiticChanged)
+                SettingRow("Отключить отображение ног", state.disableLegsRendering, onDisableLegsRenderingChanged)
+                SettingRow("Отключить деформацию ног", state.disableLegsDeformation, onDisableLegsDeformationChanged)
+                SettingRow("Уменьшить тряску камеры", state.reduceCameraShake, onReduceCameraShakeChanged)
+                SettingRow("Улучшить видимость крестиков на деревьях", state.improveTreeMarkerVisibility, onImproveTreeMarkerVisibilityChanged)
+                SettingRow("Отключить безопасный режим механизма отсечения окклюзий", state.disableOcclusionCullingSafeMode, onDisableOcclusionCullingSafeModeChanged)
+                SettingRow("Полностью отключить обломки", state.disableGibsCompletely, onDisableGibsCompletelyChanged)
+            }
         }
     }
 }
@@ -252,13 +257,31 @@ private fun DiffColumn(
     diffRows: List<DiffRow>,
     isNewColumn: Boolean,
     scrollState: androidx.compose.foundation.ScrollState,
+    showDownloadButton: Boolean,
+    onDownloadClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = title,
-            modifier = Modifier.padding(bottom = 6.dp),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+                .padding(bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(text = title)
+            Box(
+                modifier = Modifier.width(132.dp),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                if (showDownloadButton && onDownloadClick != null) {
+                    Button(onClick = onDownloadClick) {
+                        Text("Скачать")
+                    }
+                }
+            }
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
