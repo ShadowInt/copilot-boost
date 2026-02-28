@@ -5,7 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -391,29 +394,14 @@ private fun LaunchArgsSelectStageWithCopy(
                             enabled = isCopyEnabled,
                             modifier = Modifier.width(copyButtonWidth),
                         ) {
-                            CopyGlyph()
+                            Icon(
+                                imageVector = Icons.Filled.ContentCopy,
+                                contentDescription = "Копировать",
+                            )
                         }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun CopyGlyph() {
-    Box(modifier = Modifier.size(14.dp)) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .size(10.dp)
-                .border(1.dp, MaterialTheme.colorScheme.onPrimary),
-        )
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(10.dp)
-                .border(1.dp, MaterialTheme.colorScheme.onPrimary),
-        )
     }
 }
