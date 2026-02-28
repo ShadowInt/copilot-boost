@@ -2,7 +2,6 @@ package ru.copilot.boost.ui.components.stage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -103,9 +102,7 @@ private fun StageTimelineRow(
                             painter = painterResource(definition.imageResource),
                             contentDescription = definition.text,
                             modifier = Modifier
-                                .fillMaxWidth(0.82f)
-                                .aspectRatio(844f / 600f)
-                                .border(1.dp, Color(0x33000000)),
+                                .fillMaxWidth(0.82f),
                             contentScale = ContentScale.Fit,
                         )
                     }

@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.Res
-import copilotboost.composeapp.generated.resources.rust_steam_args_windows_en
+import copilotboost.composeapp.generated.resources.lib_steam_macos_ru
 import copilotboost.composeapp.generated.resources.rust_steam_args_windows_ru
 import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.copyTextToClipboard
@@ -96,7 +96,7 @@ fun LaunchArgsScreen() {
 private fun defaultRemainingStages(): List<StageDefinition> = listOf(
     StageDefinition(
         text = "Откройте свойства игры в Steam",
-        imageResource = Res.drawable.rust_steam_args_windows_en,
+        imageResource = Res.drawable.lib_steam_macos_ru,
     ),
     StageDefinition(
         text = "Вставьте параметры в поле запуска",
