@@ -11,5 +11,4 @@ data class LaunchArgsUiState(
 
 data class LaunchArgsCopyState(
     val hasCopied: Boolean = false,
-    val args: String = "",
 )

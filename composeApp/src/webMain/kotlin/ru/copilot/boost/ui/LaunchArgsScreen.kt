@@ -116,7 +116,8 @@ fun LaunchArgsScreen() {
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomEnd)
+                .widthIn(max = 200.dp)
                 .padding(16.dp),
         )
     }

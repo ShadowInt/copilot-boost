@@ -26,38 +26,50 @@ class LaunchArgsStore(
         get() = launchArgs.isNotBlank()
 
     val isCurrentSelectionCopied: Boolean
-        get() = hasSelectedSettings &&
-            state.copyState.hasCopied &&
-            state.copyState.args == launchArgs
+        get() = hasSelectedSettings && state.copyState.hasCopied
 
     fun onAdminTeleportChanged(enabled: Boolean) {
         if (state.adminTeleport == enabled) return
-        state = state.copy(adminTeleport = enabled)
+        state = state.copy(
+            adminTeleport = enabled,
+            copyState = LaunchArgsCopyState(),
+        )
     }
 
     fun onFasterAltHeadTurnChanged(enabled: Boolean) {
         if (state.fasterAltHeadTurn == enabled) return
-        state = state.copy(fasterAltHeadTurn = enabled)
+        state = state.copy(
+            fasterAltHeadTurn = enabled,
+            copyState = LaunchArgsCopyState(),
+        )
     }
 
     fun onDisablePlayerEyesAnimationChanged(enabled: Boolean) {
         if (state.disablePlayerEyesAnimation == enabled) return
-        state = state.copy(disablePlayerEyesAnimation = enabled)
+        state = state.copy(
+            disablePlayerEyesAnimation = enabled,
+            copyState = LaunchArgsCopyState(),
+        )
     }
 
     fun onServerHitmarkerChanged(enabled: Boolean) {
         if (state.serverHitmarker == enabled) return
-        state = state.copy(serverHitmarker = enabled)
+        state = state.copy(
+            serverHitmarker = enabled,
+            copyState = LaunchArgsCopyState(),
+        )
     }
 
     fun onOldItemPickupNotificationsChanged(enabled: Boolean) {
         if (state.oldItemPickupNotifications == enabled) return
-        state = state.copy(oldItemPickupNotifications = enabled)
+        state = state.copy(
+            oldItemPickupNotifications = enabled,
+            copyState = LaunchArgsCopyState(),
+        )
     }
 
     fun onCopyConfirmed() {
-        val args = launchArgs
-        if (args.isBlank()) return
-        state = state.copy(copyState = LaunchArgsCopyState(hasCopied = true, args = args))
+        if (launchArgs.isBlank()) return
+        state = state.copy(copyState = LaunchArgsCopyState(hasCopied = true))
     }
 }
