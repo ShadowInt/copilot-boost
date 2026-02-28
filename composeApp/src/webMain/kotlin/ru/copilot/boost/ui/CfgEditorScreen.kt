@@ -23,8 +23,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -68,15 +72,23 @@ fun CfgEditorScreen(
     ) {
         if (!state.hasFile) {
             val dropZoneShape = RoundedCornerShape(16.dp)
+            val borderColor = if (state.isDragging) MaterialTheme.colorScheme.primary else Color.Gray
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(dropZoneShape)
-                    .border(
-                        width = 2.dp,
-                        color = if (state.isDragging) MaterialTheme.colorScheme.primary else Color.Gray,
-                        shape = dropZoneShape,
-                    ),
+                    .drawBehind {
+                        val strokeWidth = 2.dp.toPx()
+                        val cornerRadius = 16.dp.toPx()
+                        drawRoundRect(
+                            color = borderColor,
+                            style = Stroke(
+                                width = strokeWidth,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
+                            ),
+                            cornerRadius = CornerRadius(cornerRadius),
+                        )
+                    }
+                    .clip(dropZoneShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Column(
