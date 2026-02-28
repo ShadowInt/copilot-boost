@@ -10,6 +10,9 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,6 +33,8 @@ import ru.copilot.boost.ui.components.stage.StageStatus
 import ru.copilot.boost.ui.components.stage.StageTimeline
 import ru.copilot.boost.ui.components.stage.stageStatusColor
 import ru.copilot.boost.ui.components.stage.stageStatusTextColor
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun LaunchArgsScreen() {
@@ -39,57 +44,81 @@ fun LaunchArgsScreen() {
     val hasSelectedSettings = store.hasSelectedSettings
     val isCurrentSelectionCopied = store.isCurrentSelectionCopied
     val remainingStages = remember { defaultRemainingStages() }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    Column(
+    Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
             .safeContentPadding()
             .fillMaxSize()
-            .padding(LaunchArgsUiSpec.ScreenPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
     ) {
-        BoxWithConstraints(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+                .fillMaxSize()
+                .padding(LaunchArgsUiSpec.ScreenPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
         ) {
-            val columns = calculateColumns(maxWidth)
-
-            Row(
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxSize(),
             ) {
-                LaunchArgsSettingsCard(
-                    adminTeleport = state.adminTeleport,
-                    onAdminTeleportChanged = store::onAdminTeleportChanged,
-                    fasterAltHeadTurn = state.fasterAltHeadTurn,
-                    onFasterAltHeadTurnChanged = store::onFasterAltHeadTurnChanged,
-                    disablePlayerEyesAnimation = state.disablePlayerEyesAnimation,
-                    onDisablePlayerEyesAnimationChanged = store::onDisablePlayerEyesAnimationChanged,
-                    serverHitmarker = state.serverHitmarker,
-                    onServerHitmarkerChanged = store::onServerHitmarkerChanged,
-                    oldItemPickupNotifications = state.oldItemPickupNotifications,
-                    onOldItemPickupNotificationsChanged = store::onOldItemPickupNotificationsChanged,
-                    modifier = Modifier.width(columns.left),
-                )
-                Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
-                LaunchArgsWindow(
-                    launchArgs = launchArgs,
-                    hasSelectedSettings = hasSelectedSettings,
-                    isCurrentSelectionCopied = isCurrentSelectionCopied,
-                    remainingStages = remainingStages,
-                    onCopyClick = {
-                        if (launchArgs.isNotBlank()) {
-                            copyTextToClipboard(launchArgs)
-                            store.onCopyConfirmed()
-                        }
-                    },
-                    modifier = Modifier.width(columns.right),
-                )
+                val columns = calculateColumns(maxWidth)
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxSize(),
+                ) {
+                    LaunchArgsSettingsCard(
+                        adminTeleport = state.adminTeleport,
+                        onAdminTeleportChanged = store::onAdminTeleportChanged,
+                        fasterAltHeadTurn = state.fasterAltHeadTurn,
+                        onFasterAltHeadTurnChanged = store::onFasterAltHeadTurnChanged,
+                        disablePlayerEyesAnimation = state.disablePlayerEyesAnimation,
+                        onDisablePlayerEyesAnimationChanged = store::onDisablePlayerEyesAnimationChanged,
+                        serverHitmarker = state.serverHitmarker,
+                        onServerHitmarkerChanged = store::onServerHitmarkerChanged,
+                        oldItemPickupNotifications = state.oldItemPickupNotifications,
+                        onOldItemPickupNotificationsChanged = store::onOldItemPickupNotificationsChanged,
+                        modifier = Modifier.width(columns.left),
+                    )
+                    Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
+                    LaunchArgsWindow(
+                        launchArgs = launchArgs,
+                        hasSelectedSettings = hasSelectedSettings,
+                        isCurrentSelectionCopied = isCurrentSelectionCopied,
+                        remainingStages = remainingStages,
+                        onCopyClick = {
+                            if (launchArgs.isNotBlank()) {
+                                copyTextToClipboard(launchArgs)
+                                store.onCopyConfirmed()
+                                scope.launch {
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                    launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = "Скопировано",
+                                            duration = SnackbarDuration.Indefinite,
+                                        )
+                                    }
+                                    delay(1200)
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                }
+                            }
+                        },
+                        modifier = Modifier.width(columns.right),
+                    )
+                }
             }
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp),
+        )
     }
 }
 
