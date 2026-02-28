@@ -10,6 +10,7 @@ import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
 import ru.copilot.boost.ui.CfgEditorScreen
 import ru.copilot.boost.ui.HomeScreen
+import ru.copilot.boost.ui.LaunchArgsScreen
 import ru.copilot.boost.ui.ModuleStubScreen
 import ru.copilot.boost.ui.TopNavigation
 
@@ -101,11 +102,15 @@ fun App() {
             }
 
             AppScreen.LaunchArgs -> {
-                ModuleStubScreen(
-                    title = "Параметры запуска",
-                    description = "Здесь будет настройка и генерация параметров запуска.",
-                    onBackHome = { currentScreen = AppScreen.Home },
-                )
+                Column(modifier = Modifier.fillMaxSize()) {
+                    TopNavigation(
+                        currentScreen = currentScreen,
+                        onNavigate = { currentScreen = it },
+                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LaunchArgsScreen()
+                    }
+                }
             }
         }
     }

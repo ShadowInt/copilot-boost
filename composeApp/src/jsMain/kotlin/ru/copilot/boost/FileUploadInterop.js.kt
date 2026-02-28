@@ -90,6 +90,10 @@ actual fun downloadCfgFile(fileName: String, content: String) {
     anchor.remove()
 }
 
+actual fun copyTextToClipboard(text: String) {
+    writeTextToClipboard(text)
+}
+
 actual fun readLocalStorage(key: String): String? = window.localStorage.getItem(key)
 
 actual fun writeLocalStorage(key: String, value: String) {
@@ -106,3 +110,7 @@ private fun readFileAsText(file: File, onRead: (String) -> Unit) {
 }
 
 private fun isAllowedClientCfgFile(fileName: String): Boolean = fileName == "client.cfg"
+
+private fun writeTextToClipboard(text: String) {
+    js("window.navigator && window.navigator.clipboard && window.navigator.clipboard.writeText(text)")
+}

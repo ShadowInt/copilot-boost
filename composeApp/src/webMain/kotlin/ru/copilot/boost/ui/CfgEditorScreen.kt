@@ -18,14 +18,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -69,15 +72,23 @@ fun CfgEditorScreen(
     ) {
         if (!state.hasFile) {
             val dropZoneShape = RoundedCornerShape(16.dp)
+            val borderColor = if (state.isDragging) MaterialTheme.colorScheme.primary else Color.Gray
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(dropZoneShape)
-                    .border(
-                        width = 2.dp,
-                        color = if (state.isDragging) MaterialTheme.colorScheme.primary else Color.Gray,
-                        shape = dropZoneShape,
-                    ),
+                    .drawBehind {
+                        val strokeWidth = 2.dp.toPx()
+                        val cornerRadius = 16.dp.toPx()
+                        drawRoundRect(
+                            color = borderColor,
+                            style = Stroke(
+                                width = strokeWidth,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
+                            ),
+                            cornerRadius = CornerRadius(cornerRadius),
+                        )
+                    }
+                    .clip(dropZoneShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Column(
@@ -193,7 +204,7 @@ private fun ThreeColumnEditorWithDownload(
                     .fillMaxWidth()
                     .fillMaxSize(),
             ) {
-                SettingsColumn(
+                SettingsCard(
                     state = state,
                     onDisableParasiticChanged = onDisableParasiticChanged,
                     onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
@@ -242,7 +253,7 @@ private fun ThreeColumnEditorWithDownload(
 }
 
 @Composable
-private fun SettingsColumn(
+internal fun SettingsCard(
     state: CfgEditorUiState,
     onDisableParasiticChanged: (Boolean) -> Unit,
     onDisableLegsRenderingChanged: (Boolean) -> Unit,
@@ -426,28 +437,12 @@ private fun SettingRow(
     onCheckedChange: (Boolean) -> Unit,
     hint: String? = null,
 ) {
-    Row(
-        modifier = Modifier
-            .padding(top = 6.dp)
-            .fillMaxWidth(),
-        verticalAlignment = if (hint == null) Alignment.CenterVertically else Alignment.Top,
-    ) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-        )
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(label)
-            if (hint != null) {
-                Text(
-                    text = hint,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp, end = 8.dp),
-                )
-            }
-        }
-    }
+    SettingsCheckboxRow(
+        label = label,
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        hint = hint,
+    )
 }
 
 @Composable
