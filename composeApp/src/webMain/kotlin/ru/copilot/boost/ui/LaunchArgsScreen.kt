@@ -7,8 +7,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.Res
 import copilotboost.composeapp.generated.resources.lib_steam_macos_ru
-import copilotboost.composeapp.generated.resources.rust_steam_args_windows_ru
+import copilotboost.composeapp.generated.resources.rust_steam_args_macos_ru
 import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.copyTextToClipboard
 import ru.copilot.boost.ui.components.stage.StageDefinition
@@ -99,8 +99,8 @@ private fun defaultRemainingStages(): List<StageDefinition> = listOf(
         imageResource = Res.drawable.lib_steam_macos_ru,
     ),
     StageDefinition(
-        text = "Вставьте параметры в поле запуска",
-        imageResource = Res.drawable.rust_steam_args_windows_ru,
+        text = "Вставьте сгенерированные параметры в данное поле",
+        imageResource = Res.drawable.rust_steam_args_macos_ru,
     ),
     StageDefinition(
         text = "Готово",
@@ -371,34 +371,33 @@ private fun LaunchArgsSelectStageWithCopy(
             )
             if (isStarted) {
                 Spacer(modifier = Modifier.height(8.dp))
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    val copyButtonWidth = 72.dp
-                    val fieldWidth = maxWidth - copyButtonWidth - LaunchArgsUiSpec.InnerGap
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .width(fieldWidth)
-                                .heightIn(min = LaunchArgsUiSpec.CopyFieldMinHeight, max = LaunchArgsUiSpec.CopyFieldMaxHeight)
-                                .border(1.dp, Color.Gray)
-                                .padding(horizontal = 12.dp, vertical = 10.dp),
-                        ) {
-                            Text(
-                                text = launchArgs,
-                                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                                modifier = Modifier.verticalScroll(rememberScrollState()),
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
-                        Button(
-                            onClick = onCopyClick,
-                            enabled = isCopyEnabled,
-                            modifier = Modifier.width(copyButtonWidth),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.ContentCopy,
-                                contentDescription = "Копировать",
-                            )
-                        }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = LaunchArgsUiSpec.CopyFieldMinHeight, max = LaunchArgsUiSpec.CopyFieldMaxHeight)
+                        .border(1.dp, Color.Gray)
+                        .padding(start = 12.dp, top = 6.dp, end = 4.dp, bottom = 6.dp),
+                ) {
+                    Text(
+                        text = launchArgs,
+                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 36.dp)
+                            .verticalScroll(rememberScrollState())
+                            .align(Alignment.CenterStart),
+                    )
+                    IconButton(
+                        onClick = onCopyClick,
+                        enabled = isCopyEnabled,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .align(Alignment.CenterEnd),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ContentCopy,
+                            contentDescription = "Копировать",
+                        )
                     }
                 }
             }

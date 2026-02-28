@@ -37,15 +37,15 @@ fun HomeScreen(
             modifier = Modifier.padding(top = 20.dp),
         )
         ModuleCard(
-            title = "Функционал биндов",
-            description = "Настройка и управление биндами",
-            onOpen = onOpenBinds,
-            modifier = Modifier.padding(top = 12.dp),
-        )
-        ModuleCard(
             title = "Параметры запуска",
             description = "Настройка аргументов запуска клиента",
             onOpen = onOpenLaunchArgs,
+            modifier = Modifier.padding(top = 12.dp),
+        )
+        ModuleCard(
+            title = "Функционал биндов",
+            description = "Настройка и управление биндами",
+            onOpen = onOpenBinds,
             modifier = Modifier.padding(top = 12.dp),
         )
     }
