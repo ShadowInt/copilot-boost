@@ -21,6 +21,12 @@ import copilotboost.composeapp.generated.resources.rust_steam_args_windows_en
 import copilotboost.composeapp.generated.resources.rust_steam_args_windows_ru
 import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.copyTextToClipboard
+import ru.copilot.boost.ui.components.stage.StageDefinition
+import ru.copilot.boost.ui.components.stage.StageMarkerColumn
+import ru.copilot.boost.ui.components.stage.StageStatus
+import ru.copilot.boost.ui.components.stage.StageTimeline
+import ru.copilot.boost.ui.components.stage.stageStatusColor
+import ru.copilot.boost.ui.components.stage.stageStatusTextColor
 
 @Composable
 fun LaunchArgsScreen() {
@@ -84,16 +90,16 @@ fun LaunchArgsScreen() {
     }
 }
 
-private fun defaultRemainingStages(): List<LaunchStageDefinition> = listOf(
-    LaunchStageDefinition(
+private fun defaultRemainingStages(): List<StageDefinition> = listOf(
+    StageDefinition(
         text = "Откройте свойства игры в Steam",
         imageResource = Res.drawable.rust_steam_args_windows_en,
     ),
-    LaunchStageDefinition(
+    StageDefinition(
         text = "Вставьте параметры в поле запуска",
         imageResource = Res.drawable.rust_steam_args_windows_ru,
     ),
-    LaunchStageDefinition(
+    StageDefinition(
         text = "Готово",
     ),
 )
@@ -243,7 +249,7 @@ private fun LaunchArgsWindow(
     launchArgs: String,
     hasSelectedSettings: Boolean,
     isCurrentSelectionCopied: Boolean,
-    remainingStages: List<LaunchStageDefinition>,
+    remainingStages: List<StageDefinition>,
     onCopyClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -302,7 +308,7 @@ private fun LaunchArgsWindow(
                         isCopyEnabled = launchArgs.isNotBlank(),
                         onCopyClick = onCopyClick,
                     )
-                    LaunchArgsStages(
+                    StageTimeline(
                         stages = remainingStages,
                         stageStatusProvider = { stageIndex ->
                             statusForStage(
@@ -326,13 +332,13 @@ private fun LaunchArgsWindow(
 private fun LaunchArgsSelectStageWithCopy(
     modifier: Modifier = Modifier,
     launchArgs: String,
-    status: LaunchStageStatus,
+    status: StageStatus,
     isCopyEnabled: Boolean,
     onCopyClick: () -> Unit,
 ) {
-    val markerColor = stageColor(status)
-    val labelColor = stageTextColor(status)
-    val isStarted = status != LaunchStageStatus.NOT_STARTED
+    val markerColor = stageStatusColor(status)
+    val labelColor = stageStatusTextColor(status)
+    val isStarted = status != StageStatus.NOT_STARTED
     var contentHeightPx by remember { mutableIntStateOf(0) }
     Box(
         modifier = modifier

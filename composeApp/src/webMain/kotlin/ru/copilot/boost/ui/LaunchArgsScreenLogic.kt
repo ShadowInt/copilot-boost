@@ -2,6 +2,7 @@ package ru.copilot.boost.ui
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.copilot.boost.ui.components.stage.StageStatus
 
 internal data class EditorColumns(
     val left: Dp,
@@ -88,19 +89,19 @@ internal fun statusForStage(
     hasSelectedSettings: Boolean,
     isCurrentSelectionCopied: Boolean,
     progress: StageProgress,
-): LaunchStageStatus {
+): StageStatus {
     val effectiveActiveStageIndex = if (isCurrentSelectionCopied) {
         progress.activeStageIndex.coerceAtLeast(1)
     } else {
         progress.activeStageIndex
     }
     return when {
-        !hasSelectedSettings -> LaunchStageStatus.NOT_STARTED
-        !isCurrentSelectionCopied && index == 0 -> LaunchStageStatus.IN_PROGRESS
-        !isCurrentSelectionCopied -> LaunchStageStatus.NOT_STARTED
-        progress.isAtBottom && index == progress.lastStageIndex -> LaunchStageStatus.COMPLETED
-        index < effectiveActiveStageIndex -> LaunchStageStatus.COMPLETED
-        index == effectiveActiveStageIndex -> LaunchStageStatus.IN_PROGRESS
-        else -> LaunchStageStatus.NOT_STARTED
+        !hasSelectedSettings -> StageStatus.NOT_STARTED
+        !isCurrentSelectionCopied && index == 0 -> StageStatus.IN_PROGRESS
+        !isCurrentSelectionCopied -> StageStatus.NOT_STARTED
+        progress.isAtBottom && index == progress.lastStageIndex -> StageStatus.COMPLETED
+        index < effectiveActiveStageIndex -> StageStatus.COMPLETED
+        index == effectiveActiveStageIndex -> StageStatus.IN_PROGRESS
+        else -> StageStatus.NOT_STARTED
     }
 }

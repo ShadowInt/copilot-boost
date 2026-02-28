@@ -1,12 +1,10 @@
-package ru.copilot.boost.ui
+package ru.copilot.boost.ui.components.stage
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -31,14 +29,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-internal fun LaunchArgsStages(
-    stages: List<LaunchStageDefinition>,
-    stageStatusProvider: (Int) -> LaunchStageStatus,
+fun StageTimeline(
+    stages: List<StageDefinition>,
+    stageStatusProvider: (Int) -> StageStatus,
     stageModifiers: Map<Int, Modifier> = emptyMap(),
 ) {
     Column(
@@ -47,7 +46,7 @@ internal fun LaunchArgsStages(
             .padding(horizontal = 10.dp),
     ) {
         stages.forEachIndexed { index, stage ->
-            LaunchArgsStageRow(
+            StageTimelineRow(
                 modifier = stageModifiers[index] ?: Modifier,
                 definition = stage,
                 status = stageStatusProvider(index),
@@ -58,15 +57,15 @@ internal fun LaunchArgsStages(
 }
 
 @Composable
-private fun LaunchArgsStageRow(
+private fun StageTimelineRow(
     modifier: Modifier = Modifier,
-    definition: LaunchStageDefinition,
-    status: LaunchStageStatus,
+    definition: StageDefinition,
+    status: StageStatus,
     showConnector: Boolean,
 ) {
-    val markerColor = stageColor(status)
-    val labelColor = stageTextColor(status)
-    val isStarted = status != LaunchStageStatus.NOT_STARTED
+    val markerColor = stageStatusColor(status)
+    val labelColor = stageStatusTextColor(status)
+    val isStarted = status != StageStatus.NOT_STARTED
     var contentHeightPx by remember { mutableIntStateOf(0) }
     Box(
         modifier = modifier
@@ -93,17 +92,23 @@ private fun LaunchArgsStageRow(
                 modifier = Modifier.padding(top = 0.dp, end = 4.dp),
             )
             if (isStarted) {
-                if (definition.imageResource != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Image(
-                        painter = painterResource(definition.imageResource),
-                        contentDescription = definition.text,
-                        modifier = Modifier
-                            .fillMaxWidth(0.82f)
-                            .aspectRatio(844f / 600f)
-                            .border(1.dp, Color(0x33000000)),
-                        contentScale = ContentScale.Fit,
-                    )
+                when {
+                    definition.content != null -> {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        definition.content.invoke(status)
+                    }
+                    definition.imageResource != null -> {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Image(
+                            painter = painterResource(definition.imageResource),
+                            contentDescription = definition.text,
+                            modifier = Modifier
+                                .fillMaxWidth(0.82f)
+                                .aspectRatio(844f / 600f)
+                                .border(1.dp, Color(0x33000000)),
+                            contentScale = ContentScale.Fit,
+                        )
+                    }
                 }
             }
         }
@@ -111,12 +116,12 @@ private fun LaunchArgsStageRow(
 }
 
 @Composable
-internal fun StageMarkerColumn(
+fun StageMarkerColumn(
     modifier: Modifier = Modifier,
     color: Color,
     showConnector: Boolean,
     contentHeightPx: Int,
-    markerTopOffset: androidx.compose.ui.unit.Dp = 0.dp,
+    markerTopOffset: Dp = 0.dp,
 ) {
     val density = LocalDensity.current
     val markerColumnHeight = with(density) {
@@ -154,27 +159,28 @@ internal fun StageMarkerColumn(
     }
 }
 
-internal enum class LaunchStageStatus {
+enum class StageStatus {
     NOT_STARTED,
     IN_PROGRESS,
     COMPLETED,
 }
 
-internal data class LaunchStageDefinition(
+data class StageDefinition(
     val text: String,
     val imageResource: DrawableResource? = null,
+    val content: (@Composable (StageStatus) -> Unit)? = null,
 )
 
 @Composable
-internal fun stageColor(status: LaunchStageStatus): Color = when (status) {
-    LaunchStageStatus.NOT_STARTED -> MaterialTheme.colorScheme.outlineVariant
-    LaunchStageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
-    LaunchStageStatus.COMPLETED -> Color(0xFF2E7D32)
+fun stageStatusColor(status: StageStatus): Color = when (status) {
+    StageStatus.NOT_STARTED -> MaterialTheme.colorScheme.outlineVariant
+    StageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
+    StageStatus.COMPLETED -> Color(0xFF2E7D32)
 }
 
 @Composable
-internal fun stageTextColor(status: LaunchStageStatus): Color = when (status) {
-    LaunchStageStatus.NOT_STARTED -> MaterialTheme.colorScheme.onSurfaceVariant
-    LaunchStageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSurface
-    LaunchStageStatus.COMPLETED -> MaterialTheme.colorScheme.onSurface
+fun stageStatusTextColor(status: StageStatus): Color = when (status) {
+    StageStatus.NOT_STARTED -> MaterialTheme.colorScheme.onSurfaceVariant
+    StageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSurface
+    StageStatus.COMPLETED -> MaterialTheme.colorScheme.onSurface
 }
