@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +37,8 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun LaunchArgsStages(
-    stages: List<LaunchStageItem>,
+    stages: List<LaunchStageDefinition>,
+    stageStatusProvider: (Int) -> LaunchStageStatus,
     stageModifiers: Map<Int, Modifier> = emptyMap(),
 ) {
     Column(
@@ -49,13 +49,9 @@ internal fun LaunchArgsStages(
         stages.forEachIndexed { index, stage ->
             LaunchArgsStageRow(
                 modifier = stageModifiers[index] ?: Modifier,
-                text = stage.text,
-                status = stage.status,
+                definition = stage,
+                status = stageStatusProvider(index),
                 showConnector = index != stages.lastIndex,
-                showNextButton = stage.showNextButton,
-                isNextButtonEnabled = stage.isNextButtonEnabled,
-                onNextClick = stage.onNextClick,
-                imageResource = stage.imageResource,
             )
         }
     }
@@ -64,13 +60,9 @@ internal fun LaunchArgsStages(
 @Composable
 private fun LaunchArgsStageRow(
     modifier: Modifier = Modifier,
-    text: String,
+    definition: LaunchStageDefinition,
     status: LaunchStageStatus,
     showConnector: Boolean,
-    showNextButton: Boolean = false,
-    isNextButtonEnabled: Boolean = true,
-    onNextClick: (() -> Unit)? = null,
-    imageResource: DrawableResource? = null,
 ) {
     val markerColor = stageColor(status)
     val labelColor = stageTextColor(status)
@@ -95,70 +87,23 @@ private fun LaunchArgsStageRow(
                 .onSizeChanged { contentHeightPx = it.height },
         ) {
             Text(
-                text = text,
+                text = definition.text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = labelColor,
                 modifier = Modifier.padding(top = 0.dp, end = 4.dp),
             )
             if (isStarted) {
-                if (imageResource != null && showNextButton && onNextClick != null) {
+                if (definition.imageResource != null) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        val buttonWidth = 88.dp
-                        val imageWidth = (maxWidth - buttonWidth - 8.dp) * 0.78f
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painter = painterResource(imageResource),
-                                contentDescription = text,
-                                modifier = Modifier
-                                    .width(imageWidth)
-                                    .aspectRatio(844f / 600f)
-                                    .border(1.dp, Color(0x33000000)),
-                                contentScale = ContentScale.Fit,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Button(
-                                onClick = onNextClick,
-                                enabled = isNextButtonEnabled,
-                                modifier = Modifier.width(buttonWidth),
-                            ) {
-                                Text(
-                                    text = "Далее",
-                                    maxLines = 1,
-                                    softWrap = false,
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    if (imageResource != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Image(
-                            painter = painterResource(imageResource),
-                            contentDescription = text,
-                            modifier = Modifier
-                                .fillMaxWidth(0.82f)
-                                .aspectRatio(844f / 600f)
-                                .border(1.dp, Color(0x33000000)),
-                            contentScale = ContentScale.Fit,
-                        )
-                    }
-                    if (showNextButton && onNextClick != null) {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Button(
-                            onClick = onNextClick,
-                            enabled = isNextButtonEnabled,
-                        ) {
-                            Text(
-                                text = "Далее",
-                                maxLines = 1,
-                                softWrap = false,
-                            )
-                        }
-                    }
+                    Image(
+                        painter = painterResource(definition.imageResource),
+                        contentDescription = definition.text,
+                        modifier = Modifier
+                            .fillMaxWidth(0.82f)
+                            .aspectRatio(844f / 600f)
+                            .border(1.dp, Color(0x33000000)),
+                        contentScale = ContentScale.Fit,
+                    )
                 }
             }
         }
@@ -215,12 +160,8 @@ internal enum class LaunchStageStatus {
     COMPLETED,
 }
 
-internal data class LaunchStageItem(
+internal data class LaunchStageDefinition(
     val text: String,
-    val status: LaunchStageStatus,
-    val showNextButton: Boolean = false,
-    val isNextButtonEnabled: Boolean = true,
-    val onNextClick: (() -> Unit)? = null,
     val imageResource: DrawableResource? = null,
 )
 

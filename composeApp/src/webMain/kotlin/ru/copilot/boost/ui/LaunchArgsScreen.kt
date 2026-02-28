@@ -2,98 +2,41 @@ package ru.copilot.boost.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.Res
 import copilotboost.composeapp.generated.resources.rust_steam_args_windows_en
 import copilotboost.composeapp.generated.resources.rust_steam_args_windows_ru
+import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.copyTextToClipboard
 
 @Composable
 fun LaunchArgsScreen() {
-    var adminTeleport by rememberSaveable { mutableStateOf(false) }
-    var fasterAltHeadTurn by rememberSaveable { mutableStateOf(false) }
-    var disablePlayerEyesAnimation by rememberSaveable { mutableStateOf(false) }
-    var serverHitmarker by rememberSaveable { mutableStateOf(false) }
-    var oldItemPickupNotifications by rememberSaveable { mutableStateOf(false) }
-    var lastCopiedLaunchArgs by rememberSaveable { mutableStateOf<String?>(null) }
-    val launchArgs = buildList {
-        if (adminTeleport) add("-global.enable_marker_teleport \"True\"")
-        if (fasterAltHeadTurn) {
-            add("-client.headlerp \"10\"")
-            add("-headlerp_inertia \"0\"")
-        }
-        if (disablePlayerEyesAnimation) {
-            add("-player.eye_blinking \"False\"")
-            add("-player.eye_movement \"False\"")
-        }
-        if (serverHitmarker) add("-hitnotify.notification_level \"2\"")
-        if (oldItemPickupNotifications) {
-            add("-global.showitempickupnotices \"1\"")
-            add("-global.showitemcountsonpickup \"False\"")
-            add("-global.usesingleitempickupnotice \"False\"")
-        }
-    }.joinToString(" ")
-    val hasSelectedSettings = launchArgs.isNotBlank()
-    val isCurrentSelectionCopied = hasSelectedSettings && lastCopiedLaunchArgs == launchArgs
-    val remainingStages = listOf(
-        LaunchStageItem(
-            text = "Откройте свойства игры в Steam",
-            status = LaunchStageStatus.NOT_STARTED,
-            imageResource = Res.drawable.rust_steam_args_windows_en,
-        ),
-        LaunchStageItem(
-            text = "Вставьте параметры в поле запуска",
-            status = LaunchStageStatus.NOT_STARTED,
-            imageResource = Res.drawable.rust_steam_args_windows_ru,
-        ),
-        LaunchStageItem(
-            text = "Готово",
-            status = LaunchStageStatus.NOT_STARTED,
-        ),
-    )
+    val store = remember { LaunchArgsStore() }
+    val state = store.state
+    val launchArgs = store.launchArgs
+    val hasSelectedSettings = store.hasSelectedSettings
+    val isCurrentSelectionCopied = store.isCurrentSelectionCopied
+    val remainingStages = remember { defaultRemainingStages() }
 
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
             .safeContentPadding()
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(LaunchArgsUiSpec.ScreenPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
@@ -102,11 +45,7 @@ fun LaunchArgsScreen() {
                 .fillMaxWidth()
                 .fillMaxHeight(),
         ) {
-            val gaps = 16.dp
-            val baseLeftWidth = maxWidth * 0.33f
-            val baseRemainingWidth = maxWidth - baseLeftWidth - gaps
-            val rightWidth = ((baseRemainingWidth - 8.dp) / 2) * 2 - 40.dp
-            val leftWidth = maxWidth - rightWidth - gaps
+            val columns = calculateColumns(maxWidth)
 
             Row(
                 modifier = Modifier
@@ -114,19 +53,19 @@ fun LaunchArgsScreen() {
                     .fillMaxSize(),
             ) {
                 LaunchArgsSettingsCard(
-                    adminTeleport = adminTeleport,
-                    onAdminTeleportChanged = { adminTeleport = it },
-                    fasterAltHeadTurn = fasterAltHeadTurn,
-                    onFasterAltHeadTurnChanged = { fasterAltHeadTurn = it },
-                    disablePlayerEyesAnimation = disablePlayerEyesAnimation,
-                    onDisablePlayerEyesAnimationChanged = { disablePlayerEyesAnimation = it },
-                    serverHitmarker = serverHitmarker,
-                    onServerHitmarkerChanged = { serverHitmarker = it },
-                    oldItemPickupNotifications = oldItemPickupNotifications,
-                    onOldItemPickupNotificationsChanged = { oldItemPickupNotifications = it },
-                    modifier = Modifier.width(leftWidth),
+                    adminTeleport = state.adminTeleport,
+                    onAdminTeleportChanged = store::onAdminTeleportChanged,
+                    fasterAltHeadTurn = state.fasterAltHeadTurn,
+                    onFasterAltHeadTurnChanged = store::onFasterAltHeadTurnChanged,
+                    disablePlayerEyesAnimation = state.disablePlayerEyesAnimation,
+                    onDisablePlayerEyesAnimationChanged = store::onDisablePlayerEyesAnimationChanged,
+                    serverHitmarker = state.serverHitmarker,
+                    onServerHitmarkerChanged = store::onServerHitmarkerChanged,
+                    oldItemPickupNotifications = state.oldItemPickupNotifications,
+                    onOldItemPickupNotificationsChanged = store::onOldItemPickupNotificationsChanged,
+                    modifier = Modifier.width(columns.left),
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
                 LaunchArgsWindow(
                     launchArgs = launchArgs,
                     hasSelectedSettings = hasSelectedSettings,
@@ -135,15 +74,29 @@ fun LaunchArgsScreen() {
                     onCopyClick = {
                         if (launchArgs.isNotBlank()) {
                             copyTextToClipboard(launchArgs)
-                            lastCopiedLaunchArgs = launchArgs
+                            store.onCopyConfirmed()
                         }
                     },
-                    modifier = Modifier.width(rightWidth),
+                    modifier = Modifier.width(columns.right),
                 )
             }
         }
     }
 }
+
+private fun defaultRemainingStages(): List<LaunchStageDefinition> = listOf(
+    LaunchStageDefinition(
+        text = "Откройте свойства игры в Steam",
+        imageResource = Res.drawable.rust_steam_args_windows_en,
+    ),
+    LaunchStageDefinition(
+        text = "Вставьте параметры в поле запуска",
+        imageResource = Res.drawable.rust_steam_args_windows_ru,
+    ),
+    LaunchStageDefinition(
+        text = "Готово",
+    ),
+)
 
 @Composable
 private fun LaunchArgsSettingsCard(
@@ -159,6 +112,43 @@ private fun LaunchArgsSettingsCard(
     onOldItemPickupNotificationsChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val recommendedRows = listOf(
+        LaunchSettingUiRow(
+            label = "Админский телепорт",
+            checked = adminTeleport,
+            onCheckedChange = onAdminTeleportChanged,
+            hint = "При наличии админки автоматически телепортирует игрока в точку установки маркера на карте.",
+        ),
+    )
+    val visualRows = listOf(
+        LaunchSettingUiRow(
+            label = "Ускорить поворот головы через ALT",
+            checked = fasterAltHeadTurn,
+            onCheckedChange = onFasterAltHeadTurnChanged,
+            hint = "При активации данного твика, голова персонажа будет быстрее возвращаться в исходное состояние при отпускании клавиши ALT.",
+        ),
+        LaunchSettingUiRow(
+            label = "Отключить анимацию глаз игроков",
+            checked = disablePlayerEyesAnimation,
+            onCheckedChange = onDisablePlayerEyesAnimationChanged,
+            hint = "Полностью отключает анимацию и моргания глаз у всех персонажей.",
+        ),
+    )
+    val experimentalRows = listOf(
+        LaunchSettingUiRow(
+            label = "Серверный хитмаркер",
+            checked = serverHitmarker,
+            onCheckedChange = onServerHitmarkerChanged,
+            hint = "При включении хитмаркер отображается только в том случае, когда сервер подтверждает регистрацию попадания. Добавляет небольшую задержку хитмаркерам, но избавляет от дезинформации.",
+        ),
+        LaunchSettingUiRow(
+            label = "Старые уведомления о подборе предметов",
+            checked = oldItemPickupNotifications,
+            onCheckedChange = onOldItemPickupNotificationsChanged,
+            hint = "При включении возвращает старый способ отображения подобранных предметов: каждый предмет отображается отдельно.",
+        ),
+    )
+
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -177,44 +167,45 @@ private fun LaunchArgsSettingsCard(
         ) {
             Column {
                 LaunchArgsSectionTitle("Рекомендуемые")
-                LaunchArgSettingRow(
-                    label = "Админский телепорт",
-                    checked = adminTeleport,
-                    onCheckedChange = onAdminTeleportChanged,
-                    hint = "При наличии админки автоматически телепортирует игрока в точку установки маркера на карте.",
-                )
+                recommendedRows.forEach { row ->
+                    LaunchArgSettingRow(
+                        label = row.label,
+                        checked = row.checked,
+                        onCheckedChange = row.onCheckedChange,
+                        hint = row.hint,
+                    )
+                }
 
                 LaunchArgsSectionTitle("Визуальные эффекты", withTopSpacing = true)
-                LaunchArgSettingRow(
-                    label = "Ускорить поворот головы через ALT",
-                    checked = fasterAltHeadTurn,
-                    onCheckedChange = onFasterAltHeadTurnChanged,
-                    hint = "При активации данного твика, голова персонажа будет быстрее возвращаться в исходное состояние при отпускании клавиши ALT.",
-                )
-                LaunchArgSettingRow(
-                    label = "Отключить анимацию глаз игроков",
-                    checked = disablePlayerEyesAnimation,
-                    onCheckedChange = onDisablePlayerEyesAnimationChanged,
-                    hint = "Полностью отключает анимацию и моргания глаз у всех персонажей.",
-                )
+                visualRows.forEach { row ->
+                    LaunchArgSettingRow(
+                        label = row.label,
+                        checked = row.checked,
+                        onCheckedChange = row.onCheckedChange,
+                        hint = row.hint,
+                    )
+                }
 
                 LaunchArgsSectionTitle("Экспериментальные", withTopSpacing = true)
-                LaunchArgSettingRow(
-                    label = "Серверный хитмаркер",
-                    checked = serverHitmarker,
-                    onCheckedChange = onServerHitmarkerChanged,
-                    hint = "При включении хитмаркер отображается только в том случае, когда сервер подтверждает регистрацию попадания. Добавляет небольшую задержку хитмаркерам, но избавляет от дезинформации.",
-                )
-                LaunchArgSettingRow(
-                    label = "Старые уведомления о подборе предметов",
-                    checked = oldItemPickupNotifications,
-                    onCheckedChange = onOldItemPickupNotificationsChanged,
-                    hint = "При включении возвращает старый способ отображения подобранных предметов: каждый предмет отображается отдельно.",
-                )
+                experimentalRows.forEach { row ->
+                    LaunchArgSettingRow(
+                        label = row.label,
+                        checked = row.checked,
+                        onCheckedChange = row.onCheckedChange,
+                        hint = row.hint,
+                    )
+                }
             }
         }
     }
 }
+
+private data class LaunchSettingUiRow(
+    val label: String,
+    val checked: Boolean,
+    val onCheckedChange: (Boolean) -> Unit,
+    val hint: String,
+)
 
 @Composable
 private fun LaunchArgsSectionTitle(
@@ -252,54 +243,29 @@ private fun LaunchArgsWindow(
     launchArgs: String,
     hasSelectedSettings: Boolean,
     isCurrentSelectionCopied: Boolean,
-    remainingStages: List<LaunchStageItem>,
+    remainingStages: List<LaunchStageDefinition>,
     onCopyClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
-    var firstStageHeightPx by remember { mutableIntStateOf(0) }
-    var secondStageHeightPx by remember { mutableIntStateOf(0) }
-    var thirdStageHeightPx by remember { mutableIntStateOf(0) }
-    var viewportHeightPx by remember { mutableIntStateOf(0) }
-    val firstStageEnd = firstStageHeightPx
-    val secondStageEnd = firstStageHeightPx + secondStageHeightPx
-    val thirdStageEnd = secondStageEnd + thirdStageHeightPx
-    val viewportBottom = scrollState.value + viewportHeightPx
-    val stageSwitchThresholdPx = 24
-    val activeStageIndex = when {
-        viewportBottom >= thirdStageEnd - stageSwitchThresholdPx -> 3
-        viewportBottom >= secondStageEnd - stageSwitchThresholdPx -> 2
-        viewportBottom >= firstStageEnd - stageSwitchThresholdPx -> 1
-        else -> 0
+    val totalStages = 1 + remainingStages.size
+    val stageHeightsPx = remember(totalStages) {
+        mutableStateListOf<Int>().apply { repeat(totalStages) { add(0) } }
     }
-    val effectiveActiveStageIndex = if (isCurrentSelectionCopied) {
-        activeStageIndex.coerceAtLeast(1)
-    } else {
-        activeStageIndex
+    val density = LocalDensity.current
+    val stageSwitchThresholdPx = LaunchArgsUiSpec.STAGE_SWITCH_THRESHOLD_PX
+    fun updateStageHeight(index: Int, newHeight: Int) {
+        if (index in stageHeightsPx.indices && stageHeightsPx[index] != newHeight) {
+            stageHeightsPx[index] = newHeight
+        }
     }
-    val isAtBottom = scrollState.value >= (scrollState.maxValue - stageSwitchThresholdPx).coerceAtLeast(0)
-    val lastStageIndex = 3
-    fun statusFor(index: Int): LaunchStageStatus = when {
-        !hasSelectedSettings -> LaunchStageStatus.NOT_STARTED
-        !isCurrentSelectionCopied && index == 0 -> LaunchStageStatus.IN_PROGRESS
-        !isCurrentSelectionCopied -> LaunchStageStatus.NOT_STARTED
-        isAtBottom && index == lastStageIndex -> LaunchStageStatus.COMPLETED
-        index < effectiveActiveStageIndex -> LaunchStageStatus.COMPLETED
-        index == effectiveActiveStageIndex -> LaunchStageStatus.IN_PROGRESS
-        else -> LaunchStageStatus.NOT_STARTED
-    }
-    val stagesForRender = listOf(
-        remainingStages[0].copy(status = statusFor(1)),
-        remainingStages[1].copy(status = statusFor(2)),
-        remainingStages[2].copy(status = statusFor(3)),
-    )
 
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp)
-                .padding(bottom = 6.dp),
+                .height(LaunchArgsUiSpec.CardHeaderHeight)
+                .padding(bottom = LaunchArgsUiSpec.CardHeaderBottomPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(text = "Настройка параметров запуска")
@@ -310,26 +276,47 @@ private fun LaunchArgsWindow(
                 .border(1.dp, Color.Gray)
                 .padding(12.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onSizeChanged { viewportHeightPx = it.height }
-                    .verticalScroll(scrollState),
-            ) {
-                LaunchArgsSelectStageWithCopy(
-                    modifier = Modifier.onSizeChanged { firstStageHeightPx = it.height },
-                    launchArgs = launchArgs,
-                    status = statusFor(0),
-                    isCopyEnabled = launchArgs.isNotBlank(),
-                    onCopyClick = onCopyClick,
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val viewportHeightPx = with(density) { maxHeight.roundToPx() }
+                val progress = computeStageProgress(
+                    stageHeightsPx = stageHeightsPx,
+                    scrollValue = scrollState.value,
+                    viewportHeightPx = viewportHeightPx,
+                    maxScrollValue = scrollState.maxValue,
+                    stageSwitchThresholdPx = stageSwitchThresholdPx,
                 )
-                LaunchArgsStages(
-                    stages = stagesForRender,
-                    stageModifiers = mapOf(
-                        0 to Modifier.onSizeChanged { secondStageHeightPx = it.height },
-                        1 to Modifier.onSizeChanged { thirdStageHeightPx = it.height },
-                    ),
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState),
+                ) {
+                    LaunchArgsSelectStageWithCopy(
+                        modifier = Modifier.onSizeChanged { updateStageHeight(index = 0, newHeight = it.height) },
+                        launchArgs = launchArgs,
+                        status = statusForStage(
+                            index = 0,
+                            hasSelectedSettings = hasSelectedSettings,
+                            isCurrentSelectionCopied = isCurrentSelectionCopied,
+                            progress = progress,
+                        ),
+                        isCopyEnabled = launchArgs.isNotBlank(),
+                        onCopyClick = onCopyClick,
+                    )
+                    LaunchArgsStages(
+                        stages = remainingStages,
+                        stageStatusProvider = { stageIndex ->
+                            statusForStage(
+                                index = stageIndex + 1,
+                                hasSelectedSettings = hasSelectedSettings,
+                                isCurrentSelectionCopied = isCurrentSelectionCopied,
+                                progress = progress,
+                            )
+                        },
+                        stageModifiers = remainingStages.indices.associateWith { index ->
+                            Modifier.onSizeChanged { updateStageHeight(index = index + 1, newHeight = it.height) }
+                        },
+                    )
+                }
             }
         }
     }
@@ -377,12 +364,12 @@ private fun LaunchArgsSelectStageWithCopy(
                 Spacer(modifier = Modifier.height(8.dp))
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                     val copyButtonWidth = 72.dp
-                    val fieldWidth = maxWidth - copyButtonWidth - 8.dp
+                    val fieldWidth = maxWidth - copyButtonWidth - LaunchArgsUiSpec.InnerGap
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
                                 .width(fieldWidth)
-                                .heightIn(min = 48.dp, max = 180.dp)
+                                .heightIn(min = LaunchArgsUiSpec.CopyFieldMinHeight, max = LaunchArgsUiSpec.CopyFieldMaxHeight)
                                 .border(1.dp, Color.Gray)
                                 .padding(horizontal = 12.dp, vertical = 10.dp),
                         ) {
@@ -392,7 +379,7 @@ private fun LaunchArgsSelectStageWithCopy(
                                 modifier = Modifier.verticalScroll(rememberScrollState()),
                             )
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
                         Button(
                             onClick = onCopyClick,
                             enabled = isCopyEnabled,
