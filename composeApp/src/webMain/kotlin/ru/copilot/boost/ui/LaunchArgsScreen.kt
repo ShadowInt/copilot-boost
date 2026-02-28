@@ -223,7 +223,7 @@ private fun LaunchArgsWindow(
                 .padding(bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Параметры запуска")
+            Text(text = "Выбранные параметры запуска")
         }
         Box(
             modifier = Modifier
@@ -232,34 +232,97 @@ private fun LaunchArgsWindow(
                 .padding(12.dp),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                SteamWindowTopBar()
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "ПАРАМЕТРЫ ЗАПУСКА",
-                    style = MaterialTheme.typography.titleSmall,
+                LaunchArgsSelectStageWithCopy(
+                    launchArgs = launchArgs,
+                    onCopyClick = onCopyClick,
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    val copyButtonWidth = 72.dp
-                    val fieldWidth = maxWidth - copyButtonWidth - 8.dp
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        OutlinedTextField(
-                            value = launchArgs,
-                            onValueChange = {},
-                            readOnly = true,
-                            singleLine = false,
-                            modifier = Modifier
-                                .width(fieldWidth)
-                                .height(120.dp),
-                            textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = onCopyClick,
-                            modifier = Modifier.width(copyButtonWidth),
-                        ) {
-                            CopyGlyph()
-                        }
+                LaunchArgsStages(
+                    stages = listOf(
+                        "Скопируйте выбранные конфигурации",
+                        "Откройте свойства игры в Steam",
+                        "Вставьте параметры в поле запуска",
+                    ),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LaunchArgsStages(stages: List<String>) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+    ) {
+        stages.forEachIndexed { index, stage ->
+            LaunchArgsStageRow(
+                text = stage,
+                showConnector = index != stages.lastIndex,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LaunchArgsSelectStageWithCopy(
+    launchArgs: String,
+    onCopyClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Column(
+            modifier = Modifier.width(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(50),
+                    ),
+            )
+            Box(
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .width(2.dp)
+                    .height(132.dp)
+                    .background(Color(0x55000000)),
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Выберите настройки",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(end = 4.dp),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                val copyButtonWidth = 72.dp
+                val fieldWidth = maxWidth - copyButtonWidth - 8.dp
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedTextField(
+                        value = launchArgs,
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = false,
+                        modifier = Modifier
+                            .width(fieldWidth)
+                            .height(120.dp),
+                        textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = onCopyClick,
+                        modifier = Modifier.width(copyButtonWidth),
+                    ) {
+                        CopyGlyph()
                     }
                 }
             }
@@ -268,26 +331,45 @@ private fun LaunchArgsWindow(
 }
 
 @Composable
-private fun SteamWindowTopBar() {
+private fun LaunchArgsStageRow(
+    text: String,
+    showConnector: Boolean,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
     ) {
-        WindowControlDot(Color(0xFFE35B5B))
-        Spacer(modifier = Modifier.width(6.dp))
-        WindowControlDot(Color(0xFFE3C35B))
-        Spacer(modifier = Modifier.width(6.dp))
-        WindowControlDot(Color(0xFF6BCB77))
+        Column(
+            modifier = Modifier.width(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(50),
+                    ),
+            )
+            if (showConnector) {
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 2.dp)
+                        .width(2.dp)
+                        .height(24.dp)
+                        .background(Color(0x55000000)),
+                )
+            } else {
+                Spacer(modifier = Modifier.height(28.dp))
+            }
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(top = 0.dp, end = 4.dp),
+        )
     }
-}
-
-@Composable
-private fun WindowControlDot(color: Color) {
-    Box(
-        modifier = Modifier
-            .size(10.dp)
-            .background(color, RoundedCornerShape(50)),
-    )
 }
 
 @Composable
