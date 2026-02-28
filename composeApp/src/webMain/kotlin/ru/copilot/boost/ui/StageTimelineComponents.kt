@@ -1,0 +1,239 @@
+package ru.copilot.boost.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+
+@Composable
+internal fun LaunchArgsStages(
+    stages: List<LaunchStageItem>,
+    stageModifiers: Map<Int, Modifier> = emptyMap(),
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+    ) {
+        stages.forEachIndexed { index, stage ->
+            LaunchArgsStageRow(
+                modifier = stageModifiers[index] ?: Modifier,
+                text = stage.text,
+                status = stage.status,
+                showConnector = index != stages.lastIndex,
+                showNextButton = stage.showNextButton,
+                isNextButtonEnabled = stage.isNextButtonEnabled,
+                onNextClick = stage.onNextClick,
+                imageResource = stage.imageResource,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LaunchArgsStageRow(
+    modifier: Modifier = Modifier,
+    text: String,
+    status: LaunchStageStatus,
+    showConnector: Boolean,
+    showNextButton: Boolean = false,
+    isNextButtonEnabled: Boolean = true,
+    onNextClick: (() -> Unit)? = null,
+    imageResource: DrawableResource? = null,
+) {
+    val markerColor = stageColor(status)
+    val labelColor = stageTextColor(status)
+    val isStarted = status != LaunchStageStatus.NOT_STARTED
+    var contentHeightPx by remember { mutableIntStateOf(0) }
+    Box(
+        modifier = modifier
+            .fillMaxWidth(),
+    ) {
+        StageMarkerColumn(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxHeight(),
+            color = markerColor,
+            showConnector = showConnector,
+            contentHeightPx = contentHeightPx,
+            markerTopOffset = 5.dp,
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 24.dp)
+                .onSizeChanged { contentHeightPx = it.height },
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = labelColor,
+                modifier = Modifier.padding(top = 0.dp, end = 4.dp),
+            )
+            if (isStarted) {
+                if (imageResource != null && showNextButton && onNextClick != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        val buttonWidth = 88.dp
+                        val imageWidth = (maxWidth - buttonWidth - 8.dp) * 0.78f
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painter = painterResource(imageResource),
+                                contentDescription = text,
+                                modifier = Modifier
+                                    .width(imageWidth)
+                                    .aspectRatio(844f / 600f)
+                                    .border(1.dp, Color(0x33000000)),
+                                contentScale = ContentScale.Fit,
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(
+                                onClick = onNextClick,
+                                enabled = isNextButtonEnabled,
+                                modifier = Modifier.width(buttonWidth),
+                            ) {
+                                Text(
+                                    text = "Далее",
+                                    maxLines = 1,
+                                    softWrap = false,
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    if (imageResource != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Image(
+                            painter = painterResource(imageResource),
+                            contentDescription = text,
+                            modifier = Modifier
+                                .fillMaxWidth(0.82f)
+                                .aspectRatio(844f / 600f)
+                                .border(1.dp, Color(0x33000000)),
+                            contentScale = ContentScale.Fit,
+                        )
+                    }
+                    if (showNextButton && onNextClick != null) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Button(
+                            onClick = onNextClick,
+                            enabled = isNextButtonEnabled,
+                        ) {
+                            Text(
+                                text = "Далее",
+                                maxLines = 1,
+                                softWrap = false,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun StageMarkerColumn(
+    modifier: Modifier = Modifier,
+    color: Color,
+    showConnector: Boolean,
+    contentHeightPx: Int,
+    markerTopOffset: androidx.compose.ui.unit.Dp = 0.dp,
+) {
+    val density = LocalDensity.current
+    val markerColumnHeight = with(density) {
+        if (contentHeightPx > 0) contentHeightPx.toDp() else 10.dp
+    }
+    Box(
+        modifier = modifier
+            .width(16.dp)
+            .height(markerColumnHeight)
+            .drawBehind {
+                if (showConnector) {
+                    val markerSize = 10.dp.toPx()
+                    val gapBelowMarker = 2.dp.toPx()
+                    val lineWidth = 2.dp.toPx()
+                    val startY = markerTopOffset.toPx() + markerSize + gapBelowMarker
+                    val lineHeight = (size.height - startY).coerceAtLeast(0f)
+                    drawRect(
+                        color = color.copy(alpha = 0.55f),
+                        topLeft = Offset((size.width - lineWidth) / 2f, startY),
+                        size = Size(lineWidth, lineHeight),
+                    )
+                }
+            },
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = markerTopOffset)
+                .size(10.dp)
+                .background(
+                    color = color,
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(50),
+                ),
+        )
+    }
+}
+
+internal enum class LaunchStageStatus {
+    NOT_STARTED,
+    IN_PROGRESS,
+    COMPLETED,
+}
+
+internal data class LaunchStageItem(
+    val text: String,
+    val status: LaunchStageStatus,
+    val showNextButton: Boolean = false,
+    val isNextButtonEnabled: Boolean = true,
+    val onNextClick: (() -> Unit)? = null,
+    val imageResource: DrawableResource? = null,
+)
+
+@Composable
+internal fun stageColor(status: LaunchStageStatus): Color = when (status) {
+    LaunchStageStatus.NOT_STARTED -> MaterialTheme.colorScheme.outlineVariant
+    LaunchStageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
+    LaunchStageStatus.COMPLETED -> Color(0xFF2E7D32)
+}
+
+@Composable
+internal fun stageTextColor(status: LaunchStageStatus): Color = when (status) {
+    LaunchStageStatus.NOT_STARTED -> MaterialTheme.colorScheme.onSurfaceVariant
+    LaunchStageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSurface
+    LaunchStageStatus.COMPLETED -> MaterialTheme.colorScheme.onSurface
+}

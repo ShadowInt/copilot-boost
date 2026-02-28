@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -33,26 +31,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.Res
 import copilotboost.composeapp.generated.resources.rust_steam_args_windows_en
 import copilotboost.composeapp.generated.resources.rust_steam_args_windows_ru
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
-import kotlinx.coroutines.launch
 import ru.copilot.boost.copyTextToClipboard
 
 @Composable
@@ -63,7 +52,6 @@ fun LaunchArgsScreen() {
     var serverHitmarker by rememberSaveable { mutableStateOf(false) }
     var oldItemPickupNotifications by rememberSaveable { mutableStateOf(false) }
     var lastCopiedLaunchArgs by rememberSaveable { mutableStateOf<String?>(null) }
-    var steamPropertiesStageCompleted by rememberSaveable { mutableStateOf(false) }
     val launchArgs = buildList {
         if (adminTeleport) add("-global.enable_marker_teleport \"True\"")
         if (fasterAltHeadTurn) {
@@ -83,37 +71,20 @@ fun LaunchArgsScreen() {
     }.joinToString(" ")
     val hasSelectedSettings = launchArgs.isNotBlank()
     val isCurrentSelectionCopied = hasSelectedSettings && lastCopiedLaunchArgs == launchArgs
-    val firstStageStatus = when {
-        !hasSelectedSettings -> LaunchStageStatus.NOT_STARTED
-        isCurrentSelectionCopied -> LaunchStageStatus.COMPLETED
-        else -> LaunchStageStatus.IN_PROGRESS
-    }
-    val canContinueSteamStage = firstStageStatus == LaunchStageStatus.COMPLETED
-    LaunchedEffect(canContinueSteamStage) {
-        if (!canContinueSteamStage) steamPropertiesStageCompleted = false
-    }
-    val steamStageStatus = when {
-        !canContinueSteamStage -> LaunchStageStatus.NOT_STARTED
-        steamPropertiesStageCompleted -> LaunchStageStatus.COMPLETED
-        else -> LaunchStageStatus.IN_PROGRESS
-    }
     val remainingStages = listOf(
         LaunchStageItem(
             text = "Откройте свойства игры в Steam",
-            status = steamStageStatus,
-            showNextButton = true,
-            isNextButtonEnabled = steamStageStatus == LaunchStageStatus.IN_PROGRESS,
-            onNextClick = { steamPropertiesStageCompleted = true },
+            status = LaunchStageStatus.NOT_STARTED,
             imageResource = Res.drawable.rust_steam_args_windows_en,
         ),
         LaunchStageItem(
             text = "Вставьте параметры в поле запуска",
-            status = if (steamPropertiesStageCompleted) {
-                LaunchStageStatus.IN_PROGRESS
-            } else {
-                LaunchStageStatus.NOT_STARTED
-            },
+            status = LaunchStageStatus.NOT_STARTED,
             imageResource = Res.drawable.rust_steam_args_windows_ru,
+        ),
+        LaunchStageItem(
+            text = "Готово",
+            status = LaunchStageStatus.NOT_STARTED,
         ),
     )
 
@@ -158,7 +129,8 @@ fun LaunchArgsScreen() {
                 Spacer(modifier = Modifier.width(8.dp))
                 LaunchArgsWindow(
                     launchArgs = launchArgs,
-                    firstStageStatus = firstStageStatus,
+                    hasSelectedSettings = hasSelectedSettings,
+                    isCurrentSelectionCopied = isCurrentSelectionCopied,
                     remainingStages = remainingStages,
                     onCopyClick = {
                         if (launchArgs.isNotBlank()) {
@@ -278,28 +250,49 @@ private fun LaunchArgSettingRow(
 @Composable
 private fun LaunchArgsWindow(
     launchArgs: String,
-    firstStageStatus: LaunchStageStatus,
+    hasSelectedSettings: Boolean,
+    isCurrentSelectionCopied: Boolean,
     remainingStages: List<LaunchStageItem>,
     onCopyClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scope = rememberCoroutineScope()
-    val steamStageRequester = remember { BringIntoViewRequester() }
-    val finalStageRequester = remember { BringIntoViewRequester() }
-    val stagesForRender = remember(remainingStages) {
-        remainingStages.mapIndexed { index, stage ->
-            if (index == 0 && stage.onNextClick != null) {
-                stage.copy(
-                    onNextClick = {
-                        stage.onNextClick.invoke()
-                        scope.launch { finalStageRequester.bringIntoView() }
-                    },
-                )
-            } else {
-                stage
-            }
-        }
+    val scrollState = rememberScrollState()
+    var firstStageHeightPx by remember { mutableIntStateOf(0) }
+    var secondStageHeightPx by remember { mutableIntStateOf(0) }
+    var thirdStageHeightPx by remember { mutableIntStateOf(0) }
+    var viewportHeightPx by remember { mutableIntStateOf(0) }
+    val firstStageEnd = firstStageHeightPx
+    val secondStageEnd = firstStageHeightPx + secondStageHeightPx
+    val thirdStageEnd = secondStageEnd + thirdStageHeightPx
+    val viewportBottom = scrollState.value + viewportHeightPx
+    val stageSwitchThresholdPx = 24
+    val activeStageIndex = when {
+        viewportBottom >= thirdStageEnd - stageSwitchThresholdPx -> 3
+        viewportBottom >= secondStageEnd - stageSwitchThresholdPx -> 2
+        viewportBottom >= firstStageEnd - stageSwitchThresholdPx -> 1
+        else -> 0
     }
+    val effectiveActiveStageIndex = if (isCurrentSelectionCopied) {
+        activeStageIndex.coerceAtLeast(1)
+    } else {
+        activeStageIndex
+    }
+    val isAtBottom = scrollState.value >= (scrollState.maxValue - stageSwitchThresholdPx).coerceAtLeast(0)
+    val lastStageIndex = 3
+    fun statusFor(index: Int): LaunchStageStatus = when {
+        !hasSelectedSettings -> LaunchStageStatus.NOT_STARTED
+        !isCurrentSelectionCopied && index == 0 -> LaunchStageStatus.IN_PROGRESS
+        !isCurrentSelectionCopied -> LaunchStageStatus.NOT_STARTED
+        isAtBottom && index == lastStageIndex -> LaunchStageStatus.COMPLETED
+        index < effectiveActiveStageIndex -> LaunchStageStatus.COMPLETED
+        index == effectiveActiveStageIndex -> LaunchStageStatus.IN_PROGRESS
+        else -> LaunchStageStatus.NOT_STARTED
+    }
+    val stagesForRender = listOf(
+        remainingStages[0].copy(status = statusFor(1)),
+        remainingStages[1].copy(status = statusFor(2)),
+        remainingStages[2].copy(status = statusFor(3)),
+    )
 
     Column(modifier = modifier) {
         Row(
@@ -320,22 +313,21 @@ private fun LaunchArgsWindow(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                    .onSizeChanged { viewportHeightPx = it.height }
+                    .verticalScroll(scrollState),
             ) {
                 LaunchArgsSelectStageWithCopy(
+                    modifier = Modifier.onSizeChanged { firstStageHeightPx = it.height },
                     launchArgs = launchArgs,
-                    status = firstStageStatus,
+                    status = statusFor(0),
                     isCopyEnabled = launchArgs.isNotBlank(),
-                    onCopyClick = {
-                        onCopyClick()
-                        scope.launch { steamStageRequester.bringIntoView() }
-                    },
+                    onCopyClick = onCopyClick,
                 )
                 LaunchArgsStages(
                     stages = stagesForRender,
-                    stageRequesters = mapOf(
-                        0 to steamStageRequester,
-                        1 to finalStageRequester,
+                    stageModifiers = mapOf(
+                        0 to Modifier.onSizeChanged { secondStageHeightPx = it.height },
+                        1 to Modifier.onSizeChanged { thirdStageHeightPx = it.height },
                     ),
                 )
             }
@@ -344,34 +336,8 @@ private fun LaunchArgsWindow(
 }
 
 @Composable
-private fun LaunchArgsStages(
-    stages: List<LaunchStageItem>,
-    stageRequesters: Map<Int, BringIntoViewRequester> = emptyMap(),
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp),
-    ) {
-        stages.forEachIndexed { index, stage ->
-            LaunchArgsStageRow(
-                modifier = stageRequesters[index]
-                    ?.let { Modifier.bringIntoViewRequester(it) }
-                    ?: Modifier,
-                text = stage.text,
-                status = stage.status,
-                showConnector = index != stages.lastIndex,
-                showNextButton = stage.showNextButton,
-                isNextButtonEnabled = stage.isNextButtonEnabled,
-                onNextClick = stage.onNextClick,
-                imageResource = stage.imageResource,
-            )
-        }
-    }
-}
-
-@Composable
 private fun LaunchArgsSelectStageWithCopy(
+    modifier: Modifier = Modifier,
     launchArgs: String,
     status: LaunchStageStatus,
     isCopyEnabled: Boolean,
@@ -382,7 +348,7 @@ private fun LaunchArgsSelectStageWithCopy(
     val isStarted = status != LaunchStageStatus.NOT_STARTED
     var contentHeightPx by remember { mutableIntStateOf(0) }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp),
     ) {
@@ -439,183 +405,6 @@ private fun LaunchArgsSelectStageWithCopy(
             }
         }
     }
-}
-
-@Composable
-private fun LaunchArgsStageRow(
-    modifier: Modifier = Modifier,
-    text: String,
-    status: LaunchStageStatus,
-    showConnector: Boolean,
-    showNextButton: Boolean = false,
-    isNextButtonEnabled: Boolean = true,
-    onNextClick: (() -> Unit)? = null,
-    imageResource: DrawableResource? = null,
-) {
-    val markerColor = stageColor(status)
-    val labelColor = stageTextColor(status)
-    val isStarted = status != LaunchStageStatus.NOT_STARTED
-    var contentHeightPx by remember { mutableIntStateOf(0) }
-    Box(
-        modifier = modifier
-            .fillMaxWidth(),
-    ) {
-        StageMarkerColumn(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxHeight(),
-            color = markerColor,
-            showConnector = showConnector,
-            contentHeightPx = contentHeightPx,
-            markerTopOffset = 5.dp,
-        )
-        Column(
-            modifier = Modifier
-                .padding(start = 24.dp)
-                .onSizeChanged { contentHeightPx = it.height },
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = labelColor,
-                modifier = Modifier.padding(top = 0.dp, end = 4.dp),
-            )
-            if (isStarted) {
-                if (imageResource != null && showNextButton && onNextClick != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        val buttonWidth = 88.dp
-                        val imageWidth = (maxWidth - buttonWidth - 8.dp) * 0.78f
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painter = painterResource(imageResource),
-                                contentDescription = text,
-                                modifier = Modifier
-                                    .width(imageWidth)
-                                    .aspectRatio(844f / 600f)
-                                    .border(1.dp, Color(0x33000000)),
-                                contentScale = ContentScale.Fit,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Button(
-                                onClick = onNextClick,
-                                enabled = isNextButtonEnabled,
-                                modifier = Modifier.width(buttonWidth),
-                            ) {
-                                Text(
-                                    text = "Далее",
-                                    maxLines = 1,
-                                    softWrap = false,
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    if (imageResource != null) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Image(
-                            painter = painterResource(imageResource),
-                            contentDescription = text,
-                            modifier = Modifier
-                                .fillMaxWidth(0.82f)
-                                .aspectRatio(844f / 600f)
-                                .border(1.dp, Color(0x33000000)),
-                            contentScale = ContentScale.Fit,
-                        )
-                    }
-                    if (showNextButton && onNextClick != null) {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Button(
-                            onClick = onNextClick,
-                            enabled = isNextButtonEnabled,
-                        ) {
-                            Text(
-                                text = "Далее",
-                                maxLines = 1,
-                                softWrap = false,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun StageMarkerColumn(
-    modifier: Modifier = Modifier,
-    color: Color,
-    showConnector: Boolean,
-    contentHeightPx: Int,
-    markerTopOffset: androidx.compose.ui.unit.Dp = 0.dp,
-) {
-    val density = LocalDensity.current
-    val markerColumnHeight = with(density) {
-        if (contentHeightPx > 0) contentHeightPx.toDp() else 10.dp
-    }
-    Box(
-        modifier = modifier
-            .width(16.dp)
-            .height(markerColumnHeight)
-            .drawBehind {
-                if (showConnector) {
-                    val markerSize = 10.dp.toPx()
-                    val gapBelowMarker = 2.dp.toPx()
-                    val lineWidth = 2.dp.toPx()
-                    val startY = markerTopOffset.toPx() + markerSize + gapBelowMarker
-                    val lineHeight = (size.height - startY).coerceAtLeast(0f)
-                    drawRect(
-                        color = color.copy(alpha = 0.55f),
-                        topLeft = Offset((size.width - lineWidth) / 2f, startY),
-                        size = Size(lineWidth, lineHeight),
-                    )
-                }
-            },
-        contentAlignment = Alignment.TopCenter,
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(top = markerTopOffset)
-                .size(10.dp)
-                .background(
-                    color = color,
-                    shape = RoundedCornerShape(50),
-                ),
-        )
-    }
-}
-
-private enum class LaunchStageStatus {
-    NOT_STARTED,
-    IN_PROGRESS,
-    COMPLETED,
-}
-
-private data class LaunchStageItem(
-    val text: String,
-    val status: LaunchStageStatus,
-    val showNextButton: Boolean = false,
-    val isNextButtonEnabled: Boolean = true,
-    val onNextClick: (() -> Unit)? = null,
-    val imageResource: DrawableResource? = null,
-)
-
-@Composable
-private fun stageColor(status: LaunchStageStatus): Color = when (status) {
-    LaunchStageStatus.NOT_STARTED -> MaterialTheme.colorScheme.outlineVariant
-    LaunchStageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
-    LaunchStageStatus.COMPLETED -> Color(0xFF2E7D32)
-}
-
-@Composable
-private fun stageTextColor(status: LaunchStageStatus): Color = when (status) {
-    LaunchStageStatus.NOT_STARTED -> MaterialTheme.colorScheme.onSurfaceVariant
-    LaunchStageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSurface
-    LaunchStageStatus.COMPLETED -> MaterialTheme.colorScheme.onSurface
 }
 
 @Composable
