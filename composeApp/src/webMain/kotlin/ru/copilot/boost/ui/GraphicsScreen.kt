@@ -16,10 +16,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -228,27 +233,49 @@ private fun QualitySliderRow(
 private fun GraphicsDiffSection(
     diffRows: List<DiffRow>,
 ) {
+    var showOnlyChanges by remember { mutableStateOf(true) }
     val sharedScrollState = rememberScrollState()
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(260.dp),
-    ) {
-        GraphicsDiffColumn(
-            title = "Исходный",
-            diffRows = diffRows,
-            isNewColumn = false,
-            scrollState = sharedScrollState,
-            modifier = Modifier.weight(1f),
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        GraphicsDiffColumn(
-            title = "Измененный",
-            diffRows = diffRows,
-            isNewColumn = true,
-            scrollState = sharedScrollState,
-            modifier = Modifier.weight(1f),
-        )
+    val rowsToShow = if (showOnlyChanges) {
+        diffRows.filter { it.type != DiffRowType.UNCHANGED }
+    } else {
+        diffRows
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(
+                checked = showOnlyChanges,
+                onCheckedChange = { showOnlyChanges = it },
+            )
+            Text("Только измененные строки")
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(260.dp),
+        ) {
+            GraphicsDiffColumn(
+                title = "Исходный",
+                diffRows = rowsToShow,
+                isNewColumn = false,
+                scrollState = sharedScrollState,
+                modifier = Modifier.weight(1f),
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            GraphicsDiffColumn(
+                title = "Измененный",
+                diffRows = rowsToShow,
+                isNewColumn = true,
+                scrollState = sharedScrollState,
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 

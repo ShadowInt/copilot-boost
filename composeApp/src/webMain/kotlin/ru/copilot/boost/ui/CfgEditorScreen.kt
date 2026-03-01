@@ -18,9 +18,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -135,6 +140,12 @@ private fun ThreeColumnEditorWithDownload(
     modifier: Modifier = Modifier,
 ) {
     val sharedScrollState = rememberScrollState()
+    var showOnlyChanges by remember { mutableStateOf(true) }
+    val diffRowsToShow = if (showOnlyChanges) {
+        state.diffRows.filter { it.type != DiffRowType.UNCHANGED }
+    } else {
+        state.diffRows
+    }
 
     BoxWithConstraints(modifier = modifier) {
         val gaps = 16.dp
@@ -173,25 +184,45 @@ private fun ThreeColumnEditorWithDownload(
                     modifier = Modifier.width(leftWidth),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                DiffColumn(
-                    title = "Исходный",
-                    diffRows = state.diffRows,
-                    isNewColumn = false,
-                    scrollState = sharedScrollState,
-                    showDownloadButton = false,
-                    onDownloadClick = null,
-                    modifier = Modifier.width(fileColumnWidth),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                DiffColumn(
-                    title = "Измененный",
-                    diffRows = state.diffRows,
-                    isNewColumn = true,
-                    scrollState = sharedScrollState,
-                    showDownloadButton = state.hasChanges,
-                    onDownloadClick = onDownloadClick,
-                    modifier = Modifier.width(fileColumnWidth),
-                )
+                Column(
+                    modifier = Modifier.width((fileColumnWidth * 2) + 8.dp),
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = showOnlyChanges,
+                            onCheckedChange = { showOnlyChanges = it },
+                        )
+                        Text("Только измененные строки")
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        DiffColumn(
+                            title = "Исходный",
+                            diffRows = diffRowsToShow,
+                            isNewColumn = false,
+                            scrollState = sharedScrollState,
+                            showDownloadButton = false,
+                            onDownloadClick = null,
+                            modifier = Modifier.width(fileColumnWidth),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        DiffColumn(
+                            title = "Измененный",
+                            diffRows = diffRowsToShow,
+                            isNewColumn = true,
+                            scrollState = sharedScrollState,
+                            showDownloadButton = state.hasChanges,
+                            onDownloadClick = onDownloadClick,
+                            modifier = Modifier.width(fileColumnWidth),
+                        )
+                    }
+                }
             }
         }
     }
