@@ -12,7 +12,7 @@ class SetupFlowStore(
     var currentScreen by mutableStateOf(initialScreen)
         private set
 
-    private var setupFlow by mutableStateOf<List<AppScreen>>(emptyList())
+    private var setupFlow by mutableStateOf<List<SetupStepDefinition>>(emptyList())
     private var setupFlowStepIndex by mutableIntStateOf(0)
 
     fun openSetupSelection() {
@@ -30,20 +30,12 @@ class SetupFlowStore(
         currentScreen = AppScreen.SetupSelection
     }
 
-    fun startFlow(
-        includeTweaks: Boolean,
-        includeLaunchArgs: Boolean,
-        includeBinds: Boolean,
-    ): Boolean {
-        val flow = buildSetupFlow(
-            includeTweaks = includeTweaks,
-            includeLaunchArgs = includeLaunchArgs,
-            includeBinds = includeBinds,
-        )
+    fun startFlow(selectedModules: Set<SetupModuleId>): Boolean {
+        val flow = SetupModulesRegistry.buildSteps(selectedModules)
         if (flow.isEmpty()) return false
         setupFlow = flow
         setupFlowStepIndex = 0
-        currentScreen = flow.first()
+        currentScreen = flow.first().screen
         return true
     }
 
@@ -51,7 +43,7 @@ class SetupFlowStore(
         val nextIndex = setupFlowStepIndex + 1
         if (nextIndex >= setupFlow.size) return false
         setupFlowStepIndex = nextIndex
-        currentScreen = setupFlow[nextIndex]
+        currentScreen = setupFlow[nextIndex].screen
         return true
     }
 
@@ -59,31 +51,20 @@ class SetupFlowStore(
         val previousIndex = setupFlowStepIndex - 1
         if (previousIndex < 0 || previousIndex >= setupFlow.size) return false
         setupFlowStepIndex = previousIndex
-        currentScreen = setupFlow[previousIndex]
+        currentScreen = setupFlow[previousIndex].screen
         return true
     }
 
     fun hasNextFlowStep(): Boolean = setupFlowStepIndex + 1 < setupFlow.size
 
-    fun isCurrentFlowStep(screen: AppScreen): Boolean = setupFlow.getOrNull(setupFlowStepIndex) == screen
+    fun isCurrentFlowStep(screen: AppScreen): Boolean = setupFlow.getOrNull(setupFlowStepIndex)?.screen == screen
+
+    fun currentStepTitle(): String? = setupFlow.getOrNull(setupFlowStepIndex)?.title
+
+    fun currentStepRequiresClientCfg(): Boolean = setupFlow.getOrNull(setupFlowStepIndex)?.requiresClientCfg == true
 
     private fun clearFlow() {
         setupFlow = emptyList()
         setupFlowStepIndex = 0
-    }
-
-    private fun buildSetupFlow(
-        includeTweaks: Boolean,
-        includeLaunchArgs: Boolean,
-        includeBinds: Boolean,
-    ): List<AppScreen> {
-        val flow = mutableListOf<AppScreen>()
-        if (includeTweaks) {
-            flow += AppScreen.ClientCfgUpload
-            flow += AppScreen.Tweaks
-        }
-        if (includeLaunchArgs) flow += AppScreen.LaunchArgs
-        if (includeBinds) flow += AppScreen.Binds
-        return flow
     }
 }

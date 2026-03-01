@@ -19,20 +19,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ru.copilot.boost.presentation.SetupModuleDefinition
+import ru.copilot.boost.presentation.SetupModuleId
 
 @Composable
 fun SetupSelectionScreen(
-    onStartFlow: (
-        includeTweaks: Boolean,
-        includeLaunchArgs: Boolean,
-        includeBinds: Boolean,
-    ) -> Unit,
+    modules: List<SetupModuleDefinition>,
+    onStartFlow: (Set<SetupModuleId>) -> Unit,
     onBackHome: () -> Unit,
 ) {
-    var tweaksSelected by remember { mutableStateOf(false) }
-    var launchArgsSelected by remember { mutableStateOf(false) }
-    var bindsSelected by remember { mutableStateOf(false) }
-    val hasSelection = tweaksSelected || launchArgsSelected || bindsSelected
+    var selectedModules by remember { mutableStateOf<Set<SetupModuleId>>(emptySet()) }
+    val hasSelection = selectedModules.isNotEmpty()
 
     Column(
         modifier = Modifier
@@ -48,31 +45,26 @@ fun SetupSelectionScreen(
             modifier = Modifier.padding(top = 8.dp),
         )
 
-        SetupOptionRow(
-            title = "Твики",
-            description = "Понадобится файл client.cfg через drag-and-drop",
-            checked = tweaksSelected,
-            onCheckedChange = { tweaksSelected = it },
-            modifier = Modifier.padding(top = 20.dp),
-        )
-        SetupOptionRow(
-            title = "Параметры запуска",
-            description = "Настройка аргументов запуска клиента",
-            checked = launchArgsSelected,
-            onCheckedChange = { launchArgsSelected = it },
-            modifier = Modifier.padding(top = 12.dp),
-        )
-        SetupOptionRow(
-            title = "Бинды",
-            description = "Настройка и управление биндами",
-            checked = bindsSelected,
-            onCheckedChange = { bindsSelected = it },
-            modifier = Modifier.padding(top = 12.dp),
-        )
+        modules.forEachIndexed { index, module ->
+            val isChecked = module.id in selectedModules
+            SetupOptionRow(
+                title = module.title,
+                description = module.description,
+                checked = isChecked,
+                onCheckedChange = { checked ->
+                    selectedModules = if (checked) {
+                        selectedModules + module.id
+                    } else {
+                        selectedModules - module.id
+                    }
+                },
+                modifier = Modifier.padding(top = if (index == 0) 20.dp else 12.dp),
+            )
+        }
 
         Button(
             onClick = {
-                onStartFlow(tweaksSelected, launchArgsSelected, bindsSelected)
+                onStartFlow(selectedModules)
             },
             enabled = hasSelection,
             modifier = Modifier.padding(top = 16.dp),

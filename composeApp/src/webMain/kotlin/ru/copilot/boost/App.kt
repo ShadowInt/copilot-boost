@@ -1,29 +1,21 @@
 package ru.copilot.boost
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
 import ru.copilot.boost.presentation.SetupFlowStore
+import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.ui.ClientCfgUploadScreen
 import ru.copilot.boost.ui.CfgEditorScreen
 import ru.copilot.boost.ui.HomeScreen
 import ru.copilot.boost.ui.LaunchArgsScreen
 import ru.copilot.boost.ui.ModuleStubScreen
 import ru.copilot.boost.ui.SetupSelectionScreen
+import ru.copilot.boost.ui.components.ModuleScaffold
 
 @Composable
 fun App() {
@@ -78,216 +70,155 @@ fun App() {
 
             AppScreen.SetupSelection -> {
                 SetupSelectionScreen(
-                    onStartFlow = { includeTweaks, includeLaunchArgs, includeBinds ->
+                    modules = SetupModulesRegistry.modules,
+                    onStartFlow = { selectedModules ->
                         store.reset()
-                        flowStore.startFlow(
-                            includeTweaks = includeTweaks,
-                            includeLaunchArgs = includeLaunchArgs,
-                            includeBinds = includeBinds,
-                        )
+                        flowStore.startFlow(selectedModules = selectedModules)
                     },
                     onBackHome = resetFlowToHome,
                 )
             }
 
             AppScreen.ClientCfgUpload -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    BackNavigationBar(
-                        title = "Загрузка клиентской конфигурации",
-                        onBack = {
-                            if (!flowStore.moveBackward()) {
-                                resetFlowToSelection()
+                ModuleScaffold(
+                    title = flowStore.currentStepTitle() ?: "Загрузка клиентской конфигурации",
+                    onBack = {
+                        if (!flowStore.moveBackward()) {
+                            resetFlowToSelection()
+                        }
+                    },
+                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) "Далее" else null,
+                    primaryActionEnabled = if (flowStore.currentStepRequiresClientCfg()) {
+                        store.state.hasFile
+                    } else {
+                        true
+                    },
+                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) {
+                        {
+                            if (!flowStore.moveForward()) {
+                                resetFlowToHome()
                             }
-                        },
-                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) "Далее" else null,
-                        primaryActionEnabled = store.state.hasFile,
-                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) {
-                            {
-                                if (!flowStore.moveForward()) {
-                                    resetFlowToHome()
-                                }
-                            }
-                        } else {
-                            null
+                        }
+                    } else {
+                        null
+                    },
+                ) {
+                    ClientCfgUploadScreen(
+                        isDragging = store.state.isDragging,
+                        uploadError = store.state.uploadError,
+                        fileName = store.state.fileName,
+                        onPickFileClick = {
+                            openFilePicker(
+                                onFileSelected = store::onFileSelected,
+                                onInvalidFile = store::onInvalidFile,
+                            )
                         },
                     )
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        ClientCfgUploadScreen(
-                            isDragging = store.state.isDragging,
-                            uploadError = store.state.uploadError,
-                            fileName = store.state.fileName,
-                            onPickFileClick = {
-                                openFilePicker(
-                                    onFileSelected = store::onFileSelected,
-                                    onInvalidFile = store::onInvalidFile,
-                                )
-                            },
-                        )
-                    }
                 }
             }
 
             AppScreen.Tweaks -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    BackNavigationBar(
-                        title = "Твики",
-                        onBack = {
-                            if (!flowStore.moveBackward()) {
-                                resetFlowToSelection()
+                ModuleScaffold(
+                    title = flowStore.currentStepTitle() ?: "Твики",
+                    onBack = {
+                        if (!flowStore.moveBackward()) {
+                            resetFlowToSelection()
+                        }
+                    },
+                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
+                        if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
+                    } else {
+                        null
+                    },
+                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
+                        {
+                            if (!flowStore.moveForward()) {
+                                resetFlowToHome()
                             }
-                        },
-                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
-                            if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
-                        } else {
-                            null
-                        },
-                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
-                            {
-                                if (!flowStore.moveForward()) {
-                                    resetFlowToHome()
-                                }
-                            }
-                        } else {
-                            null
+                        }
+                    } else {
+                        null
+                    },
+                ) {
+                    val state = store.state
+                    CfgEditorScreen(
+                        state = state,
+                        onDisableParasiticChanged = store::onDisableParasiticChanged,
+                        onDisableLegsRenderingChanged = store::onDisableLegsRenderingChanged,
+                        onDisableLegsDeformationChanged = store::onDisableLegsDeformationChanged,
+                        onDisableStrobeLightsChanged = store::onDisableStrobeLightsChanged,
+                        onReduceHeldItemSizeChanged = store::onReduceHeldItemSizeChanged,
+                        onRestoreEventTextNotificationsChanged = store::onRestoreEventTextNotificationsChanged,
+                        onRemoveAutocraftMenuDelayChanged = store::onRemoveAutocraftMenuDelayChanged,
+                        onReduceSleepingBagRemovalDelayChanged = store::onReduceSleepingBagRemovalDelayChanged,
+                        onAddMapInfoToF8MenuChanged = store::onAddMapInfoToF8MenuChanged,
+                        onDisableClientErrorOverlayChanged = store::onDisableClientErrorOverlayChanged,
+                        onAddAdminGesturesToGameMenuChanged = store::onAddAdminGesturesToGameMenuChanged,
+                        onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
+                        onEnlargedConsoleChanged = store::onEnlargedConsoleChanged,
+                        onReduceRadialMenuCallDelayChanged = store::onReduceRadialMenuCallDelayChanged,
+                        onLeftHandModeChanged = store::onLeftHandModeChanged,
+                        onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
+                        onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
+                        onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,
+                        onDisableGibsCompletelyChanged = store::onDisableGibsCompletelyChanged,
+                        onDownloadClick = {
+                            val fileName = state.downloadFileName ?: return@CfgEditorScreen
+                            downloadCfgFile(
+                                fileName = fileName,
+                                content = state.patchedContent,
+                            )
                         },
                     )
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        val state = store.state
-                        CfgEditorScreen(
-                            state = state,
-                            onDisableParasiticChanged = store::onDisableParasiticChanged,
-                            onDisableLegsRenderingChanged = store::onDisableLegsRenderingChanged,
-                            onDisableLegsDeformationChanged = store::onDisableLegsDeformationChanged,
-                            onDisableStrobeLightsChanged = store::onDisableStrobeLightsChanged,
-                            onReduceHeldItemSizeChanged = store::onReduceHeldItemSizeChanged,
-                            onRestoreEventTextNotificationsChanged = store::onRestoreEventTextNotificationsChanged,
-                            onRemoveAutocraftMenuDelayChanged = store::onRemoveAutocraftMenuDelayChanged,
-                            onReduceSleepingBagRemovalDelayChanged = store::onReduceSleepingBagRemovalDelayChanged,
-                            onAddMapInfoToF8MenuChanged = store::onAddMapInfoToF8MenuChanged,
-                            onDisableClientErrorOverlayChanged = store::onDisableClientErrorOverlayChanged,
-                            onAddAdminGesturesToGameMenuChanged = store::onAddAdminGesturesToGameMenuChanged,
-                            onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
-                            onEnlargedConsoleChanged = store::onEnlargedConsoleChanged,
-                            onReduceRadialMenuCallDelayChanged = store::onReduceRadialMenuCallDelayChanged,
-                            onLeftHandModeChanged = store::onLeftHandModeChanged,
-                            onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
-                            onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
-                            onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,
-                            onDisableGibsCompletelyChanged = store::onDisableGibsCompletelyChanged,
-                            onDownloadClick = {
-                                val fileName = state.downloadFileName ?: return@CfgEditorScreen
-                                downloadCfgFile(
-                                    fileName = fileName,
-                                    content = state.patchedContent,
-                                )
-                            },
-                        )
-                    }
                 }
             }
 
             AppScreen.Binds -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    BackNavigationBar(
-                        title = "Бинды",
-                        onBack = {
-                            if (!flowStore.moveBackward()) {
-                                resetFlowToSelection()
-                            }
-                        },
-                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) "Завершить" else null,
-                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) {
-                            resetFlowToHome
-                        } else {
-                            null
-                        },
+                ModuleScaffold(
+                    title = flowStore.currentStepTitle() ?: "Бинды",
+                    onBack = {
+                        if (!flowStore.moveBackward()) {
+                            resetFlowToSelection()
+                        }
+                    },
+                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) "Завершить" else null,
+                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) {
+                        resetFlowToHome
+                    } else {
+                        null
+                    },
+                ) {
+                    ModuleStubScreen(
+                        title = "Функционал биндов",
+                        description = "Здесь будет настройка биндов и пресетов клавиш.",
                     )
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        ModuleStubScreen(
-                            title = "Функционал биндов",
-                            description = "Здесь будет настройка биндов и пресетов клавиш.",
-                        )
-                    }
                 }
             }
 
             AppScreen.LaunchArgs -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    BackNavigationBar(
-                        title = "Параметры запуска",
-                        onBack = {
-                            if (!flowStore.moveBackward()) {
-                                resetFlowToSelection()
+                ModuleScaffold(
+                    title = flowStore.currentStepTitle() ?: "Параметры запуска",
+                    onBack = {
+                        if (!flowStore.moveBackward()) {
+                            resetFlowToSelection()
+                        }
+                    },
+                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
+                        if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
+                    } else {
+                        null
+                    },
+                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
+                        {
+                            if (!flowStore.moveForward()) {
+                                resetFlowToHome()
                             }
-                        },
-                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
-                            if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
-                        } else {
-                            null
-                        },
-                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
-                            {
-                                if (!flowStore.moveForward()) {
-                                    resetFlowToHome()
-                                }
-                            }
-                        } else {
-                            null
-                        },
-                    )
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        LaunchArgsScreen()
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun BackNavigationBar(
-    title: String,
-    onBack: () -> Unit,
-    primaryActionText: String? = null,
-    primaryActionEnabled: Boolean = true,
-    onPrimaryAction: (() -> Unit)? = null,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.CenterStart,
-        ) {
-            Button(onClick = onBack) {
-                Text("Назад")
-            }
-        }
-
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = title.uppercase(),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            )
-        }
-
-        Box(
-            modifier = Modifier.weight(1f),
-            contentAlignment = Alignment.CenterEnd,
-        ) {
-            if (primaryActionText != null && onPrimaryAction != null) {
-                Button(
-                    onClick = onPrimaryAction,
-                    enabled = primaryActionEnabled,
+                        }
+                    } else {
+                        null
+                    },
                 ) {
-                    Text(primaryActionText)
+                    LaunchArgsScreen()
                 }
             }
         }
