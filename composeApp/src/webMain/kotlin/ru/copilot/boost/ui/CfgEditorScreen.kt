@@ -22,19 +22,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
 import ru.copilot.boost.presentation.model.CfgEditorUiState
+import ru.copilot.boost.ui.components.FileDropZone
 
 @Composable
 fun CfgEditorScreen(
@@ -71,64 +66,14 @@ fun CfgEditorScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         if (!state.hasFile) {
-            val dropZoneShape = RoundedCornerShape(16.dp)
-            val borderColor = if (state.isDragging) MaterialTheme.colorScheme.primary else Color.Gray
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .drawBehind {
-                        val strokeWidth = 2.dp.toPx()
-                        val cornerRadius = 16.dp.toPx()
-                        drawRoundRect(
-                            color = borderColor,
-                            style = Stroke(
-                                width = strokeWidth,
-                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
-                            ),
-                            cornerRadius = CornerRadius(cornerRadius),
-                        )
-                    }
-                    .clip(dropZoneShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Text(
-                        text = if (state.isDragging) {
-                            "Отпустите файл здесь"
-                        } else {
-                            "Перетащите client.cfg файл в эту область"
-                        },
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                    if (!state.isDragging) {
-                        Text(
-                            text = "ИЛИ",
-                            modifier = Modifier.padding(top = 10.dp),
-                        )
-
-                        Button(
-                            onClick = onPickFileClick,
-                            modifier = Modifier.padding(top = 16.dp),
-                        ) {
-                            Text("Выберите файл")
-                        }
-                    }
-
-                    if (!state.isDragging) {
-                        state.uploadError?.let { error ->
-                            Text(
-                                text = error,
-                                color = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.padding(top = 10.dp),
-                            )
-                        }
-                    }
-                }
-            }
-
+            FileDropZone(
+                isDragging = state.isDragging,
+                idleMessage = "Перетащите client.cfg файл в эту область",
+                dragMessage = "Отпустите файл здесь",
+                pickButtonText = "Выберите файл",
+                onPickFileClick = onPickFileClick,
+                errorMessage = state.uploadError,
+            )
             return@Column
         }
 
