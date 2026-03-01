@@ -6,11 +6,13 @@ expect fun observeGlobalFileDrop(
     onDragStateChanged: (Boolean) -> Unit,
     onFileSelected: (UploadedFileData) -> Unit,
     onInvalidFile: () -> Unit,
+    allowedFileName: String = "client.cfg",
 ): () -> Unit
 
 expect fun openFilePicker(
     onFileSelected: (UploadedFileData) -> Unit,
     onInvalidFile: () -> Unit,
+    allowedFileName: String = "client.cfg",
 )
 
 expect fun downloadCfgFile(fileName: String, content: String)

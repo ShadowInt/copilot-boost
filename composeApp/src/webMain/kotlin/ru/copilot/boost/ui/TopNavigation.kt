@@ -24,6 +24,7 @@ fun TopNavigation(
     ) {
         Button(onClick = { onNavigate(AppScreen.Home) }) { Text("Главная") }
         Button(onClick = { onNavigate(AppScreen.Tweaks) }) { Text("Твики") }
+        Button(onClick = { onNavigate(AppScreen.Graphics) }) { Text("Графика") }
         Button(onClick = { onNavigate(AppScreen.LaunchArgs) }) { Text("Параметры запуска") }
         Button(onClick = { onNavigate(AppScreen.Binds) }) { Text("Бинды") }
     }
