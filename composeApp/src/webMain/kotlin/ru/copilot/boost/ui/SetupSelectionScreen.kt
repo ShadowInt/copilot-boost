@@ -19,12 +19,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ru.copilot.boost.presentation.SetupModuleDefinition
 import ru.copilot.boost.presentation.SetupModuleId
+
+data class SetupSelectionModuleUi(
+    val id: SetupModuleId,
+    val title: String,
+    val description: String,
+)
 
 @Composable
 fun SetupSelectionScreen(
-    modules: List<SetupModuleDefinition>,
+    modules: List<SetupSelectionModuleUi>,
     onStartFlow: (Set<SetupModuleId>) -> Unit,
     onBackHome: () -> Unit,
 ) {

@@ -1,0 +1,17 @@
+<resources>
+    <string name="nav_back">Назад</string>
+    <string name="flow_action_next">Далее</string>
+    <string name="flow_action_finish">Завершить</string>
+    <string name="flow_step_counter">ШАГ %1$d/%2$d</string>
+    <string name="flow_unload_warning">Прогресс настройки будет потерян. Продолжить?</string>
+    <string name="module_tweaks_title">Твики</string>
+    <string name="module_tweaks_description">Понадобится файл client.cfg через drag-and-drop</string>
+    <string name="module_launch_args_title">Параметры запуска</string>
+    <string name="module_launch_args_description">Настройка аргументов запуска клиента</string>
+    <string name="module_binds_title">Бинды</string>
+    <string name="module_binds_description">Настройка и управление биндами</string>
+    <string name="step_client_cfg_upload_title">Загрузка клиентской конфигурации</string>
+    <string name="step_tweaks_title">Твики</string>
+    <string name="step_launch_args_title">Параметры запуска</string>
+    <string name="step_binds_title">Бинды</string>
+</resources>

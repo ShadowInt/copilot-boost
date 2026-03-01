@@ -15,6 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import copilotboost.composeapp.generated.resources.Res
+import copilotboost.composeapp.generated.resources.nav_back
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ModuleScaffold(
@@ -62,7 +65,7 @@ private fun BackNavigationBar(
             contentAlignment = Alignment.CenterStart,
         ) {
             Button(onClick = onBack) {
-                Text("Назад")
+                Text(stringResource(Res.string.nav_back))
             }
         }
 

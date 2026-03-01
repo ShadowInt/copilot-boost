@@ -8,9 +8,22 @@ enum class SetupModuleId {
     Binds,
 }
 
+enum class SetupTextKey {
+    ModuleTweaksTitle,
+    ModuleTweaksDescription,
+    ModuleLaunchArgsTitle,
+    ModuleLaunchArgsDescription,
+    ModuleBindsTitle,
+    ModuleBindsDescription,
+    StepClientCfgUploadTitle,
+    StepTweaksTitle,
+    StepLaunchArgsTitle,
+    StepBindsTitle,
+}
+
 data class SetupStepDefinition(
     val screen: AppScreen,
-    val title: String,
+    val titleKey: SetupTextKey,
     val canProceed: (SetupFlowContext) -> Boolean = { true },
 )
 
@@ -20,8 +33,8 @@ data class SetupFlowContext(
 
 data class SetupModuleDefinition(
     val id: SetupModuleId,
-    val title: String,
-    val description: String,
+    val titleKey: SetupTextKey,
+    val descriptionKey: SetupTextKey,
     val steps: List<SetupStepDefinition>,
 )
 
@@ -29,39 +42,39 @@ object SetupModulesRegistry {
     val modules: List<SetupModuleDefinition> = listOf(
         SetupModuleDefinition(
             id = SetupModuleId.Tweaks,
-            title = "Твики",
-            description = "Понадобится файл client.cfg через drag-and-drop",
+            titleKey = SetupTextKey.ModuleTweaksTitle,
+            descriptionKey = SetupTextKey.ModuleTweaksDescription,
             steps = listOf(
                 SetupStepDefinition(
                     screen = AppScreen.ClientCfgUpload,
-                    title = "Загрузка клиентской конфигурации",
+                    titleKey = SetupTextKey.StepClientCfgUploadTitle,
                     canProceed = { context -> context.hasClientCfg },
                 ),
                 SetupStepDefinition(
                     screen = AppScreen.Tweaks,
-                    title = "Твики",
+                    titleKey = SetupTextKey.StepTweaksTitle,
                 ),
             ),
         ),
         SetupModuleDefinition(
             id = SetupModuleId.LaunchArgs,
-            title = "Параметры запуска",
-            description = "Настройка аргументов запуска клиента",
+            titleKey = SetupTextKey.ModuleLaunchArgsTitle,
+            descriptionKey = SetupTextKey.ModuleLaunchArgsDescription,
             steps = listOf(
                 SetupStepDefinition(
                     screen = AppScreen.LaunchArgs,
-                    title = "Параметры запуска",
+                    titleKey = SetupTextKey.StepLaunchArgsTitle,
                 ),
             ),
         ),
         SetupModuleDefinition(
             id = SetupModuleId.Binds,
-            title = "Бинды",
-            description = "Настройка и управление биндами",
+            titleKey = SetupTextKey.ModuleBindsTitle,
+            descriptionKey = SetupTextKey.ModuleBindsDescription,
             steps = listOf(
                 SetupStepDefinition(
                     screen = AppScreen.Binds,
-                    title = "Бинды",
+                    titleKey = SetupTextKey.StepBindsTitle,
                 ),
             ),
         ),
