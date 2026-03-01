@@ -6,6 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import ru.copilot.boost.navigation.AppScreen
 
+enum class SetupFlowAction {
+    Back,
+    Next,
+}
+
 class SetupFlowStore(
     initialScreen: AppScreen = AppScreen.Home,
 ) {
@@ -39,7 +44,30 @@ class SetupFlowStore(
         return true
     }
 
-    fun moveForward(): Boolean {
+    fun dispatch(action: SetupFlowAction): AppScreen {
+        return when (action) {
+            SetupFlowAction.Back -> goBackOrSelection()
+            SetupFlowAction.Next -> goNextOrFinish()
+        }
+    }
+
+    fun goNextOrFinish(): AppScreen {
+        val moved = moveForward()
+        if (!moved) {
+            finishToHome()
+        }
+        return currentScreen
+    }
+
+    fun goBackOrSelection(): AppScreen {
+        val moved = moveBackward()
+        if (!moved) {
+            resetToSelection()
+        }
+        return currentScreen
+    }
+
+    private fun moveForward(): Boolean {
         val nextIndex = setupFlowStepIndex + 1
         if (nextIndex >= setupFlow.size) return false
         setupFlowStepIndex = nextIndex
@@ -47,7 +75,7 @@ class SetupFlowStore(
         return true
     }
 
-    fun moveBackward(): Boolean {
+    private fun moveBackward(): Boolean {
         val previousIndex = setupFlowStepIndex - 1
         if (previousIndex < 0 || previousIndex >= setupFlow.size) return false
         setupFlowStepIndex = previousIndex

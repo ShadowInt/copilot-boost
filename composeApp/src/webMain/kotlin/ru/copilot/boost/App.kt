@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
 import ru.copilot.boost.presentation.LaunchArgsStore
+import ru.copilot.boost.presentation.SetupFlowAction
 import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.ui.*
@@ -57,8 +58,11 @@ fun App() {
             resetAllModules()
             flowStore.finishToHome()
         }
-        val resetFlowToSelection = {
-            flowStore.resetToSelection()
+        val handleFlowAction: (SetupFlowAction) -> Unit = { action ->
+            val destination = flowStore.dispatch(action)
+            if (action == SetupFlowAction.Next && destination == AppScreen.Home) {
+                resetAllModules()
+            }
         }
 
         when (currentScreen) {
@@ -86,9 +90,7 @@ fun App() {
                 ModuleScaffold(
                     title = flowStore.currentStepTitle() ?: "Загрузка клиентской конфигурации",
                     onBack = {
-                        if (!flowStore.moveBackward()) {
-                            resetFlowToSelection()
-                        }
+                        handleFlowAction(SetupFlowAction.Back)
                     },
                     primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) "Далее" else null,
                     primaryActionEnabled = if (flowStore.currentStepRequiresClientCfg()) {
@@ -97,11 +99,7 @@ fun App() {
                         true
                     },
                     onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) {
-                        {
-                            if (!flowStore.moveForward()) {
-                                resetFlowToHome()
-                            }
-                        }
+                        { handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
@@ -124,9 +122,7 @@ fun App() {
                 ModuleScaffold(
                     title = flowStore.currentStepTitle() ?: "Твики",
                     onBack = {
-                        if (!flowStore.moveBackward()) {
-                            resetFlowToSelection()
-                        }
+                        handleFlowAction(SetupFlowAction.Back)
                     },
                     primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
                         if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
@@ -134,11 +130,7 @@ fun App() {
                         null
                     },
                     onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
-                        {
-                            if (!flowStore.moveForward()) {
-                                resetFlowToHome()
-                            }
-                        }
+                        { handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
@@ -180,13 +172,11 @@ fun App() {
                 ModuleScaffold(
                     title = flowStore.currentStepTitle() ?: "Бинды",
                     onBack = {
-                        if (!flowStore.moveBackward()) {
-                            resetFlowToSelection()
-                        }
+                        handleFlowAction(SetupFlowAction.Back)
                     },
                     primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) "Завершить" else null,
                     onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) {
-                        resetFlowToHome
+                        { handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
@@ -202,9 +192,7 @@ fun App() {
                 ModuleScaffold(
                     title = flowStore.currentStepTitle() ?: "Параметры запуска",
                     onBack = {
-                        if (!flowStore.moveBackward()) {
-                            resetFlowToSelection()
-                        }
+                        handleFlowAction(SetupFlowAction.Back)
                     },
                     primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
                         if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
@@ -212,11 +200,7 @@ fun App() {
                         null
                     },
                     onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
-                        {
-                            if (!flowStore.moveForward()) {
-                                resetFlowToHome()
-                            }
-                        }
+                        { handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
