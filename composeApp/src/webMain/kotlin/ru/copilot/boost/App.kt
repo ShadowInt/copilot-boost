@@ -17,7 +17,6 @@ import ru.copilot.boost.ui.TopNavigation
 @Composable
 fun App() {
     val store = remember { CfgEditorStore() }
-    val graphicsStore = remember { ru.copilot.boost.presentation.GraphicsStore() }
     var currentScreen by remember { mutableStateOf(loadSavedScreen()) }
 
     LaunchedEffect(currentScreen) {
@@ -30,19 +29,8 @@ fun App() {
                 onDragStateChanged = store::onDragStateChanged,
                 onFileSelected = store::onFileSelected,
                 onInvalidFile = store::onInvalidFile,
-                allowedFileName = "client.cfg",
             )
-            onDispose { disposeListeners() }
-        }
-    }
-    if (currentScreen == AppScreen.Graphics) {
-        DisposableEffect(graphicsStore) {
-            val disposeListeners = observeGlobalFileDrop(
-                onDragStateChanged = graphicsStore::onDragStateChanged,
-                onFileSelected = graphicsStore::onFileSelected,
-                onInvalidFile = graphicsStore::onInvalidFile,
-                allowedFileName = "client.cfg",
-            )
+
             onDispose { disposeListeners() }
         }
     }
@@ -53,7 +41,6 @@ fun App() {
                 HomeScreen(
                     appVersion = BuildKonfig.PROJECT_VERSION,
                     onOpenTweaks = { currentScreen = AppScreen.Tweaks },
-                    onOpenGraphics = { currentScreen = AppScreen.Graphics },
                     onOpenBinds = { currentScreen = AppScreen.Binds },
                     onOpenLaunchArgs = { currentScreen = AppScreen.LaunchArgs },
                 )
@@ -73,7 +60,6 @@ fun App() {
                                 openFilePicker(
                                     onFileSelected = store::onFileSelected,
                                     onInvalidFile = store::onInvalidFile,
-                                    allowedFileName = "client.cfg",
                                 )
                             },
                             onDisableParasiticChanged = store::onDisableParasiticChanged,
@@ -100,43 +86,6 @@ fun App() {
                                 downloadCfgFile(
                                     fileName = fileName,
                                     content = state.patchedContent,
-                                )
-                            },
-                        )
-                    }
-                }
-            }
-
-            AppScreen.Graphics -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    TopNavigation(
-                        currentScreen = currentScreen,
-                        onNavigate = { currentScreen = it },
-                    )
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        val state = graphicsStore.state
-                        ru.copilot.boost.ui.GraphicsScreen(
-                            state = state,
-                            onPickFileClick = {
-                                openFilePicker(
-                                    onFileSelected = graphicsStore::onFileSelected,
-                                    onInvalidFile = graphicsStore::onInvalidFile,
-                                    allowedFileName = "client.cfg",
-                                )
-                            },
-                            onPresetSelected = graphicsStore::onPresetSelected,
-                            onShadowQualityChanged = graphicsStore::onShadowQualityChanged,
-                            onTextureQualityChanged = graphicsStore::onTextureQualityChanged,
-                            onLightingQualityChanged = graphicsStore::onLightingQualityChanged,
-                            onTreeQualityChanged = graphicsStore::onTreeQualityChanged,
-                            onWaterReflectionsChanged = graphicsStore::onWaterReflectionsChanged,
-                            onGrassQualityChanged = graphicsStore::onGrassQualityChanged,
-                            onCloudQualityChanged = graphicsStore::onCloudQualityChanged,
-                            onAntialiasingChanged = graphicsStore::onAntialiasingChanged,
-                            onDownloadClick = {
-                                downloadCfgFile(
-                                    fileName = "client.cfg",
-                                    content = graphicsStore.patchedContent,
                                 )
                             },
                         )

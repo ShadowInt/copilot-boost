@@ -13,7 +13,6 @@ actual fun observeGlobalFileDrop(
     onDragStateChanged: (Boolean) -> Unit,
     onFileSelected: (UploadedFileData) -> Unit,
     onInvalidFile: () -> Unit,
-    allowedFileName: String,
 ): () -> Unit {
     val dragOverListener: (Event) -> Unit = { event ->
         val dragEvent = event as DragEvent
@@ -32,7 +31,7 @@ actual fun observeGlobalFileDrop(
         onDragStateChanged(false)
         val file = dragEvent.dataTransfer?.files?.item(0)
         if (file != null) {
-            if (isAllowedCfgFile(file.name, allowedFileName)) {
+            if (isAllowedClientCfgFile(file.name)) {
                 readFileAsText(file) { content ->
                     onFileSelected(UploadedFileData(name = file.name, content = content))
                 }
@@ -56,7 +55,6 @@ actual fun observeGlobalFileDrop(
 actual fun openFilePicker(
     onFileSelected: (UploadedFileData) -> Unit,
     onInvalidFile: () -> Unit,
-    allowedFileName: String,
 ) {
     val input = window.document.createElement("input") as HTMLInputElement
     input.type = "file"
@@ -66,7 +64,7 @@ actual fun openFilePicker(
     input.onchange = {
         val file = input.files?.item(0)
         if (file != null) {
-            if (isAllowedCfgFile(file.name, allowedFileName)) {
+            if (isAllowedClientCfgFile(file.name)) {
                 readFileAsText(file) { content ->
                     onFileSelected(UploadedFileData(name = file.name, content = content))
                 }
@@ -111,7 +109,7 @@ private fun readFileAsText(file: File, onRead: (String) -> Unit) {
     reader.readAsText(file)
 }
 
-private fun isAllowedCfgFile(fileName: String, allowedFileName: String): Boolean = fileName == allowedFileName
+private fun isAllowedClientCfgFile(fileName: String): Boolean = fileName == "client.cfg"
 
 private fun writeTextToClipboard(text: String) {
     js("window.navigator && window.navigator.clipboard && window.navigator.clipboard.writeText(text)")

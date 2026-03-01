@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 fun HomeScreen(
     appVersion: String,
     onOpenTweaks: () -> Unit,
-    onOpenGraphics: () -> Unit,
     onOpenBinds: () -> Unit,
     onOpenLaunchArgs: () -> Unit,
 ) {
@@ -36,12 +35,6 @@ fun HomeScreen(
             description = "Изменение параметров client.cfg с diff-просмотром",
             onOpen = onOpenTweaks,
             modifier = Modifier.padding(top = 20.dp),
-        )
-        ModuleCard(
-            title = "Графика",
-            description = "Настройка графики через client.cfg: качество теней, текстур, освещения и др.",
-            onOpen = onOpenGraphics,
-            modifier = Modifier.padding(top = 12.dp),
         )
         ModuleCard(
             title = "Параметры запуска",
