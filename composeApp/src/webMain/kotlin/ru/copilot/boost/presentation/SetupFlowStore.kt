@@ -11,6 +11,16 @@ enum class SetupFlowAction {
     Next,
 }
 
+data class SetupFlowUiState(
+    val currentScreen: AppScreen,
+    val currentStepTitle: String? = null,
+    val currentStepNumber: Int? = null,
+    val totalSteps: Int = 0,
+    val isCurrentStepScreen: Boolean = false,
+    val hasNextStep: Boolean = false,
+    val canProceed: Boolean = true,
+)
+
 class SetupFlowStore(
     initialScreen: AppScreen = AppScreen.Home,
 ) {
@@ -85,11 +95,18 @@ class SetupFlowStore(
 
     fun hasNextFlowStep(): Boolean = setupFlowStepIndex + 1 < setupFlow.size
 
-    fun isCurrentFlowStep(screen: AppScreen): Boolean = setupFlow.getOrNull(setupFlowStepIndex)?.screen == screen
-
-    fun currentStepTitle(): String? = setupFlow.getOrNull(setupFlowStepIndex)?.title
-
-    fun currentStepRequiresClientCfg(): Boolean = setupFlow.getOrNull(setupFlowStepIndex)?.requiresClientCfg == true
+    fun uiState(context: SetupFlowContext): SetupFlowUiState {
+        val step = setupFlow.getOrNull(setupFlowStepIndex)
+        return SetupFlowUiState(
+            currentScreen = currentScreen,
+            currentStepTitle = step?.title,
+            currentStepNumber = if (step != null) setupFlowStepIndex + 1 else null,
+            totalSteps = setupFlow.size,
+            isCurrentStepScreen = step?.screen == currentScreen,
+            hasNextStep = hasNextFlowStep(),
+            canProceed = step?.canProceed?.invoke(context) ?: true,
+        )
+    }
 
     private fun clearFlow() {
         setupFlow = emptyList()

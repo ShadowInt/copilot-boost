@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ModuleScaffold(
     title: String,
+    subtitle: String? = null,
     onBack: () -> Unit,
     primaryActionText: String? = null,
     primaryActionEnabled: Boolean = true,
@@ -28,6 +29,7 @@ fun ModuleScaffold(
     Column(modifier = Modifier.fillMaxSize()) {
         BackNavigationBar(
             title = title,
+            subtitle = subtitle,
             onBack = onBack,
             primaryActionText = primaryActionText,
             primaryActionEnabled = primaryActionEnabled,
@@ -42,6 +44,7 @@ fun ModuleScaffold(
 @Composable
 private fun BackNavigationBar(
     title: String,
+    subtitle: String? = null,
     onBack: () -> Unit,
     primaryActionText: String? = null,
     primaryActionEnabled: Boolean = true,
@@ -67,10 +70,19 @@ private fun BackNavigationBar(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = title.uppercase(),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = title.uppercase(),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
 
         Box(

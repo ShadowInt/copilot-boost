@@ -11,7 +11,11 @@ enum class SetupModuleId {
 data class SetupStepDefinition(
     val screen: AppScreen,
     val title: String,
-    val requiresClientCfg: Boolean = false,
+    val canProceed: (SetupFlowContext) -> Boolean = { true },
+)
+
+data class SetupFlowContext(
+    val hasClientCfg: Boolean,
 )
 
 data class SetupModuleDefinition(
@@ -31,7 +35,7 @@ object SetupModulesRegistry {
                 SetupStepDefinition(
                     screen = AppScreen.ClientCfgUpload,
                     title = "Загрузка клиентской конфигурации",
-                    requiresClientCfg = true,
+                    canProceed = { context -> context.hasClientCfg },
                 ),
                 SetupStepDefinition(
                     screen = AppScreen.Tweaks,

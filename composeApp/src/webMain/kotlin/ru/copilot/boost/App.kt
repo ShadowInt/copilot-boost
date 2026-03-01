@@ -8,7 +8,9 @@ import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
 import ru.copilot.boost.presentation.LaunchArgsStore
+import ru.copilot.boost.presentation.SetupCoordinator
 import ru.copilot.boost.presentation.SetupFlowAction
+import ru.copilot.boost.presentation.SetupFlowContext
 import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.ui.*
@@ -22,6 +24,12 @@ fun App() {
         listOf(cfgStore, launchArgsStore)
     }
     val flowStore = remember { SetupFlowStore(initialScreen = loadSavedScreen()) }
+    val coordinator = remember(flowStore, moduleStores) {
+        SetupCoordinator(
+            flowStore = flowStore,
+            moduleStores = moduleStores,
+        )
+    }
     val currentScreen = flowStore.currentScreen
 
     LaunchedEffect(currentScreen) {
@@ -51,18 +59,13 @@ fun App() {
     }
 
     MaterialTheme {
-        val resetAllModules = {
-            moduleStores.forEach { it.reset() }
-        }
-        val resetFlowToHome = {
-            resetAllModules()
-            flowStore.finishToHome()
-        }
-        val handleFlowAction: (SetupFlowAction) -> Unit = { action ->
-            val destination = flowStore.dispatch(action)
-            if (action == SetupFlowAction.Next && destination == AppScreen.Home) {
-                resetAllModules()
-            }
+        val flowUiState = flowStore.uiState(
+            context = SetupFlowContext(
+                hasClientCfg = cfgStore.state.hasFile,
+            ),
+        )
+        val stepSubtitle = flowUiState.currentStepNumber?.let { step ->
+            if (flowUiState.totalSteps > 0) "ШАГ $step/${flowUiState.totalSteps}" else null
         }
 
         when (currentScreen) {
@@ -70,7 +73,7 @@ fun App() {
                 HomeScreen(
                     appVersion = BuildKonfig.PROJECT_VERSION,
                     onStartSetup = {
-                        flowStore.openSetupSelection()
+                        coordinator.openSetupSelection()
                     },
                 )
             }
@@ -79,27 +82,27 @@ fun App() {
                 SetupSelectionScreen(
                     modules = SetupModulesRegistry.modules,
                     onStartFlow = { selectedModules ->
-                        resetAllModules()
-                        flowStore.startFlow(selectedModules = selectedModules)
+                        coordinator.startFlow(selectedModules = selectedModules)
                     },
-                    onBackHome = resetFlowToHome,
+                    onBackHome = coordinator::goHome,
                 )
             }
 
             AppScreen.ClientCfgUpload -> {
                 ModuleScaffold(
-                    title = flowStore.currentStepTitle() ?: "Загрузка клиентской конфигурации",
+                    title = flowUiState.currentStepTitle ?: "Загрузка клиентской конфигурации",
+                    subtitle = stepSubtitle,
                     onBack = {
-                        handleFlowAction(SetupFlowAction.Back)
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
                     },
-                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) "Далее" else null,
-                    primaryActionEnabled = if (flowStore.currentStepRequiresClientCfg()) {
-                        cfgStore.state.hasFile
+                    primaryActionText = if (flowUiState.isCurrentStepScreen) {
+                        if (flowUiState.hasNextStep) "Далее" else "Завершить"
                     } else {
-                        true
+                        null
                     },
-                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) {
-                        { handleFlowAction(SetupFlowAction.Next) }
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
@@ -120,17 +123,19 @@ fun App() {
 
             AppScreen.Tweaks -> {
                 ModuleScaffold(
-                    title = flowStore.currentStepTitle() ?: "Твики",
+                    title = flowUiState.currentStepTitle ?: "Твики",
+                    subtitle = stepSubtitle,
                     onBack = {
-                        handleFlowAction(SetupFlowAction.Back)
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
                     },
-                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
-                        if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
+                    primaryActionText = if (flowUiState.isCurrentStepScreen) {
+                        if (flowUiState.hasNextStep) "Далее" else "Завершить"
                     } else {
                         null
                     },
-                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
-                        { handleFlowAction(SetupFlowAction.Next) }
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
@@ -170,13 +175,19 @@ fun App() {
 
             AppScreen.Binds -> {
                 ModuleScaffold(
-                    title = flowStore.currentStepTitle() ?: "Бинды",
+                    title = flowUiState.currentStepTitle ?: "Бинды",
+                    subtitle = stepSubtitle,
                     onBack = {
-                        handleFlowAction(SetupFlowAction.Back)
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
                     },
-                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) "Завершить" else null,
-                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) {
-                        { handleFlowAction(SetupFlowAction.Next) }
+                    primaryActionText = if (flowUiState.isCurrentStepScreen) {
+                        if (flowUiState.hasNextStep) "Далее" else "Завершить"
+                    } else {
+                        null
+                    },
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
@@ -190,17 +201,19 @@ fun App() {
 
             AppScreen.LaunchArgs -> {
                 ModuleScaffold(
-                    title = flowStore.currentStepTitle() ?: "Параметры запуска",
+                    title = flowUiState.currentStepTitle ?: "Параметры запуска",
+                    subtitle = stepSubtitle,
                     onBack = {
-                        handleFlowAction(SetupFlowAction.Back)
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
                     },
-                    primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
-                        if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
+                    primaryActionText = if (flowUiState.isCurrentStepScreen) {
+                        if (flowUiState.hasNextStep) "Далее" else "Завершить"
                     } else {
                         null
                     },
-                    onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
-                        { handleFlowAction(SetupFlowAction.Next) }
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
                     } else {
                         null
                     },
