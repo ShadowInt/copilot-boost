@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
+import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.ui.ClientCfgUploadScreen
 import ru.copilot.boost.ui.CfgEditorScreen
 import ru.copilot.boost.ui.HomeScreen
@@ -27,9 +28,8 @@ import ru.copilot.boost.ui.SetupSelectionScreen
 @Composable
 fun App() {
     val store = remember { CfgEditorStore() }
-    var currentScreen by remember { mutableStateOf(loadSavedScreen()) }
-    var setupFlow by remember { mutableStateOf<List<AppScreen>>(emptyList()) }
-    var setupFlowStepIndex by remember { mutableIntStateOf(0) }
+    val flowStore = remember { SetupFlowStore(initialScreen = loadSavedScreen()) }
+    val currentScreen = flowStore.currentScreen
 
     LaunchedEffect(currentScreen) {
         saveScreen(currentScreen)
@@ -60,36 +60,10 @@ fun App() {
     MaterialTheme {
         val resetFlowToHome = {
             store.reset()
-            setupFlow = emptyList()
-            setupFlowStepIndex = 0
-            currentScreen = AppScreen.Home
+            flowStore.finishToHome()
         }
         val resetFlowToSelection = {
-            setupFlow = emptyList()
-            setupFlowStepIndex = 0
-            currentScreen = AppScreen.SetupSelection
-        }
-        val isCurrentFlowStep: (AppScreen) -> Boolean = { screen ->
-            setupFlow.getOrNull(setupFlowStepIndex) == screen
-        }
-        val hasNextFlowStep = { setupFlowStepIndex + 1 < setupFlow.size }
-        val moveFlowForward = {
-            val nextIndex = setupFlowStepIndex + 1
-            if (nextIndex < setupFlow.size) {
-                setupFlowStepIndex = nextIndex
-                currentScreen = setupFlow[nextIndex]
-            } else {
-                resetFlowToHome()
-            }
-        }
-        val moveFlowBackward = {
-            val previousIndex = setupFlowStepIndex - 1
-            if (previousIndex >= 0 && previousIndex < setupFlow.size) {
-                setupFlowStepIndex = previousIndex
-                currentScreen = setupFlow[previousIndex]
-            } else {
-                resetFlowToSelection()
-            }
+            flowStore.resetToSelection()
         }
 
         when (currentScreen) {
@@ -97,9 +71,7 @@ fun App() {
                 HomeScreen(
                     appVersion = BuildKonfig.PROJECT_VERSION,
                     onStartSetup = {
-                        setupFlow = emptyList()
-                        setupFlowStepIndex = 0
-                        currentScreen = AppScreen.SetupSelection
+                        flowStore.openSetupSelection()
                     },
                 )
             }
@@ -108,16 +80,11 @@ fun App() {
                 SetupSelectionScreen(
                     onStartFlow = { includeTweaks, includeLaunchArgs, includeBinds ->
                         store.reset()
-                        val flow = buildSetupFlow(
+                        flowStore.startFlow(
                             includeTweaks = includeTweaks,
                             includeLaunchArgs = includeLaunchArgs,
                             includeBinds = includeBinds,
                         )
-                        if (flow.isNotEmpty()) {
-                            setupFlow = flow
-                            setupFlowStepIndex = 0
-                            currentScreen = flow.first()
-                        }
                     },
                     onBackHome = resetFlowToHome,
                 )
@@ -127,11 +94,19 @@ fun App() {
                 Column(modifier = Modifier.fillMaxSize()) {
                     BackNavigationBar(
                         title = "Загрузка клиентской конфигурации",
-                        onBack = moveFlowBackward,
-                        primaryActionText = if (isCurrentFlowStep(AppScreen.ClientCfgUpload)) "Далее" else null,
+                        onBack = {
+                            if (!flowStore.moveBackward()) {
+                                resetFlowToSelection()
+                            }
+                        },
+                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) "Далее" else null,
                         primaryActionEnabled = store.state.hasFile,
-                        onPrimaryAction = if (isCurrentFlowStep(AppScreen.ClientCfgUpload)) {
-                            if (hasNextFlowStep()) moveFlowForward else resetFlowToHome
+                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) {
+                            {
+                                if (!flowStore.moveForward()) {
+                                    resetFlowToHome()
+                                }
+                            }
                         } else {
                             null
                         },
@@ -156,16 +131,22 @@ fun App() {
                 Column(modifier = Modifier.fillMaxSize()) {
                     BackNavigationBar(
                         title = "Твики",
-                        onBack = moveFlowBackward,
-                        primaryActionText = if (isCurrentFlowStep(AppScreen.Tweaks)) {
-                            if (hasNextFlowStep()) "Далее" else "Завершить"
+                        onBack = {
+                            if (!flowStore.moveBackward()) {
+                                resetFlowToSelection()
+                            }
+                        },
+                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
+                            if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
                         } else {
                             null
                         },
-                        onPrimaryAction = if (isCurrentFlowStep(AppScreen.Tweaks) && hasNextFlowStep()) {
-                            moveFlowForward
-                        } else if (isCurrentFlowStep(AppScreen.Tweaks)) {
-                            resetFlowToHome
+                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Tweaks)) {
+                            {
+                                if (!flowStore.moveForward()) {
+                                    resetFlowToHome()
+                                }
+                            }
                         } else {
                             null
                         },
@@ -209,9 +190,13 @@ fun App() {
                 Column(modifier = Modifier.fillMaxSize()) {
                     BackNavigationBar(
                         title = "Бинды",
-                        onBack = moveFlowBackward,
-                        primaryActionText = if (isCurrentFlowStep(AppScreen.Binds)) "Завершить" else null,
-                        onPrimaryAction = if (isCurrentFlowStep(AppScreen.Binds)) {
+                        onBack = {
+                            if (!flowStore.moveBackward()) {
+                                resetFlowToSelection()
+                            }
+                        },
+                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) "Завершить" else null,
+                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.Binds)) {
                             resetFlowToHome
                         } else {
                             null
@@ -230,14 +215,22 @@ fun App() {
                 Column(modifier = Modifier.fillMaxSize()) {
                     BackNavigationBar(
                         title = "Параметры запуска",
-                        onBack = moveFlowBackward,
-                        primaryActionText = if (isCurrentFlowStep(AppScreen.LaunchArgs)) {
-                            if (hasNextFlowStep()) "Далее" else "Завершить"
+                        onBack = {
+                            if (!flowStore.moveBackward()) {
+                                resetFlowToSelection()
+                            }
+                        },
+                        primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
+                            if (flowStore.hasNextFlowStep()) "Далее" else "Завершить"
                         } else {
                             null
                         },
-                        onPrimaryAction = if (isCurrentFlowStep(AppScreen.LaunchArgs)) {
-                            if (hasNextFlowStep()) moveFlowForward else resetFlowToHome
+                        onPrimaryAction = if (flowStore.isCurrentFlowStep(AppScreen.LaunchArgs)) {
+                            {
+                                if (!flowStore.moveForward()) {
+                                    resetFlowToHome()
+                                }
+                            }
                         } else {
                             null
                         },
@@ -299,19 +292,4 @@ private fun BackNavigationBar(
             }
         }
     }
-}
-
-private fun buildSetupFlow(
-    includeTweaks: Boolean,
-    includeLaunchArgs: Boolean,
-    includeBinds: Boolean,
-): List<AppScreen> {
-    val flow = mutableListOf<AppScreen>()
-    if (includeTweaks) {
-        flow += AppScreen.ClientCfgUpload
-        flow += AppScreen.Tweaks
-    }
-    if (includeLaunchArgs) flow += AppScreen.LaunchArgs
-    if (includeBinds) flow += AppScreen.Binds
-    return flow
 }
