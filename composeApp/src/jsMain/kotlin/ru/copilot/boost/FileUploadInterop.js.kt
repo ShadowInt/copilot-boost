@@ -100,6 +100,17 @@ actual fun writeLocalStorage(key: String, value: String) {
     window.localStorage.setItem(key, value)
 }
 
+actual fun observePageUnloadWarning(message: String): () -> Unit {
+    val beforeUnloadListener: (Event) -> Unit = { event ->
+        event.preventDefault()
+        event.asDynamic().returnValue = message
+    }
+    window.addEventListener("beforeunload", beforeUnloadListener)
+    return {
+        window.removeEventListener("beforeunload", beforeUnloadListener)
+    }
+}
+
 private fun readFileAsText(file: File, onRead: (String) -> Unit) {
     val reader = FileReader()
     reader.onload = {

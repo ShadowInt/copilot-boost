@@ -17,7 +17,10 @@ import androidx.compose.ui.unit.dp
 fun ModuleStubScreen(
     title: String,
     description: String,
-    onBackHome: () -> Unit,
+    onBack: (() -> Unit)? = null,
+    backButtonText: String = "Назад",
+    onPrimaryAction: (() -> Unit)? = null,
+    primaryActionText: String = "Далее",
 ) {
     Column(
         modifier = Modifier
@@ -29,8 +32,15 @@ fun ModuleStubScreen(
     ) {
         Text(title, style = MaterialTheme.typography.headlineSmall)
         Text(description, modifier = Modifier.padding(top = 8.dp))
-        Button(onClick = onBackHome, modifier = Modifier.padding(top = 16.dp)) {
-            Text("На главную")
+        if (onPrimaryAction != null) {
+            Button(onClick = onPrimaryAction, modifier = Modifier.padding(top = 16.dp)) {
+                Text(primaryActionText)
+            }
+        }
+        if (onBack != null) {
+            Button(onClick = onBack, modifier = Modifier.padding(top = 16.dp)) {
+                Text(backButtonText)
+            }
         }
     }
 }

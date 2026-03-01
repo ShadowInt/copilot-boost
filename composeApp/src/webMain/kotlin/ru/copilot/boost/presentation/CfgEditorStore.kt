@@ -172,6 +172,12 @@ class CfgEditorStore(
         }
     }
 
+    fun reset() {
+        state = CfgEditorUiState()
+        initiallyAppliedPresets = null
+        preparedContent = null
+    }
+
     private fun recalculatePatch() {
         val file = state.uploadedFile ?: run {
             state = state.copy(

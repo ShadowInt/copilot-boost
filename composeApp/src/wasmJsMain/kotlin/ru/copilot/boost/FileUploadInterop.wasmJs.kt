@@ -102,6 +102,21 @@ actual fun writeLocalStorage(key: String, value: String) {
 }
 
 @OptIn(ExperimentalWasmJsInterop::class)
+actual fun observePageUnloadWarning(message: String): () -> Unit {
+    val beforeUnloadListener: (Event) -> Unit = { event ->
+        event.preventDefault()
+        setBeforeUnloadReturnValue(event, message)
+    }
+    window.addEventListener("beforeunload", beforeUnloadListener)
+    return {
+        window.removeEventListener("beforeunload", beforeUnloadListener)
+    }
+}
+
+@OptIn(ExperimentalWasmJsInterop::class)
+private fun setBeforeUnloadReturnValue(event: Event, message: String): Unit = js("event.returnValue = message")
+
+@OptIn(ExperimentalWasmJsInterop::class)
 private fun readFileAsText(file: File, onRead: (String) -> Unit) {
     val reader = FileReader()
     reader.onload = {
