@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
+import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.ui.*
@@ -14,7 +15,11 @@ import ru.copilot.boost.ui.components.ModuleScaffold
 
 @Composable
 fun App() {
-    val store = remember { CfgEditorStore() }
+    val cfgStore = remember { CfgEditorStore() }
+    val launchArgsStore = remember { LaunchArgsStore() }
+    val moduleStores = remember(cfgStore, launchArgsStore) {
+        listOf(cfgStore, launchArgsStore)
+    }
     val flowStore = remember { SetupFlowStore(initialScreen = loadSavedScreen()) }
     val currentScreen = flowStore.currentScreen
 
@@ -23,11 +28,11 @@ fun App() {
     }
 
     if (currentScreen == AppScreen.ClientCfgUpload) {
-        DisposableEffect(store) {
+        DisposableEffect(cfgStore) {
             val disposeListeners = observeGlobalFileDrop(
-                onDragStateChanged = store::onDragStateChanged,
-                onFileSelected = store::onFileSelected,
-                onInvalidFile = store::onInvalidFile,
+                onDragStateChanged = cfgStore::onDragStateChanged,
+                onFileSelected = cfgStore::onFileSelected,
+                onInvalidFile = cfgStore::onInvalidFile,
             )
 
             onDispose { disposeListeners() }
@@ -45,8 +50,11 @@ fun App() {
     }
 
     MaterialTheme {
+        val resetAllModules = {
+            moduleStores.forEach { it.reset() }
+        }
         val resetFlowToHome = {
-            store.reset()
+            resetAllModules()
             flowStore.finishToHome()
         }
         val resetFlowToSelection = {
@@ -67,7 +75,7 @@ fun App() {
                 SetupSelectionScreen(
                     modules = SetupModulesRegistry.modules,
                     onStartFlow = { selectedModules ->
-                        store.reset()
+                        resetAllModules()
                         flowStore.startFlow(selectedModules = selectedModules)
                     },
                     onBackHome = resetFlowToHome,
@@ -84,7 +92,7 @@ fun App() {
                     },
                     primaryActionText = if (flowStore.isCurrentFlowStep(AppScreen.ClientCfgUpload)) "Далее" else null,
                     primaryActionEnabled = if (flowStore.currentStepRequiresClientCfg()) {
-                        store.state.hasFile
+                        cfgStore.state.hasFile
                     } else {
                         true
                     },
@@ -99,13 +107,13 @@ fun App() {
                     },
                 ) {
                     ClientCfgUploadScreen(
-                        isDragging = store.state.isDragging,
-                        uploadError = store.state.uploadError,
-                        fileName = store.state.fileName,
+                        isDragging = cfgStore.state.isDragging,
+                        uploadError = cfgStore.state.uploadError,
+                        fileName = cfgStore.state.fileName,
                         onPickFileClick = {
                             openFilePicker(
-                                onFileSelected = store::onFileSelected,
-                                onInvalidFile = store::onInvalidFile,
+                                onFileSelected = cfgStore::onFileSelected,
+                                onInvalidFile = cfgStore::onInvalidFile,
                             )
                         },
                     )
@@ -135,28 +143,28 @@ fun App() {
                         null
                     },
                 ) {
-                    val state = store.state
+                    val state = cfgStore.state
                     CfgEditorScreen(
                         state = state,
-                        onDisableParasiticChanged = store::onDisableParasiticChanged,
-                        onDisableLegsRenderingChanged = store::onDisableLegsRenderingChanged,
-                        onDisableLegsDeformationChanged = store::onDisableLegsDeformationChanged,
-                        onDisableStrobeLightsChanged = store::onDisableStrobeLightsChanged,
-                        onReduceHeldItemSizeChanged = store::onReduceHeldItemSizeChanged,
-                        onRestoreEventTextNotificationsChanged = store::onRestoreEventTextNotificationsChanged,
-                        onRemoveAutocraftMenuDelayChanged = store::onRemoveAutocraftMenuDelayChanged,
-                        onReduceSleepingBagRemovalDelayChanged = store::onReduceSleepingBagRemovalDelayChanged,
-                        onAddMapInfoToF8MenuChanged = store::onAddMapInfoToF8MenuChanged,
-                        onDisableClientErrorOverlayChanged = store::onDisableClientErrorOverlayChanged,
-                        onAddAdminGesturesToGameMenuChanged = store::onAddAdminGesturesToGameMenuChanged,
-                        onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
-                        onEnlargedConsoleChanged = store::onEnlargedConsoleChanged,
-                        onReduceRadialMenuCallDelayChanged = store::onReduceRadialMenuCallDelayChanged,
-                        onLeftHandModeChanged = store::onLeftHandModeChanged,
-                        onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
-                        onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
-                        onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,
-                        onDisableGibsCompletelyChanged = store::onDisableGibsCompletelyChanged,
+                        onDisableParasiticChanged = cfgStore::onDisableParasiticChanged,
+                        onDisableLegsRenderingChanged = cfgStore::onDisableLegsRenderingChanged,
+                        onDisableLegsDeformationChanged = cfgStore::onDisableLegsDeformationChanged,
+                        onDisableStrobeLightsChanged = cfgStore::onDisableStrobeLightsChanged,
+                        onReduceHeldItemSizeChanged = cfgStore::onReduceHeldItemSizeChanged,
+                        onRestoreEventTextNotificationsChanged = cfgStore::onRestoreEventTextNotificationsChanged,
+                        onRemoveAutocraftMenuDelayChanged = cfgStore::onRemoveAutocraftMenuDelayChanged,
+                        onReduceSleepingBagRemovalDelayChanged = cfgStore::onReduceSleepingBagRemovalDelayChanged,
+                        onAddMapInfoToF8MenuChanged = cfgStore::onAddMapInfoToF8MenuChanged,
+                        onDisableClientErrorOverlayChanged = cfgStore::onDisableClientErrorOverlayChanged,
+                        onAddAdminGesturesToGameMenuChanged = cfgStore::onAddAdminGesturesToGameMenuChanged,
+                        onConvenientSkinSortingChanged = cfgStore::onConvenientSkinSortingChanged,
+                        onEnlargedConsoleChanged = cfgStore::onEnlargedConsoleChanged,
+                        onReduceRadialMenuCallDelayChanged = cfgStore::onReduceRadialMenuCallDelayChanged,
+                        onLeftHandModeChanged = cfgStore::onLeftHandModeChanged,
+                        onReduceCameraShakeChanged = cfgStore::onReduceCameraShakeChanged,
+                        onImproveTreeMarkerVisibilityChanged = cfgStore::onImproveTreeMarkerVisibilityChanged,
+                        onDisableOcclusionCullingSafeModeChanged = cfgStore::onDisableOcclusionCullingSafeModeChanged,
+                        onDisableGibsCompletelyChanged = cfgStore::onDisableGibsCompletelyChanged,
                         onDownloadClick = {
                             val fileName = state.downloadFileName ?: return@CfgEditorScreen
                             downloadCfgFile(
@@ -213,7 +221,7 @@ fun App() {
                         null
                     },
                 ) {
-                    LaunchArgsScreen()
+                    LaunchArgsScreen(store = launchArgsStore)
                 }
             }
         }

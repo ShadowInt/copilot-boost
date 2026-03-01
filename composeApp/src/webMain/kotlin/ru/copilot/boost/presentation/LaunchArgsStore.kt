@@ -9,7 +9,7 @@ import ru.copilot.boost.ui.buildLaunchArgs
 
 class LaunchArgsStore(
     initialState: LaunchArgsUiState = LaunchArgsUiState(),
-) {
+) : SetupModuleStore {
     var state by mutableStateOf(initialState)
         private set
 
@@ -71,5 +71,9 @@ class LaunchArgsStore(
     fun onCopyConfirmed() {
         if (launchArgs.isBlank()) return
         state = state.copy(copyState = LaunchArgsCopyState(hasCopied = true))
+    }
+
+    override fun reset() {
+        state = LaunchArgsUiState()
     }
 }
