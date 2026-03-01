@@ -1,20 +1,15 @@
 package ru.copilot.boost
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
 import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.presentation.SetupModulesRegistry
-import ru.copilot.boost.ui.ClientCfgUploadScreen
-import ru.copilot.boost.ui.CfgEditorScreen
-import ru.copilot.boost.ui.HomeScreen
-import ru.copilot.boost.ui.LaunchArgsScreen
-import ru.copilot.boost.ui.ModuleStubScreen
-import ru.copilot.boost.ui.SetupSelectionScreen
+import ru.copilot.boost.ui.*
 import ru.copilot.boost.ui.components.ModuleScaffold
 
 @Composable
