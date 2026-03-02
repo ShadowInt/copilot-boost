@@ -12,15 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ModuleStubScreen(
     title: String,
     description: String,
     onBack: (() -> Unit)? = null,
-    backButtonText: String = "Назад",
+    backButtonText: String = stringResource(Res.string.nav_back),
     onPrimaryAction: (() -> Unit)? = null,
-    primaryActionText: String = "Далее",
+    primaryActionText: String = stringResource(Res.string.flow_action_next),
 ) {
     Column(
         modifier = Modifier

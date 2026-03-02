@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Переиспользуемая зона drag and drop для загрузки файлов.
@@ -35,7 +37,7 @@ fun FileDropZone(
     isDragging: Boolean,
     idleMessage: String,
     dragMessage: String,
-    pickButtonText: String = "Выберите файл",
+    pickButtonText: String,
     onPickFileClick: () -> Unit,
     errorMessage: String? = null,
     modifier: Modifier = Modifier,
@@ -70,7 +72,7 @@ fun FileDropZone(
             )
             if (!isDragging) {
                 Text(
-                    text = "ИЛИ",
+                    text = stringResource(Res.string.file_drop_or),
                     modifier = Modifier.padding(top = 10.dp),
                 )
                 Button(

@@ -19,6 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.presentation.SetupModuleId
 
 data class SetupSelectionModuleUi(
@@ -44,9 +46,9 @@ fun SetupSelectionScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("Что вы хотите настроить?", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(Res.string.selection_title), style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Выберите один или несколько разделов и нажмите «Продолжить»",
+            stringResource(Res.string.selection_subtitle),
             modifier = Modifier.padding(top = 8.dp),
         )
 
@@ -74,14 +76,14 @@ fun SetupSelectionScreen(
             enabled = hasSelection,
             modifier = Modifier.padding(top = 16.dp),
         ) {
-            Text("Начать")
+            Text(stringResource(Res.string.selection_start))
         }
 
         Button(
             onClick = onBackHome,
             modifier = Modifier.padding(top = 8.dp),
         ) {
-            Text("На главную")
+            Text(stringResource(Res.string.selection_go_home))
         }
     }
 }

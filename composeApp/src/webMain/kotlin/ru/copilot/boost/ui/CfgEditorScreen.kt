@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
 import ru.copilot.boost.domain.model.PresetId
@@ -53,7 +55,7 @@ fun CfgEditorScreen(
     ) {
         if (!state.hasFile) {
             Text(
-                text = "Сначала загрузите client.cfg на предыдущем шаге.",
+                text = stringResource(Res.string.cfg_no_file),
                 modifier = Modifier.padding(top = 12.dp),
             )
             return@Column
@@ -118,13 +120,13 @@ private fun ThreeColumnEditorWithDownload(
                             checked = showOnlyChanges,
                             onCheckedChange = { showOnlyChanges = it },
                         )
-                        Text("Только измененные строки")
+                        Text(stringResource(Res.string.cfg_only_changes))
                     }
                     Row(
                         modifier = Modifier.fillMaxSize(),
                     ) {
                         DiffColumn(
-                            title = "Исходный",
+                            title = stringResource(Res.string.cfg_column_original),
                             diffRows = diffRowsToShow,
                             isNewColumn = false,
                             scrollState = sharedScrollState,
@@ -134,7 +136,7 @@ private fun ThreeColumnEditorWithDownload(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         DiffColumn(
-                            title = "Измененный",
+                            title = stringResource(Res.string.cfg_column_modified),
                             diffRows = diffRowsToShow,
                             isNewColumn = true,
                             scrollState = sharedScrollState,
@@ -163,7 +165,7 @@ internal fun SettingsCard(
                 .padding(bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Настройки")
+            Text(text = stringResource(Res.string.cfg_settings_title))
         }
         Box(
             modifier = Modifier
@@ -173,126 +175,126 @@ internal fun SettingsCard(
                 .verticalScroll(rememberScrollState()),
         ) {
             Column {
-                SettingsGroupTitle("Рекомендуемые")
+                SettingsGroupTitle(stringResource(Res.string.cfg_group_recommended))
                 SettingRow(
-                    label = "Отключить все паразитные параметры",
+                    label = stringResource(Res.string.preset_parasitic_label),
                     checked = state.presets[PresetId.DisableParasiticParameters],
                     onCheckedChange = { onPresetChanged(PresetId.DisableParasiticParameters, it) },
-                    hint = "Отключает все ненужные настройки, которые затрудняют геймплей, снижают производительность или просто удалены из игры, но остались в меню (ненужные блики, размытия, уведомления, анимации и т.д.)",
+                    hint = stringResource(Res.string.preset_parasitic_hint),
                 )
                 SettingRow(
-                    label = "Отключить отображение ног",
+                    label = stringResource(Res.string.preset_legs_rendering_label),
                     checked = state.presets[PresetId.DisableLegsRendering],
                     onCheckedChange = { onPresetChanged(PresetId.DisableLegsRendering, it) },
-                    hint = "Отключает отображение ног персонажа от первого лица, помогая целиться вниз.",
+                    hint = stringResource(Res.string.preset_legs_rendering_hint),
                 )
                 SettingRow(
-                    label = "Уменьшить тряску камеры",
+                    label = stringResource(Res.string.preset_camera_shake_label),
                     checked = state.presets[PresetId.ReduceCameraShake],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceCameraShake, it) },
-                    hint = "Минимизирует тряску камеры при беге, стрельбе, взрывах и получении урона.",
+                    hint = stringResource(Res.string.preset_camera_shake_hint),
                 )
                 SettingRow(
-                    label = "Улучшить видимость крестиков на деревьях",
+                    label = stringResource(Res.string.preset_tree_marker_label),
                     checked = state.presets[PresetId.ImproveTreeMarkerVisibility],
                     onCheckedChange = { onPresetChanged(PresetId.ImproveTreeMarkerVisibility, it) },
-                    hint = "Меняет цвет отображения маркеров на деревьях на более контрастный.",
+                    hint = stringResource(Res.string.preset_tree_marker_hint),
                 )
                 SettingRow(
-                    label = "Отключить безопасный режим механизма отсечению окклюзии",
+                    label = stringResource(Res.string.preset_occlusion_culling_label),
                     checked = state.presets[PresetId.DisableOcclusionCullingSafeMode],
                     onCheckedChange = { onPresetChanged(PresetId.DisableOcclusionCullingSafeMode, it) },
-                    hint = "Проверка, что безопасный режим отсечения окклюзии, который очень сильно снижает FPS, отключен.",
+                    hint = stringResource(Res.string.preset_occlusion_culling_hint),
                 )
 
-                SettingsGroupTitle("Визуальные эффекты")
+                SettingsGroupTitle(stringResource(Res.string.cfg_group_visual))
                 SettingRow(
-                    label = "Полностью отключить обломки",
+                    label = stringResource(Res.string.preset_gibs_label),
                     checked = state.presets[PresetId.DisableGibsCompletely],
                     onCheckedChange = { onPresetChanged(PresetId.DisableGibsCompletely, it) },
-                    hint = "Полностью отключает обломки при разрушении сооружений и объектов. Звуки разрушений при этом сохраняются.",
+                    hint = stringResource(Res.string.preset_gibs_hint),
                 )
                 SettingRow(
-                    label = "Отключить деформацию ног",
+                    label = stringResource(Res.string.preset_legs_deformation_label),
                     checked = state.presets[PresetId.DisableLegsDeformation],
                     onCheckedChange = { onPresetChanged(PresetId.DisableLegsDeformation, it) },
-                    hint = "Возвращает старую анимацию ног персонажа, которая не подстраивается под рельеф. Может помочь в PVP и немного снизить нагрузку на ПК.",
+                    hint = stringResource(Res.string.preset_legs_deformation_hint),
                 )
                 SettingRow(
-                    label = "Отключить стробоскопы",
+                    label = stringResource(Res.string.preset_strobe_lights_label),
                     checked = state.presets[PresetId.DisableStrobeLights],
                     onCheckedChange = { onPresetChanged(PresetId.DisableStrobeLights, it) },
-                    hint = "Полностью отключает стробоскопы в игре, оставляя только звук их работы. Может сильно повысить FPS, если рядом несколько стробоскопов.",
+                    hint = stringResource(Res.string.preset_strobe_lights_hint),
                 )
                 SettingRow(
-                    label = "Уменьшить предмет в руках",
+                    label = stringResource(Res.string.preset_held_item_size_label),
                     checked = state.presets[PresetId.ReduceHeldItemSize],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceHeldItemSize, it) },
-                    hint = "Делает оружие и предметы в руках персонажа меньше. Функция работает только если уголь обзора установлен выше 70.",
+                    hint = stringResource(Res.string.preset_held_item_size_hint),
                 )
 
-                SettingsGroupTitle("Интерфейс")
+                SettingsGroupTitle(stringResource(Res.string.cfg_group_interface))
                 SettingRow(
-                    label = "Вернуть текстовые уведомления об ивентах",
+                    label = stringResource(Res.string.preset_event_notifications_label),
                     checked = state.presets[PresetId.RestoreEventTextNotifications],
                     onCheckedChange = { onPresetChanged(PresetId.RestoreEventTextNotifications, it) },
-                    hint = "Возвращает текстовые уведомления о старте ивентов, таких как появление на карте карго, патрульного вертолета, чинука и т.п.",
+                    hint = stringResource(Res.string.preset_event_notifications_hint),
                 )
                 SettingRow(
-                    label = "Убрать задержку в меню автокрафта",
+                    label = stringResource(Res.string.preset_autocraft_delay_label),
                     checked = state.presets[PresetId.RemoveAutocraftMenuDelay],
                     onCheckedChange = { onPresetChanged(PresetId.RemoveAutocraftMenuDelay, it) },
-                    hint = "Отключает небольшое провисание интерфейса при попытке скрафтить предмет через меню быстрого крафта.",
+                    hint = stringResource(Res.string.preset_autocraft_delay_hint),
                 )
                 SettingRow(
-                    label = "Снизить задержку при удалении спальников",
+                    label = stringResource(Res.string.preset_sleeping_bag_label),
                     checked = state.presets[PresetId.ReduceSleepingBagRemovalDelay],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceSleepingBagRemovalDelay, it) },
-                    hint = "Твик позволяет практически мгновенно удалять спальники, кликнув на крестик на карте.",
+                    hint = stringResource(Res.string.preset_sleeping_bag_hint),
                 )
                 SettingRow(
-                    label = "Добавить информацию о карте в меню F8",
+                    label = stringResource(Res.string.preset_f8_map_info_label),
                     checked = state.presets[PresetId.AddMapInfoToF8Menu],
                     onCheckedChange = { onPresetChanged(PresetId.AddMapInfoToF8Menu, it) },
-                    hint = "Добавляет информацию о типе, размере и сиде карты в меню отладки F8. У администраторов серверов также отображаются коорлинаты персонажа.",
+                    hint = stringResource(Res.string.preset_f8_map_info_hint),
                 )
                 SettingRow(
-                    label = "Отключить отображение клиентских ошибок",
+                    label = stringResource(Res.string.preset_error_overlay_label),
                     checked = state.presets[PresetId.DisableClientErrorOverlay],
                     onCheckedChange = { onPresetChanged(PresetId.DisableClientErrorOverlay, it) },
-                    hint = "Полностью отключает надоедливые красные ошибки в углу экрана.",
+                    hint = stringResource(Res.string.preset_error_overlay_hint),
                 )
                 SettingRow(
-                    label = "Добавить админские жесты в игровое меню",
+                    label = stringResource(Res.string.preset_admin_gestures_label),
                     checked = state.presets[PresetId.AddAdminGesturesToGameMenu],
                     onCheckedChange = { onPresetChanged(PresetId.AddAdminGesturesToGameMenu, it) },
-                    hint = "Добавляет скрытые анимации в меню настройки жестов. Эти анимации работают только при наличии админки на сервере.",
+                    hint = stringResource(Res.string.preset_admin_gestures_hint),
                 )
                 SettingRow(
-                    label = "Удобная сортировка скинов",
+                    label = stringResource(Res.string.preset_skin_sorting_label),
                     checked = state.presets[PresetId.ConvenientSkinSorting],
                     onCheckedChange = { onPresetChanged(PresetId.ConvenientSkinSorting, it) },
-                    hint = "Сортирует скины в меню крафта по дате использования.",
+                    hint = stringResource(Res.string.preset_skin_sorting_hint),
                 )
                 SettingRow(
-                    label = "Увеличенная консоль",
+                    label = stringResource(Res.string.preset_enlarged_console_label),
                     checked = state.presets[PresetId.EnlargedConsole],
                     onCheckedChange = { onPresetChanged(PresetId.EnlargedConsole, it) },
-                    hint = "Увеличивает размер шрифта в консоли.",
+                    hint = stringResource(Res.string.preset_enlarged_console_hint),
                 )
 
-                SettingsGroupTitle("Экспериментальные")
+                SettingsGroupTitle(stringResource(Res.string.cfg_group_experimental))
                 SettingRow(
-                    label = "Снизить задержку вызова радиального меню",
+                    label = stringResource(Res.string.preset_radial_menu_label),
                     checked = state.presets[PresetId.ReduceRadialMenuCallDelay],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceRadialMenuCallDelay, it) },
-                    hint = "Немного ускоряет появление радиального меню при зажатии кнопки взаимодействия. Может быть не привычно. Не рекомендуется игрокам с низким FPS.",
+                    hint = stringResource(Res.string.preset_radial_menu_hint),
                 )
                 SettingRow(
-                    label = "Режим левой руки",
+                    label = stringResource(Res.string.preset_left_hand_label),
                     checked = state.presets[PresetId.LeftHandMode],
                     onCheckedChange = { onPresetChanged(PresetId.LeftHandMode, it) },
-                    hint = "Переносит оружие и предметы в левую руку персонажа",
+                    hint = stringResource(Res.string.preset_left_hand_hint),
                 )
 
             }
@@ -350,7 +352,7 @@ private fun DiffColumn(
             ) {
                 if (showDownloadButton && onDownloadClick != null) {
                     Button(onClick = onDownloadClick) {
-                        Text("Скачать")
+                        Text(stringResource(Res.string.cfg_download))
                     }
                 }
             }
@@ -389,7 +391,7 @@ private fun DiffColumn(
                 }
                 if (diffRows.isEmpty()) {
                     Text(
-                        text = "Нет данных",
+                        text = stringResource(Res.string.cfg_no_data),
                         fontFamily = FontFamily.Monospace,
                     )
                 }

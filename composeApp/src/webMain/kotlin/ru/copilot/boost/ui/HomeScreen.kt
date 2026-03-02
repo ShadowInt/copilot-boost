@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HomeScreen(
@@ -27,12 +29,12 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
     ) {
         Text("CopilotBoost", style = MaterialTheme.typography.headlineMedium)
-        Text("Версия: $appVersion", modifier = Modifier.padding(top = 4.dp))
+        Text(stringResource(Res.string.home_version, appVersion), modifier = Modifier.padding(top = 4.dp))
         Button(
             onClick = onStartSetup,
             modifier = Modifier.padding(top = 20.dp),
         ) {
-            Text("Настроить Rust")
+            Text(stringResource(Res.string.home_setup_button))
         }
     }
 }

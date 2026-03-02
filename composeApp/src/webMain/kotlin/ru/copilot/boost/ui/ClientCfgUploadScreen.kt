@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.ui.components.FileDropZone
 
 @Composable
@@ -30,23 +32,23 @@ fun ClientCfgUploadScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
-        Text("Загрузка client.cfg", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(Res.string.upload_title), style = MaterialTheme.typography.headlineSmall)
         Text(
-            text = "Перетащите файл или выберите его вручную",
+            text = stringResource(Res.string.upload_subtitle),
             modifier = Modifier.padding(top = 8.dp),
         )
         if (fileName != null) {
             Text(
-                text = "Выбран файл: $fileName",
+                text = stringResource(Res.string.upload_selected_file, fileName),
                 modifier = Modifier.padding(top = 8.dp),
             )
         }
 
         FileDropZone(
             isDragging = isDragging,
-            idleMessage = "Перетащите client.cfg файл в эту область",
-            dragMessage = "Отпустите файл здесь",
-            pickButtonText = "Выберите файл",
+            idleMessage = stringResource(Res.string.upload_idle_message),
+            dragMessage = stringResource(Res.string.upload_drag_message),
+            pickButtonText = stringResource(Res.string.upload_pick_button),
             onPickFileClick = onPickFileClick,
             errorMessage = uploadError,
             modifier = Modifier.padding(top = 16.dp),

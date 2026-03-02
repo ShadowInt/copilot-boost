@@ -14,6 +14,8 @@ import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.presentation.SetupFlowUiState
 import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.presentation.SetupTextKey
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.ui.*
 import ru.copilot.boost.ui.components.ModuleScaffold
 import ru.copilot.boost.ui.i18n.flowPrimaryActionText
@@ -152,8 +154,8 @@ fun App() {
                     coordinator = coordinator,
                 ) {
                     ModuleStubScreen(
-                        title = "Функционал биндов",
-                        description = "Здесь будет настройка биндов и пресетов клавиш.",
+                        title = stringResource(Res.string.binds_stub_title),
+                        description = stringResource(Res.string.binds_stub_description),
                     )
                 }
             }

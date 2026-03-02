@@ -22,9 +22,8 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import copilotboost.composeapp.generated.resources.Res
-import copilotboost.composeapp.generated.resources.lib_steam_macos_ru
-import copilotboost.composeapp.generated.resources.rust_steam_args_macos_ru
+import copilotboost.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.copyTextToClipboard
 import ru.copilot.boost.ui.components.stage.StageDefinition
@@ -44,9 +43,10 @@ fun LaunchArgsScreen(
     val launchArgs = store.launchArgs
     val hasSelectedSettings = store.hasSelectedSettings
     val isCurrentSelectionCopied = store.isCurrentSelectionCopied
-    val remainingStages = remember { defaultRemainingStages() }
+    val remainingStages = defaultRemainingStages()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val copiedMessage = stringResource(Res.string.launch_args_copied)
 
     Box(
         modifier = Modifier
@@ -100,7 +100,7 @@ fun LaunchArgsScreen(
                                     snackbarHostState.currentSnackbarData?.dismiss()
                                     launch {
                                         snackbarHostState.showSnackbar(
-                                            message = "Скопировано",
+                                            message = copiedMessage,
                                             duration = SnackbarDuration.Indefinite,
                                         )
                                     }
@@ -124,17 +124,18 @@ fun LaunchArgsScreen(
     }
 }
 
+@Composable
 private fun defaultRemainingStages(): List<StageDefinition> = listOf(
     StageDefinition(
-        text = "Откройте свойства игры в Steam",
+        text = stringResource(Res.string.launch_args_stage_open_steam),
         imageResource = Res.drawable.lib_steam_macos_ru,
     ),
     StageDefinition(
-        text = "Вставьте сгенерированные параметры в данное поле",
+        text = stringResource(Res.string.launch_args_stage_paste_params),
         imageResource = Res.drawable.rust_steam_args_macos_ru,
     ),
     StageDefinition(
-        text = "Готово",
+        text = stringResource(Res.string.launch_args_stage_done),
     ),
 )
 
@@ -154,38 +155,38 @@ private fun LaunchArgsSettingsCard(
 ) {
     val recommendedRows = listOf(
         LaunchSettingUiRow(
-            label = "Админский телепорт",
+            label = stringResource(Res.string.launch_args_admin_teleport_label),
             checked = adminTeleport,
             onCheckedChange = onAdminTeleportChanged,
-            hint = "При наличии админки автоматически телепортирует игрока в точку установки маркера на карте.",
+            hint = stringResource(Res.string.launch_args_admin_teleport_hint),
         ),
     )
     val visualRows = listOf(
         LaunchSettingUiRow(
-            label = "Ускорить поворот головы через ALT",
+            label = stringResource(Res.string.launch_args_alt_head_turn_label),
             checked = fasterAltHeadTurn,
             onCheckedChange = onFasterAltHeadTurnChanged,
-            hint = "При активации данного твика, голова персонажа будет быстрее возвращаться в исходное состояние при отпускании клавиши ALT.",
+            hint = stringResource(Res.string.launch_args_alt_head_turn_hint),
         ),
         LaunchSettingUiRow(
-            label = "Отключить анимацию глаз игроков",
+            label = stringResource(Res.string.launch_args_eyes_animation_label),
             checked = disablePlayerEyesAnimation,
             onCheckedChange = onDisablePlayerEyesAnimationChanged,
-            hint = "Полностью отключает анимацию и моргания глаз у всех персонажей.",
+            hint = stringResource(Res.string.launch_args_eyes_animation_hint),
         ),
     )
     val experimentalRows = listOf(
         LaunchSettingUiRow(
-            label = "Серверный хитмаркер",
+            label = stringResource(Res.string.launch_args_server_hitmarker_label),
             checked = serverHitmarker,
             onCheckedChange = onServerHitmarkerChanged,
-            hint = "При включении хитмаркер отображается только в том случае, когда сервер подтверждает регистрацию попадания. Добавляет небольшую задержку хитмаркерам, но избавляет от дезинформации.",
+            hint = stringResource(Res.string.launch_args_server_hitmarker_hint),
         ),
         LaunchSettingUiRow(
-            label = "Старые уведомления о подборе предметов",
+            label = stringResource(Res.string.launch_args_old_pickup_label),
             checked = oldItemPickupNotifications,
             onCheckedChange = onOldItemPickupNotificationsChanged,
-            hint = "При включении возвращает старый способ отображения подобранных предметов: каждый предмет отображается отдельно.",
+            hint = stringResource(Res.string.launch_args_old_pickup_hint),
         ),
     )
 
@@ -197,7 +198,7 @@ private fun LaunchArgsSettingsCard(
                 .padding(bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Настройки")
+            Text(text = stringResource(Res.string.launch_args_settings_title))
         }
         Box(
             modifier = Modifier
@@ -206,7 +207,7 @@ private fun LaunchArgsSettingsCard(
                 .padding(12.dp),
         ) {
             Column {
-                LaunchArgsSectionTitle("Рекомендуемые")
+                LaunchArgsSectionTitle(stringResource(Res.string.launch_args_group_recommended))
                 recommendedRows.forEach { row ->
                     LaunchArgSettingRow(
                         label = row.label,
@@ -216,7 +217,7 @@ private fun LaunchArgsSettingsCard(
                     )
                 }
 
-                LaunchArgsSectionTitle("Визуальные эффекты", withTopSpacing = true)
+                LaunchArgsSectionTitle(stringResource(Res.string.launch_args_group_visual), withTopSpacing = true)
                 visualRows.forEach { row ->
                     LaunchArgSettingRow(
                         label = row.label,
@@ -226,7 +227,7 @@ private fun LaunchArgsSettingsCard(
                     )
                 }
 
-                LaunchArgsSectionTitle("Экспериментальные", withTopSpacing = true)
+                LaunchArgsSectionTitle(stringResource(Res.string.launch_args_group_experimental), withTopSpacing = true)
                 experimentalRows.forEach { row ->
                     LaunchArgSettingRow(
                         label = row.label,
@@ -308,7 +309,7 @@ private fun LaunchArgsWindow(
                 .padding(bottom = LaunchArgsUiSpec.CardHeaderBottomPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Настройка параметров запуска")
+            Text(text = stringResource(Res.string.launch_args_window_title))
         }
         Box(
             modifier = Modifier
@@ -395,7 +396,7 @@ private fun LaunchArgsSelectStageWithCopy(
                 .onSizeChanged { contentHeightPx = it.height },
         ) {
             Text(
-                text = "Выберите настройки и скопируйте их",
+                text = stringResource(Res.string.launch_args_select_and_copy),
                 style = MaterialTheme.typography.bodyMedium,
                 color = labelColor,
                 modifier = Modifier.padding(end = 4.dp),
@@ -427,7 +428,7 @@ private fun LaunchArgsSelectStageWithCopy(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ContentCopy,
-                            contentDescription = "Копировать",
+                            contentDescription = stringResource(Res.string.launch_args_copy_button),
                         )
                     }
                 }

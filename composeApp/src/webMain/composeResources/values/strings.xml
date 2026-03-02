@@ -4,14 +4,119 @@
     <string name="flow_action_finish">Завершить</string>
     <string name="flow_step_counter">ШАГ %1$d/%2$d</string>
     <string name="flow_unload_warning">Прогресс настройки будет потерян. Продолжить?</string>
+
     <string name="module_tweaks_title">Твики</string>
     <string name="module_tweaks_description">Понадобится файл client.cfg через drag-and-drop</string>
     <string name="module_launch_args_title">Параметры запуска</string>
     <string name="module_launch_args_description">Настройка аргументов запуска клиента</string>
     <string name="module_binds_title">Бинды</string>
     <string name="module_binds_description">Настройка и управление биндами</string>
+
     <string name="step_client_cfg_upload_title">Загрузка клиентской конфигурации</string>
     <string name="step_tweaks_title">Твики</string>
     <string name="step_launch_args_title">Параметры запуска</string>
     <string name="step_binds_title">Бинды</string>
+
+    <!-- HomeScreen -->
+    <string name="home_version">Версия: %1$s</string>
+    <string name="home_setup_button">Настроить Rust</string>
+
+    <!-- SetupSelectionScreen -->
+    <string name="selection_title">Что вы хотите настроить?</string>
+    <string name="selection_subtitle">Выберите один или несколько разделов и нажмите «Продолжить»</string>
+    <string name="selection_start">Начать</string>
+    <string name="selection_go_home">На главную</string>
+
+    <!-- ClientCfgUploadScreen -->
+    <string name="upload_title">Загрузка client.cfg</string>
+    <string name="upload_subtitle">Перетащите файл или выберите его вручную</string>
+    <string name="upload_selected_file">Выбран файл: %1$s</string>
+    <string name="upload_idle_message">Перетащите client.cfg файл в эту область</string>
+    <string name="upload_drag_message">Отпустите файл здесь</string>
+    <string name="upload_pick_button">Выберите файл</string>
+
+    <!-- FileDropZone -->
+    <string name="file_drop_or">ИЛИ</string>
+
+    <!-- ModuleStubScreen -->
+    <string name="binds_stub_title">Функционал биндов</string>
+    <string name="binds_stub_description">Здесь будет настройка биндов и пресетов клавиш.</string>
+
+    <!-- CfgEditorScreen -->
+    <string name="cfg_no_file">Сначала загрузите client.cfg на предыдущем шаге.</string>
+    <string name="cfg_only_changes">Только измененные строки</string>
+    <string name="cfg_column_original">Исходный</string>
+    <string name="cfg_column_modified">Измененный</string>
+    <string name="cfg_settings_title">Настройки</string>
+    <string name="cfg_download">Скачать</string>
+    <string name="cfg_no_data">Нет данных</string>
+    <string name="cfg_group_recommended">Рекомендуемые</string>
+    <string name="cfg_group_visual">Визуальные эффекты</string>
+    <string name="cfg_group_interface">Интерфейс</string>
+    <string name="cfg_group_experimental">Экспериментальные</string>
+
+    <string name="preset_parasitic_label">Отключить все паразитные параметры</string>
+    <string name="preset_parasitic_hint">Отключает все ненужные настройки, которые затрудняют геймплей, снижают производительность или просто удалены из игры, но остались в меню (ненужные блики, размытия, уведомления, анимации и т.д.)</string>
+    <string name="preset_legs_rendering_label">Отключить отображение ног</string>
+    <string name="preset_legs_rendering_hint">Отключает отображение ног персонажа от первого лица, помогая целиться вниз.</string>
+    <string name="preset_camera_shake_label">Уменьшить тряску камеры</string>
+    <string name="preset_camera_shake_hint">Минимизирует тряску камеры при беге, стрельбе, взрывах и получении урона.</string>
+    <string name="preset_tree_marker_label">Улучшить видимость крестиков на деревьях</string>
+    <string name="preset_tree_marker_hint">Меняет цвет отображения маркеров на деревьях на более контрастный.</string>
+    <string name="preset_occlusion_culling_label">Отключить безопасный режим механизма отсечению окклюзии</string>
+    <string name="preset_occlusion_culling_hint">Проверка, что безопасный режим отсечения окклюзии, который очень сильно снижает FPS, отключен.</string>
+    <string name="preset_gibs_label">Полностью отключить обломки</string>
+    <string name="preset_gibs_hint">Полностью отключает обломки при разрушении сооружений и объектов. Звуки разрушений при этом сохраняются.</string>
+    <string name="preset_legs_deformation_label">Отключить деформацию ног</string>
+    <string name="preset_legs_deformation_hint">Возвращает старую анимацию ног персонажа, которая не подстраивается под рельеф. Может помочь в PVP и немного снизить нагрузку на ПК.</string>
+    <string name="preset_strobe_lights_label">Отключить стробоскопы</string>
+    <string name="preset_strobe_lights_hint">Полностью отключает стробоскопы в игре, оставляя только звук их работы. Может сильно повысить FPS, если рядом несколько стробоскопов.</string>
+    <string name="preset_held_item_size_label">Уменьшить предмет в руках</string>
+    <string name="preset_held_item_size_hint">Делает оружие и предметы в руках персонажа меньше. Функция работает только если уголь обзора установлен выше 70.</string>
+    <string name="preset_event_notifications_label">Вернуть текстовые уведомления об ивентах</string>
+    <string name="preset_event_notifications_hint">Возвращает текстовые уведомления о старте ивентов, таких как появление на карте карго, патрульного вертолета, чинука и т.п.</string>
+    <string name="preset_autocraft_delay_label">Убрать задержку в меню автокрафта</string>
+    <string name="preset_autocraft_delay_hint">Отключает небольшое провисание интерфейса при попытке скрафтить предмет через меню быстрого крафта.</string>
+    <string name="preset_sleeping_bag_label">Снизить задержку при удалении спальников</string>
+    <string name="preset_sleeping_bag_hint">Твик позволяет практически мгновенно удалять спальники, кликнув на крестик на карте.</string>
+    <string name="preset_f8_map_info_label">Добавить информацию о карте в меню F8</string>
+    <string name="preset_f8_map_info_hint">Добавляет информацию о типе, размере и сиде карты в меню отладки F8. У администраторов серверов также отображаются коорлинаты персонажа.</string>
+    <string name="preset_error_overlay_label">Отключить отображение клиентских ошибок</string>
+    <string name="preset_error_overlay_hint">Полностью отключает надоедливые красные ошибки в углу экрана.</string>
+    <string name="preset_admin_gestures_label">Добавить админские жесты в игровое меню</string>
+    <string name="preset_admin_gestures_hint">Добавляет скрытые анимации в меню настройки жестов. Эти анимации работают только при наличии админки на сервере.</string>
+    <string name="preset_skin_sorting_label">Удобная сортировка скинов</string>
+    <string name="preset_skin_sorting_hint">Сортирует скины в меню крафта по дате использования.</string>
+    <string name="preset_enlarged_console_label">Увеличенная консоль</string>
+    <string name="preset_enlarged_console_hint">Увеличивает размер шрифта в консоли.</string>
+    <string name="preset_radial_menu_label">Снизить задержку вызова радиального меню</string>
+    <string name="preset_radial_menu_hint">Немного ускоряет появление радиального меню при зажатии кнопки взаимодействия. Может быть не привычно. Не рекомендуется игрокам с низким FPS.</string>
+    <string name="preset_left_hand_label">Режим левой руки</string>
+    <string name="preset_left_hand_hint">Переносит оружие и предметы в левую руку персонажа</string>
+
+    <!-- LaunchArgsScreen -->
+    <string name="launch_args_settings_title">Настройки</string>
+    <string name="launch_args_window_title">Настройка параметров запуска</string>
+    <string name="launch_args_select_and_copy">Выберите настройки и скопируйте их</string>
+    <string name="launch_args_copy_button">Копировать</string>
+    <string name="launch_args_copied">Скопировано</string>
+    <string name="launch_args_group_recommended">Рекомендуемые</string>
+    <string name="launch_args_group_visual">Визуальные эффекты</string>
+    <string name="launch_args_group_experimental">Экспериментальные</string>
+    <string name="launch_args_stage_open_steam">Откройте свойства игры в Steam</string>
+    <string name="launch_args_stage_paste_params">Вставьте сгенерированные параметры в данное поле</string>
+    <string name="launch_args_stage_done">Готово</string>
+    <string name="launch_args_admin_teleport_label">Админский телепорт</string>
+    <string name="launch_args_admin_teleport_hint">При наличии админки автоматически телепортирует игрока в точку установки маркера на карте.</string>
+    <string name="launch_args_alt_head_turn_label">Ускорить поворот головы через ALT</string>
+    <string name="launch_args_alt_head_turn_hint">При активации данного твика, голова персонажа будет быстрее возвращаться в исходное состояние при отпускании клавиши ALT.</string>
+    <string name="launch_args_eyes_animation_label">Отключить анимацию глаз игроков</string>
+    <string name="launch_args_eyes_animation_hint">Полностью отключает анимацию и моргания глаз у всех персонажей.</string>
+    <string name="launch_args_server_hitmarker_label">Серверный хитмаркер</string>
+    <string name="launch_args_server_hitmarker_hint">При включении хитмаркер отображается только в том случае, когда сервер подтверждает регистрацию попадания. Добавляет небольшую задержку хитмаркерам, но избавляет от дезинформации.</string>
+    <string name="launch_args_old_pickup_label">Старые уведомления о подборе предметов</string>
+    <string name="launch_args_old_pickup_hint">При включении возвращает старый способ отображения подобранных предметов: каждый предмет отображается отдельно.</string>
+
+    <!-- CfgEditorStore -->
+    <string name="error_invalid_file">Разрешен только файл с именем client.cfg</string>
 </resources>
