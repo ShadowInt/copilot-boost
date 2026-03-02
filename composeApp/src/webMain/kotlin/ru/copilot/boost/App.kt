@@ -42,10 +42,17 @@ fun App() {
     }
 
     if (currentScreen == AppScreen.ClientCfgUpload) {
+        val onFileSelectedAndAdvance: (ru.copilot.boost.model.UploadedFileData) -> Unit = remember(cfgStore, coordinator) {
+            { fileData ->
+                cfgStore.onFileSelected(fileData)
+                coordinator.handleFlowAction(SetupFlowAction.Next)
+            }
+        }
+
         DisposableEffect(cfgStore) {
             val disposeListeners = observeGlobalFileDrop(
                 onDragStateChanged = cfgStore::onDragStateChanged,
-                onFileSelected = cfgStore::onFileSelected,
+                onFileSelected = onFileSelectedAndAdvance,
                 onInvalidFile = cfgStore::onInvalidFile,
             )
 
@@ -121,7 +128,10 @@ fun App() {
                         fileName = cfgStore.state.fileName,
                         onPickFileClick = {
                             openFilePicker(
-                                onFileSelected = cfgStore::onFileSelected,
+                                onFileSelected = { fileData ->
+                                    cfgStore.onFileSelected(fileData)
+                                    coordinator.handleFlowAction(SetupFlowAction.Next)
+                                },
                                 onInvalidFile = cfgStore::onInvalidFile,
                             )
                         },
