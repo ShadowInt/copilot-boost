@@ -2,57 +2,20 @@ package ru.copilot.boost.presentation.model
 
 import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
+import ru.copilot.boost.domain.model.PresetFlags
 import ru.copilot.boost.model.UploadedFileData
 
 data class CfgEditorUiState(
     val uploadedFile: UploadedFileData? = null,
     val isDragging: Boolean = false,
     val uploadError: String? = null,
-    val disableParasiticParameters: Boolean = false,
-    val disableLegsRendering: Boolean = false,
-    val disableLegsDeformation: Boolean = false,
-    val disableStrobeLights: Boolean = false,
-    val reduceHeldItemSize: Boolean = false,
-    val restoreEventTextNotifications: Boolean = false,
-    val removeAutocraftMenuDelay: Boolean = false,
-    val reduceSleepingBagRemovalDelay: Boolean = false,
-    val addMapInfoToF8Menu: Boolean = false,
-    val disableClientErrorOverlay: Boolean = false,
-    val addAdminGesturesToGameMenu: Boolean = false,
-    val convenientSkinSorting: Boolean = false,
-    val enlargedConsole: Boolean = false,
-    val reduceRadialMenuCallDelay: Boolean = false,
-    val leftHandMode: Boolean = false,
-    val reduceCameraShake: Boolean = false,
-    val improveTreeMarkerVisibility: Boolean = false,
-    val disableOcclusionCullingSafeMode: Boolean = false,
-    val disableGibsCompletely: Boolean = false,
+    val presets: PresetFlags = PresetFlags(),
     val patchedContent: String = "",
     val diffRows: List<DiffRow> = emptyList(),
 ) {
     val hasFile: Boolean get() = uploadedFile != null
     val fileName: String? get() = uploadedFile?.name
-    val showDiff: Boolean get() = (
-        disableParasiticParameters ||
-            disableLegsRendering ||
-            disableLegsDeformation ||
-            disableStrobeLights ||
-            reduceHeldItemSize ||
-            restoreEventTextNotifications ||
-            removeAutocraftMenuDelay ||
-            reduceSleepingBagRemovalDelay ||
-            addMapInfoToF8Menu ||
-            disableClientErrorOverlay ||
-            addAdminGesturesToGameMenu ||
-            convenientSkinSorting ||
-            enlargedConsole ||
-            reduceRadialMenuCallDelay ||
-            leftHandMode ||
-            reduceCameraShake ||
-            improveTreeMarkerVisibility ||
-            disableOcclusionCullingSafeMode ||
-            disableGibsCompletely
-        ) && diffRows.isNotEmpty()
+    val showDiff: Boolean get() = presets.anyEnabled() && diffRows.isNotEmpty()
     val hasChanges: Boolean get() = diffRows.any { it.type != DiffRowType.UNCHANGED }
     val downloadFileName: String? get() = uploadedFile?.name
 }

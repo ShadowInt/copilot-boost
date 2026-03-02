@@ -33,30 +33,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
+import ru.copilot.boost.domain.model.PresetId
 import ru.copilot.boost.presentation.model.CfgEditorUiState
 
 @Composable
 fun CfgEditorScreen(
     state: CfgEditorUiState,
-    onDisableParasiticChanged: (Boolean) -> Unit,
-    onDisableLegsRenderingChanged: (Boolean) -> Unit,
-    onDisableLegsDeformationChanged: (Boolean) -> Unit,
-    onDisableStrobeLightsChanged: (Boolean) -> Unit,
-    onReduceHeldItemSizeChanged: (Boolean) -> Unit,
-    onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
-    onRemoveAutocraftMenuDelayChanged: (Boolean) -> Unit,
-    onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
-    onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
-    onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
-    onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
-    onConvenientSkinSortingChanged: (Boolean) -> Unit,
-    onEnlargedConsoleChanged: (Boolean) -> Unit,
-    onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
-    onLeftHandModeChanged: (Boolean) -> Unit,
-    onReduceCameraShakeChanged: (Boolean) -> Unit,
-    onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
-    onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
-    onDisableGibsCompletelyChanged: (Boolean) -> Unit,
+    onPresetChanged: (PresetId, Boolean) -> Unit,
     onDownloadClick: () -> Unit,
 ) {
     Column(
@@ -78,25 +61,7 @@ fun CfgEditorScreen(
 
         ThreeColumnEditorWithDownload(
             state = state,
-            onDisableParasiticChanged = onDisableParasiticChanged,
-            onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
-            onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
-            onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
-            onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
-            onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
-            onRemoveAutocraftMenuDelayChanged = onRemoveAutocraftMenuDelayChanged,
-            onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
-            onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
-            onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
-            onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
-            onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
-            onEnlargedConsoleChanged = onEnlargedConsoleChanged,
-            onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
-            onLeftHandModeChanged = onLeftHandModeChanged,
-            onReduceCameraShakeChanged = onReduceCameraShakeChanged,
-            onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
-            onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
-            onDisableGibsCompletelyChanged = onDisableGibsCompletelyChanged,
+            onPresetChanged = onPresetChanged,
             onDownloadClick = onDownloadClick,
             modifier = Modifier
                 .padding(top = 12.dp)
@@ -109,25 +74,7 @@ fun CfgEditorScreen(
 @Composable
 private fun ThreeColumnEditorWithDownload(
     state: CfgEditorUiState,
-    onDisableParasiticChanged: (Boolean) -> Unit,
-    onDisableLegsRenderingChanged: (Boolean) -> Unit,
-    onDisableLegsDeformationChanged: (Boolean) -> Unit,
-    onDisableStrobeLightsChanged: (Boolean) -> Unit,
-    onReduceHeldItemSizeChanged: (Boolean) -> Unit,
-    onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
-    onRemoveAutocraftMenuDelayChanged: (Boolean) -> Unit,
-    onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
-    onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
-    onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
-    onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
-    onConvenientSkinSortingChanged: (Boolean) -> Unit,
-    onEnlargedConsoleChanged: (Boolean) -> Unit,
-    onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
-    onLeftHandModeChanged: (Boolean) -> Unit,
-    onReduceCameraShakeChanged: (Boolean) -> Unit,
-    onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
-    onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
-    onDisableGibsCompletelyChanged: (Boolean) -> Unit,
+    onPresetChanged: (PresetId, Boolean) -> Unit,
     onDownloadClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -154,25 +101,7 @@ private fun ThreeColumnEditorWithDownload(
             ) {
                 SettingsCard(
                     state = state,
-                    onDisableParasiticChanged = onDisableParasiticChanged,
-                    onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
-                    onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
-                    onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
-                    onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
-                    onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
-                    onRemoveAutocraftMenuDelayChanged = onRemoveAutocraftMenuDelayChanged,
-                    onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
-                    onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
-                    onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
-                    onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
-                    onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
-                    onEnlargedConsoleChanged = onEnlargedConsoleChanged,
-                    onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
-                    onLeftHandModeChanged = onLeftHandModeChanged,
-                    onReduceCameraShakeChanged = onReduceCameraShakeChanged,
-                    onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
-                    onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
-                    onDisableGibsCompletelyChanged = onDisableGibsCompletelyChanged,
+                    onPresetChanged = onPresetChanged,
                     modifier = Modifier.width(leftWidth),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -223,25 +152,7 @@ private fun ThreeColumnEditorWithDownload(
 @Composable
 internal fun SettingsCard(
     state: CfgEditorUiState,
-    onDisableParasiticChanged: (Boolean) -> Unit,
-    onDisableLegsRenderingChanged: (Boolean) -> Unit,
-    onDisableLegsDeformationChanged: (Boolean) -> Unit,
-    onDisableStrobeLightsChanged: (Boolean) -> Unit,
-    onReduceHeldItemSizeChanged: (Boolean) -> Unit,
-    onRestoreEventTextNotificationsChanged: (Boolean) -> Unit,
-    onRemoveAutocraftMenuDelayChanged: (Boolean) -> Unit,
-    onReduceSleepingBagRemovalDelayChanged: (Boolean) -> Unit,
-    onAddMapInfoToF8MenuChanged: (Boolean) -> Unit,
-    onDisableClientErrorOverlayChanged: (Boolean) -> Unit,
-    onAddAdminGesturesToGameMenuChanged: (Boolean) -> Unit,
-    onConvenientSkinSortingChanged: (Boolean) -> Unit,
-    onEnlargedConsoleChanged: (Boolean) -> Unit,
-    onReduceRadialMenuCallDelayChanged: (Boolean) -> Unit,
-    onLeftHandModeChanged: (Boolean) -> Unit,
-    onReduceCameraShakeChanged: (Boolean) -> Unit,
-    onImproveTreeMarkerVisibilityChanged: (Boolean) -> Unit,
-    onDisableOcclusionCullingSafeModeChanged: (Boolean) -> Unit,
-    onDisableGibsCompletelyChanged: (Boolean) -> Unit,
+    onPresetChanged: (PresetId, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -265,122 +176,122 @@ internal fun SettingsCard(
                 SettingsGroupTitle("Рекомендуемые")
                 SettingRow(
                     label = "Отключить все паразитные параметры",
-                    checked = state.disableParasiticParameters,
-                    onCheckedChange = onDisableParasiticChanged,
+                    checked = state.presets[PresetId.DisableParasiticParameters],
+                    onCheckedChange = { onPresetChanged(PresetId.DisableParasiticParameters, it) },
                     hint = "Отключает все ненужные настройки, которые затрудняют геймплей, снижают производительность или просто удалены из игры, но остались в меню (ненужные блики, размытия, уведомления, анимации и т.д.)",
                 )
                 SettingRow(
                     label = "Отключить отображение ног",
-                    checked = state.disableLegsRendering,
-                    onCheckedChange = onDisableLegsRenderingChanged,
+                    checked = state.presets[PresetId.DisableLegsRendering],
+                    onCheckedChange = { onPresetChanged(PresetId.DisableLegsRendering, it) },
                     hint = "Отключает отображение ног персонажа от первого лица, помогая целиться вниз.",
                 )
                 SettingRow(
                     label = "Уменьшить тряску камеры",
-                    checked = state.reduceCameraShake,
-                    onCheckedChange = onReduceCameraShakeChanged,
+                    checked = state.presets[PresetId.ReduceCameraShake],
+                    onCheckedChange = { onPresetChanged(PresetId.ReduceCameraShake, it) },
                     hint = "Минимизирует тряску камеры при беге, стрельбе, взрывах и получении урона.",
                 )
                 SettingRow(
                     label = "Улучшить видимость крестиков на деревьях",
-                    checked = state.improveTreeMarkerVisibility,
-                    onCheckedChange = onImproveTreeMarkerVisibilityChanged,
+                    checked = state.presets[PresetId.ImproveTreeMarkerVisibility],
+                    onCheckedChange = { onPresetChanged(PresetId.ImproveTreeMarkerVisibility, it) },
                     hint = "Меняет цвет отображения маркеров на деревьях на более контрастный.",
                 )
                 SettingRow(
                     label = "Отключить безопасный режим механизма отсечению окклюзии",
-                    checked = state.disableOcclusionCullingSafeMode,
-                    onCheckedChange = onDisableOcclusionCullingSafeModeChanged,
+                    checked = state.presets[PresetId.DisableOcclusionCullingSafeMode],
+                    onCheckedChange = { onPresetChanged(PresetId.DisableOcclusionCullingSafeMode, it) },
                     hint = "Проверка, что безопасный режим отсечения окклюзии, который очень сильно снижает FPS, отключен.",
                 )
 
                 SettingsGroupTitle("Визуальные эффекты")
                 SettingRow(
                     label = "Полностью отключить обломки",
-                    checked = state.disableGibsCompletely,
-                    onCheckedChange = onDisableGibsCompletelyChanged,
+                    checked = state.presets[PresetId.DisableGibsCompletely],
+                    onCheckedChange = { onPresetChanged(PresetId.DisableGibsCompletely, it) },
                     hint = "Полностью отключает обломки при разрушении сооружений и объектов. Звуки разрушений при этом сохраняются.",
                 )
                 SettingRow(
                     label = "Отключить деформацию ног",
-                    checked = state.disableLegsDeformation,
-                    onCheckedChange = onDisableLegsDeformationChanged,
+                    checked = state.presets[PresetId.DisableLegsDeformation],
+                    onCheckedChange = { onPresetChanged(PresetId.DisableLegsDeformation, it) },
                     hint = "Возвращает старую анимацию ног персонажа, которая не подстраивается под рельеф. Может помочь в PVP и немного снизить нагрузку на ПК.",
                 )
                 SettingRow(
                     label = "Отключить стробоскопы",
-                    checked = state.disableStrobeLights,
-                    onCheckedChange = onDisableStrobeLightsChanged,
+                    checked = state.presets[PresetId.DisableStrobeLights],
+                    onCheckedChange = { onPresetChanged(PresetId.DisableStrobeLights, it) },
                     hint = "Полностью отключает стробоскопы в игре, оставляя только звук их работы. Может сильно повысить FPS, если рядом несколько стробоскопов.",
                 )
                 SettingRow(
                     label = "Уменьшить предмет в руках",
-                    checked = state.reduceHeldItemSize,
-                    onCheckedChange = onReduceHeldItemSizeChanged,
+                    checked = state.presets[PresetId.ReduceHeldItemSize],
+                    onCheckedChange = { onPresetChanged(PresetId.ReduceHeldItemSize, it) },
                     hint = "Делает оружие и предметы в руках персонажа меньше. Функция работает только если уголь обзора установлен выше 70.",
                 )
 
                 SettingsGroupTitle("Интерфейс")
                 SettingRow(
                     label = "Вернуть текстовые уведомления об ивентах",
-                    checked = state.restoreEventTextNotifications,
-                    onCheckedChange = onRestoreEventTextNotificationsChanged,
+                    checked = state.presets[PresetId.RestoreEventTextNotifications],
+                    onCheckedChange = { onPresetChanged(PresetId.RestoreEventTextNotifications, it) },
                     hint = "Возвращает текстовые уведомления о старте ивентов, таких как появление на карте карго, патрульного вертолета, чинука и т.п.",
                 )
                 SettingRow(
                     label = "Убрать задержку в меню автокрафта",
-                    checked = state.removeAutocraftMenuDelay,
-                    onCheckedChange = onRemoveAutocraftMenuDelayChanged,
+                    checked = state.presets[PresetId.RemoveAutocraftMenuDelay],
+                    onCheckedChange = { onPresetChanged(PresetId.RemoveAutocraftMenuDelay, it) },
                     hint = "Отключает небольшое провисание интерфейса при попытке скрафтить предмет через меню быстрого крафта.",
                 )
                 SettingRow(
                     label = "Снизить задержку при удалении спальников",
-                    checked = state.reduceSleepingBagRemovalDelay,
-                    onCheckedChange = onReduceSleepingBagRemovalDelayChanged,
+                    checked = state.presets[PresetId.ReduceSleepingBagRemovalDelay],
+                    onCheckedChange = { onPresetChanged(PresetId.ReduceSleepingBagRemovalDelay, it) },
                     hint = "Твик позволяет практически мгновенно удалять спальники, кликнув на крестик на карте.",
                 )
                 SettingRow(
                     label = "Добавить информацию о карте в меню F8",
-                    checked = state.addMapInfoToF8Menu,
-                    onCheckedChange = onAddMapInfoToF8MenuChanged,
+                    checked = state.presets[PresetId.AddMapInfoToF8Menu],
+                    onCheckedChange = { onPresetChanged(PresetId.AddMapInfoToF8Menu, it) },
                     hint = "Добавляет информацию о типе, размере и сиде карты в меню отладки F8. У администраторов серверов также отображаются коорлинаты персонажа.",
                 )
                 SettingRow(
                     label = "Отключить отображение клиентских ошибок",
-                    checked = state.disableClientErrorOverlay,
-                    onCheckedChange = onDisableClientErrorOverlayChanged,
+                    checked = state.presets[PresetId.DisableClientErrorOverlay],
+                    onCheckedChange = { onPresetChanged(PresetId.DisableClientErrorOverlay, it) },
                     hint = "Полностью отключает надоедливые красные ошибки в углу экрана.",
                 )
                 SettingRow(
                     label = "Добавить админские жесты в игровое меню",
-                    checked = state.addAdminGesturesToGameMenu,
-                    onCheckedChange = onAddAdminGesturesToGameMenuChanged,
+                    checked = state.presets[PresetId.AddAdminGesturesToGameMenu],
+                    onCheckedChange = { onPresetChanged(PresetId.AddAdminGesturesToGameMenu, it) },
                     hint = "Добавляет скрытые анимации в меню настройки жестов. Эти анимации работают только при наличии админки на сервере.",
                 )
                 SettingRow(
                     label = "Удобная сортировка скинов",
-                    checked = state.convenientSkinSorting,
-                    onCheckedChange = onConvenientSkinSortingChanged,
+                    checked = state.presets[PresetId.ConvenientSkinSorting],
+                    onCheckedChange = { onPresetChanged(PresetId.ConvenientSkinSorting, it) },
                     hint = "Сортирует скины в меню крафта по дате использования.",
                 )
                 SettingRow(
                     label = "Увеличенная консоль",
-                    checked = state.enlargedConsole,
-                    onCheckedChange = onEnlargedConsoleChanged,
+                    checked = state.presets[PresetId.EnlargedConsole],
+                    onCheckedChange = { onPresetChanged(PresetId.EnlargedConsole, it) },
                     hint = "Увеличивает размер шрифта в консоли.",
                 )
 
                 SettingsGroupTitle("Экспериментальные")
                 SettingRow(
                     label = "Снизить задержку вызова радиального меню",
-                    checked = state.reduceRadialMenuCallDelay,
-                    onCheckedChange = onReduceRadialMenuCallDelayChanged,
+                    checked = state.presets[PresetId.ReduceRadialMenuCallDelay],
+                    onCheckedChange = { onPresetChanged(PresetId.ReduceRadialMenuCallDelay, it) },
                     hint = "Немного ускоряет появление радиального меню при зажатии кнопки взаимодействия. Может быть не привычно. Не рекомендуется игрокам с низким FPS.",
                 )
                 SettingRow(
                     label = "Режим левой руки",
-                    checked = state.leftHandMode,
-                    onCheckedChange = onLeftHandModeChanged,
+                    checked = state.presets[PresetId.LeftHandMode],
+                    onCheckedChange = { onPresetChanged(PresetId.LeftHandMode, it) },
                     hint = "Переносит оружие и предметы в левую руку персонажа",
                 )
 

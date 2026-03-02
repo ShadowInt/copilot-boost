@@ -157,25 +157,7 @@ fun App() {
                     val state = cfgStore.state
                     CfgEditorScreen(
                         state = state,
-                        onDisableParasiticChanged = cfgStore::onDisableParasiticChanged,
-                        onDisableLegsRenderingChanged = cfgStore::onDisableLegsRenderingChanged,
-                        onDisableLegsDeformationChanged = cfgStore::onDisableLegsDeformationChanged,
-                        onDisableStrobeLightsChanged = cfgStore::onDisableStrobeLightsChanged,
-                        onReduceHeldItemSizeChanged = cfgStore::onReduceHeldItemSizeChanged,
-                        onRestoreEventTextNotificationsChanged = cfgStore::onRestoreEventTextNotificationsChanged,
-                        onRemoveAutocraftMenuDelayChanged = cfgStore::onRemoveAutocraftMenuDelayChanged,
-                        onReduceSleepingBagRemovalDelayChanged = cfgStore::onReduceSleepingBagRemovalDelayChanged,
-                        onAddMapInfoToF8MenuChanged = cfgStore::onAddMapInfoToF8MenuChanged,
-                        onDisableClientErrorOverlayChanged = cfgStore::onDisableClientErrorOverlayChanged,
-                        onAddAdminGesturesToGameMenuChanged = cfgStore::onAddAdminGesturesToGameMenuChanged,
-                        onConvenientSkinSortingChanged = cfgStore::onConvenientSkinSortingChanged,
-                        onEnlargedConsoleChanged = cfgStore::onEnlargedConsoleChanged,
-                        onReduceRadialMenuCallDelayChanged = cfgStore::onReduceRadialMenuCallDelayChanged,
-                        onLeftHandModeChanged = cfgStore::onLeftHandModeChanged,
-                        onReduceCameraShakeChanged = cfgStore::onReduceCameraShakeChanged,
-                        onImproveTreeMarkerVisibilityChanged = cfgStore::onImproveTreeMarkerVisibilityChanged,
-                        onDisableOcclusionCullingSafeModeChanged = cfgStore::onDisableOcclusionCullingSafeModeChanged,
-                        onDisableGibsCompletelyChanged = cfgStore::onDisableGibsCompletelyChanged,
+                        onPresetChanged = cfgStore::onPresetChanged,
                         onDownloadClick = {
                             val fileName = state.downloadFileName ?: return@CfgEditorScreen
                             downloadCfgFile(

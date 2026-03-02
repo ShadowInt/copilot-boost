@@ -1,9 +1,10 @@
 package ru.copilot.boost.domain
 
-import ru.copilot.boost.domain.model.AppliedPresetState
 import ru.copilot.boost.domain.model.CfgPatchResult
 import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
+import ru.copilot.boost.domain.model.PresetFlags
+import ru.copilot.boost.domain.model.PresetId
 import ru.copilot.boost.domain.model.PreparedCfgContent
 
 class CfgPatcher {
@@ -13,115 +14,22 @@ class CfgPatcher {
         return PreparedCfgContent(lines = lines, keys = keys)
     }
 
-    fun detectAppliedPresets(content: String): AppliedPresetState {
+    fun detectAppliedPresets(content: String): PresetFlags {
         val currentValuesByKey = parseCurrentValuesByKey(content)
-        return AppliedPresetState(
-            disableParasiticParameters = isPresetApplied(currentValuesByKey, parasiticPresetValues),
-            disableLegsRendering = isPresetApplied(currentValuesByKey, legsPresetValues),
-            disableLegsDeformation = isPresetApplied(currentValuesByKey, legsDeformationPresetValues),
-            disableStrobeLights = isPresetApplied(currentValuesByKey, disableStrobeLightsPresetValues),
-            reduceHeldItemSize = isPresetApplied(currentValuesByKey, reduceHeldItemSizePresetValues),
-            restoreEventTextNotifications = isPresetApplied(currentValuesByKey, restoreEventTextNotificationsPresetValues),
-            removeAutocraftMenuDelay = isPresetApplied(currentValuesByKey, removeAutocraftMenuDelayPresetValues),
-            reduceSleepingBagRemovalDelay = isPresetApplied(currentValuesByKey, reduceSleepingBagRemovalDelayPresetValues),
-            addMapInfoToF8Menu = isPresetApplied(currentValuesByKey, addMapInfoToF8MenuPresetValues),
-            disableClientErrorOverlay = isPresetApplied(currentValuesByKey, disableClientErrorOverlayPresetValues),
-            addAdminGesturesToGameMenu = isPresetApplied(currentValuesByKey, addAdminGesturesToGameMenuPresetValues),
-            convenientSkinSorting = isPresetApplied(currentValuesByKey, convenientSkinSortingPresetValues),
-            enlargedConsole = isPresetApplied(currentValuesByKey, enlargedConsolePresetValues),
-            reduceRadialMenuCallDelay = isPresetApplied(currentValuesByKey, reduceRadialMenuCallDelayPresetValues),
-            leftHandMode = isPresetApplied(currentValuesByKey, leftHandModePresetValues),
-            reduceCameraShake = isPresetApplied(currentValuesByKey, reduceCameraShakePresetValues),
-            improveTreeMarkerVisibility = isPresetApplied(currentValuesByKey, improveTreeMarkerVisibilityPresetValues),
-            disableOcclusionCullingSafeMode = isPresetApplied(currentValuesByKey, disableOcclusionCullingSafeModePresetValues),
-            disableGibsCompletely = isPresetApplied(currentValuesByKey, disableGibsCompletelyPresetValues),
-        )
+        val flags = PresetId.entries.associateWith { id ->
+            isPresetApplied(currentValuesByKey, presetValuesById.getValue(id))
+        }
+        return PresetFlags(flags)
     }
 
     fun applyPresets(
         content: String,
-        disableParasiticParameters: Boolean,
-        disableLegsRendering: Boolean,
-        disableLegsDeformation: Boolean,
-        disableStrobeLights: Boolean,
-        reduceHeldItemSize: Boolean,
-        restoreEventTextNotifications: Boolean,
-        removeAutocraftMenuDelay: Boolean,
-        reduceSleepingBagRemovalDelay: Boolean,
-        addMapInfoToF8Menu: Boolean,
-        disableClientErrorOverlay: Boolean,
-        addAdminGesturesToGameMenu: Boolean,
-        convenientSkinSorting: Boolean,
-        enlargedConsole: Boolean,
-        reduceRadialMenuCallDelay: Boolean,
-        leftHandMode: Boolean,
-        reduceCameraShake: Boolean,
-        improveTreeMarkerVisibility: Boolean,
-        disableOcclusionCullingSafeMode: Boolean,
-        disableGibsCompletely: Boolean,
-        removeParasiticParameters: Boolean = false,
-        removeLegsRendering: Boolean = false,
-        removeLegsDeformation: Boolean = false,
-        removeStrobeLights: Boolean = false,
-        removeHeldItemSize: Boolean = false,
-        removeEventTextNotifications: Boolean = false,
-        removeQuickCraftDelay: Boolean = false,
-        removeSleepingBagRemovalDelay: Boolean = false,
-        removeMapInfoFromF8Menu: Boolean = false,
-        removeClientErrorOverlay: Boolean = false,
-        removeAdminGesturesFromGameMenu: Boolean = false,
-        removeConvenientSkinSorting: Boolean = false,
-        removeEnlargedConsole: Boolean = false,
-        removeRadialMenuCallDelay: Boolean = false,
-        removeLeftHandMode: Boolean = false,
-        removeCameraShake: Boolean = false,
-        removeTreeMarkerVisibility: Boolean = false,
-        removeOcclusionCullingSafeMode: Boolean = false,
-        removeGibsCompletely: Boolean = false,
+        enabled: PresetFlags,
+        remove: PresetFlags = PresetFlags(),
         preparedContent: PreparedCfgContent? = null,
     ): CfgPatchResult {
-        val activePresetLinesByKey = buildActivePresetLinesByKey(
-            disableParasiticParameters = disableParasiticParameters,
-            disableLegsRendering = disableLegsRendering,
-            disableLegsDeformation = disableLegsDeformation,
-            disableStrobeLights = disableStrobeLights,
-            reduceHeldItemSize = reduceHeldItemSize,
-            restoreEventTextNotifications = restoreEventTextNotifications,
-            removeAutocraftMenuDelay = removeAutocraftMenuDelay,
-            reduceSleepingBagRemovalDelay = reduceSleepingBagRemovalDelay,
-            addMapInfoToF8Menu = addMapInfoToF8Menu,
-            disableClientErrorOverlay = disableClientErrorOverlay,
-            addAdminGesturesToGameMenu = addAdminGesturesToGameMenu,
-            convenientSkinSorting = convenientSkinSorting,
-            enlargedConsole = enlargedConsole,
-            reduceRadialMenuCallDelay = reduceRadialMenuCallDelay,
-            leftHandMode = leftHandMode,
-            reduceCameraShake = reduceCameraShake,
-            improveTreeMarkerVisibility = improveTreeMarkerVisibility,
-            disableOcclusionCullingSafeMode = disableOcclusionCullingSafeMode,
-            disableGibsCompletely = disableGibsCompletely,
-        )
-        val keysToRemove = buildKeysToRemove(
-            removeParasiticParameters = removeParasiticParameters,
-            removeLegsRendering = removeLegsRendering,
-            removeLegsDeformation = removeLegsDeformation,
-            removeStrobeLights = removeStrobeLights,
-            removeHeldItemSize = removeHeldItemSize,
-            removeEventTextNotifications = removeEventTextNotifications,
-            removeQuickCraftDelay = removeQuickCraftDelay,
-            removeSleepingBagRemovalDelay = removeSleepingBagRemovalDelay,
-            removeMapInfoFromF8Menu = removeMapInfoFromF8Menu,
-            removeClientErrorOverlay = removeClientErrorOverlay,
-            removeAdminGesturesFromGameMenu = removeAdminGesturesFromGameMenu,
-            removeConvenientSkinSorting = removeConvenientSkinSorting,
-            removeEnlargedConsole = removeEnlargedConsole,
-            removeRadialMenuCallDelay = removeRadialMenuCallDelay,
-            removeLeftHandMode = removeLeftHandMode,
-            removeCameraShake = removeCameraShake,
-            removeTreeMarkerVisibility = removeTreeMarkerVisibility,
-            removeOcclusionCullingSafeMode = removeOcclusionCullingSafeMode,
-            removeGibsCompletely = removeGibsCompletely,
-        )
+        val activePresetLinesByKey = buildActivePresetLinesByKey(enabled)
+        val keysToRemove = buildKeysToRemove(remove)
 
         val prepared = preparedContent ?: prepareContent(content)
         val originalLines = prepared.lines
@@ -203,204 +111,112 @@ class CfgPatcher {
     }
 
     companion object {
-        private val parasiticPresetValues = linkedMapOf(
-            "global.showblood" to "\"False\"",
-            "global.censorrecordings" to "\"False\"",
-            "shoutcaststreamer.allowinternetstreams" to "\"False\"",
-            "effects.hurtoverlay" to "\"False\"",
-            "effects.hurtoverleyapplylighting" to "\"False\"",
-            "effects.bloom" to "\"False\"",
-            "effects.shafts" to "\"False\"",
-            "effects.lensdirt" to "\"False\"",
-            "graphics.branding" to "\"False\"",
-            "gametip.showgametips" to "\"False\"",
-            "graphicssettings.particleraycastbudget" to "\"0\"",
-            "graphicssettings.pixellightcount" to "\"0\"",
-            "ui.showbeltbarbinds" to "\"False\"",
-            "water.quality" to "\"0\"",
-            "effects.vignet" to "\"False\"",
-            "global.processmidiinput" to "\"False\"",
-            "player.cold_breath" to "\"False\"",
-            "client.hascompletedtutorial" to "\"True\"",
-            "render.instanced_rendering" to "\"0\"",
-            "graphicssettings.billboardsfacecameraposition" to "\"False\"",
+        private val presetValuesById: Map<PresetId, LinkedHashMap<String, String>> = mapOf(
+            PresetId.DisableParasiticParameters to linkedMapOf(
+                "global.showblood" to "\"False\"",
+                "global.censorrecordings" to "\"False\"",
+                "shoutcaststreamer.allowinternetstreams" to "\"False\"",
+                "effects.hurtoverlay" to "\"False\"",
+                "effects.hurtoverleyapplylighting" to "\"False\"",
+                "effects.bloom" to "\"False\"",
+                "effects.shafts" to "\"False\"",
+                "effects.lensdirt" to "\"False\"",
+                "graphics.branding" to "\"False\"",
+                "gametip.showgametips" to "\"False\"",
+                "graphicssettings.particleraycastbudget" to "\"0\"",
+                "graphicssettings.pixellightcount" to "\"0\"",
+                "ui.showbeltbarbinds" to "\"False\"",
+                "water.quality" to "\"0\"",
+                "effects.vignet" to "\"False\"",
+                "global.processmidiinput" to "\"False\"",
+                "player.cold_breath" to "\"False\"",
+                "client.hascompletedtutorial" to "\"True\"",
+                "render.instanced_rendering" to "\"0\"",
+                "graphicssettings.billboardsfacecameraposition" to "\"False\"",
+            ),
+            PresetId.DisableLegsRendering to linkedMapOf(
+                "legs.enablelegs" to "\"False\"",
+            ),
+            PresetId.DisableLegsDeformation to linkedMapOf(
+                "player.footik" to "\"False\"",
+            ),
+            PresetId.DisableStrobeLights to linkedMapOf(
+                "strobelight.forceoff" to "\"True\"",
+            ),
+            PresetId.ReduceHeldItemSize to linkedMapOf(
+                "graphics.vm_fov_scale" to "\"False\"",
+            ),
+            PresetId.RestoreEventTextNotifications to linkedMapOf(
+                "ui.monumentnotificationtoasts" to "\"True\"",
+            ),
+            PresetId.RemoveAutocraftMenuDelay to linkedMapOf(
+                "inventory.quickcraftdelay" to "\"0\"",
+            ),
+            PresetId.ReduceSleepingBagRemovalDelay to linkedMapOf(
+                "client.bag_unclaim_duration" to "\"0.1\"",
+            ),
+            PresetId.AddMapInfoToF8Menu to linkedMapOf(
+                "debug.showworldinfoinperformancereadout" to "\"True\"",
+            ),
+            PresetId.DisableClientErrorOverlay to linkedMapOf(
+                "console.erroroverlay" to "\"False\"",
+            ),
+            PresetId.AddAdminGesturesToGameMenu to linkedMapOf(
+                "gesturecollection.showadmincinematicgesturesinbindings" to "\"True\"",
+            ),
+            PresetId.ConvenientSkinSorting to linkedMapOf(
+                "client.sortskinsrecentlyused" to "\"True\"",
+            ),
+            PresetId.EnlargedConsole to linkedMapOf(
+                "global.consolescale" to "\"16\"",
+            ),
+            PresetId.ReduceRadialMenuCallDelay to linkedMapOf(
+                "input.holdtime" to "\"0.15\"",
+            ),
+            PresetId.LeftHandMode to linkedMapOf(
+                "graphics.vm_horizontal_flip" to "\"True\"",
+            ),
+            PresetId.ReduceCameraShake to linkedMapOf(
+                "client.clampscreenshake" to "\"True\"",
+                "client.allowcameratiltondpv" to "\"False\"",
+                "client.headbob" to "\"False\"",
+                "client.hurtpunch" to "\"False\"",
+            ),
+            PresetId.ImproveTreeMarkerVisibility to linkedMapOf(
+                "accessibility.treemarkercolor" to "\"2\"",
+            ),
+            PresetId.DisableOcclusionCullingSafeMode to linkedMapOf(
+                "culling.safemode" to "\"False\"",
+            ),
+            PresetId.DisableGibsCompletely to linkedMapOf(
+                "effects.maxgibdist" to "\"150\"",
+                "effects.maxgibs" to "\"0\"",
+                "effects.maxgiblife" to "\"0\"",
+                "effects.mingiblife" to "\"0\"",
+            ),
         )
 
-        private val legsPresetValues = linkedMapOf(
-            "legs.enablelegs" to "\"False\"",
-        )
-        private val legsDeformationPresetValues = linkedMapOf(
-            "player.footik" to "\"False\"",
-        )
-        private val disableStrobeLightsPresetValues = linkedMapOf(
-            "strobelight.forceoff" to "\"True\"",
-        )
-        private val reduceHeldItemSizePresetValues = linkedMapOf(
-            "graphics.vm_fov_scale" to "\"False\"",
-        )
-        private val restoreEventTextNotificationsPresetValues = linkedMapOf(
-            "ui.monumentnotificationtoasts" to "\"True\"",
-        )
-        private val removeAutocraftMenuDelayPresetValues = linkedMapOf(
-            "inventory.quickcraftdelay" to "\"0\"",
-        )
-        private val reduceSleepingBagRemovalDelayPresetValues = linkedMapOf(
-            "client.bag_unclaim_duration" to "\"0.1\"",
-        )
-        private val addMapInfoToF8MenuPresetValues = linkedMapOf(
-            "debug.showworldinfoinperformancereadout" to "\"True\"",
-        )
-        private val disableClientErrorOverlayPresetValues = linkedMapOf(
-            "console.erroroverlay" to "\"False\"",
-        )
-        private val addAdminGesturesToGameMenuPresetValues = linkedMapOf(
-            "gesturecollection.showadmincinematicgesturesinbindings" to "\"True\"",
-        )
-        private val convenientSkinSortingPresetValues = linkedMapOf(
-            "client.sortskinsrecentlyused" to "\"True\"",
-        )
-        private val enlargedConsolePresetValues = linkedMapOf(
-            "global.consolescale" to "\"16\"",
-        )
-        private val reduceRadialMenuCallDelayPresetValues = linkedMapOf(
-            "input.holdtime" to "\"0.15\"",
-        )
-        private val leftHandModePresetValues = linkedMapOf(
-            "graphics.vm_horizontal_flip" to "\"True\"",
-        )
-        private val reduceCameraShakePresetValues = linkedMapOf(
-            "client.clampscreenshake" to "\"True\"",
-            "client.allowcameratiltondpv" to "\"False\"",
-            "client.headbob" to "\"False\"",
-            "client.hurtpunch" to "\"False\"",
-        )
-        private val improveTreeMarkerVisibilityPresetValues = linkedMapOf(
-            "accessibility.treemarkercolor" to "\"2\"",
-        )
-        private val disableOcclusionCullingSafeModePresetValues = linkedMapOf(
-            "culling.safemode" to "\"False\"",
-        )
-        private val disableGibsCompletelyPresetValues = linkedMapOf(
-            "effects.maxgibdist" to "\"150\"",
-            "effects.maxgibs" to "\"0\"",
-            "effects.maxgiblife" to "\"0\"",
-            "effects.mingiblife" to "\"0\"",
-        )
+        private val presetLinesByKeyById: Map<PresetId, Map<String, String>> =
+            presetValuesById.mapValues { (_, values) -> canonicalPresetLinesByKey(values) }
 
-        private val parasiticPresetLinesByKey = canonicalPresetLinesByKey(parasiticPresetValues)
-        private val legsPresetLinesByKey = canonicalPresetLinesByKey(legsPresetValues)
-        private val legsDeformationPresetLinesByKey = canonicalPresetLinesByKey(legsDeformationPresetValues)
-        private val disableStrobeLightsPresetLinesByKey = canonicalPresetLinesByKey(disableStrobeLightsPresetValues)
-        private val reduceHeldItemSizePresetLinesByKey = canonicalPresetLinesByKey(reduceHeldItemSizePresetValues)
-        private val restoreEventTextNotificationsPresetLinesByKey = canonicalPresetLinesByKey(restoreEventTextNotificationsPresetValues)
-        private val removeAutocraftMenuDelayPresetLinesByKey = canonicalPresetLinesByKey(removeAutocraftMenuDelayPresetValues)
-        private val reduceSleepingBagRemovalDelayPresetLinesByKey = canonicalPresetLinesByKey(reduceSleepingBagRemovalDelayPresetValues)
-        private val addMapInfoToF8MenuPresetLinesByKey = canonicalPresetLinesByKey(addMapInfoToF8MenuPresetValues)
-        private val disableClientErrorOverlayPresetLinesByKey = canonicalPresetLinesByKey(disableClientErrorOverlayPresetValues)
-        private val addAdminGesturesToGameMenuPresetLinesByKey = canonicalPresetLinesByKey(addAdminGesturesToGameMenuPresetValues)
-        private val convenientSkinSortingPresetLinesByKey = canonicalPresetLinesByKey(convenientSkinSortingPresetValues)
-        private val enlargedConsolePresetLinesByKey = canonicalPresetLinesByKey(enlargedConsolePresetValues)
-        private val reduceRadialMenuCallDelayPresetLinesByKey = canonicalPresetLinesByKey(reduceRadialMenuCallDelayPresetValues)
-        private val leftHandModePresetLinesByKey = canonicalPresetLinesByKey(leftHandModePresetValues)
-        private val reduceCameraShakePresetLinesByKey = canonicalPresetLinesByKey(reduceCameraShakePresetValues)
-        private val improveTreeMarkerVisibilityPresetLinesByKey = canonicalPresetLinesByKey(improveTreeMarkerVisibilityPresetValues)
-        private val disableOcclusionCullingSafeModePresetLinesByKey = canonicalPresetLinesByKey(disableOcclusionCullingSafeModePresetValues)
-        private val disableGibsCompletelyPresetLinesByKey = canonicalPresetLinesByKey(disableGibsCompletelyPresetValues)
-
-        private fun buildKeysToRemove(
-            removeParasiticParameters: Boolean,
-            removeLegsRendering: Boolean,
-            removeLegsDeformation: Boolean,
-            removeStrobeLights: Boolean,
-            removeHeldItemSize: Boolean,
-            removeEventTextNotifications: Boolean,
-            removeQuickCraftDelay: Boolean,
-            removeSleepingBagRemovalDelay: Boolean,
-            removeMapInfoFromF8Menu: Boolean,
-            removeClientErrorOverlay: Boolean,
-            removeAdminGesturesFromGameMenu: Boolean,
-            removeConvenientSkinSorting: Boolean,
-            removeEnlargedConsole: Boolean,
-            removeRadialMenuCallDelay: Boolean,
-            removeLeftHandMode: Boolean,
-            removeCameraShake: Boolean,
-            removeTreeMarkerVisibility: Boolean,
-            removeOcclusionCullingSafeMode: Boolean,
-            removeGibsCompletely: Boolean,
-        ): Set<String> {
-            val keysToRemove = linkedSetOf<String>()
-            listOf(
-                removeParasiticParameters to parasiticPresetLinesByKey.keys,
-                removeLegsRendering to legsPresetLinesByKey.keys,
-                removeLegsDeformation to legsDeformationPresetLinesByKey.keys,
-                removeStrobeLights to disableStrobeLightsPresetLinesByKey.keys,
-                removeHeldItemSize to reduceHeldItemSizePresetLinesByKey.keys,
-                removeEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey.keys,
-                removeQuickCraftDelay to removeAutocraftMenuDelayPresetLinesByKey.keys,
-                removeSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey.keys,
-                removeMapInfoFromF8Menu to addMapInfoToF8MenuPresetLinesByKey.keys,
-                removeClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey.keys,
-                removeAdminGesturesFromGameMenu to addAdminGesturesToGameMenuPresetLinesByKey.keys,
-                removeConvenientSkinSorting to convenientSkinSortingPresetLinesByKey.keys,
-                removeEnlargedConsole to enlargedConsolePresetLinesByKey.keys,
-                removeRadialMenuCallDelay to reduceRadialMenuCallDelayPresetLinesByKey.keys,
-                removeLeftHandMode to leftHandModePresetLinesByKey.keys,
-                removeCameraShake to reduceCameraShakePresetLinesByKey.keys,
-                removeTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey.keys,
-                removeOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey.keys,
-                removeGibsCompletely to disableGibsCompletelyPresetLinesByKey.keys,
-            ).forEach { (enabled, keys) ->
-                if (enabled) keysToRemove += keys
-            }
-            return keysToRemove
-        }
-
-        private fun buildActivePresetLinesByKey(
-            disableParasiticParameters: Boolean,
-            disableLegsRendering: Boolean,
-            disableLegsDeformation: Boolean,
-            disableStrobeLights: Boolean,
-            reduceHeldItemSize: Boolean,
-            restoreEventTextNotifications: Boolean,
-            removeAutocraftMenuDelay: Boolean,
-            reduceSleepingBagRemovalDelay: Boolean,
-            addMapInfoToF8Menu: Boolean,
-            disableClientErrorOverlay: Boolean,
-            addAdminGesturesToGameMenu: Boolean,
-            convenientSkinSorting: Boolean,
-            enlargedConsole: Boolean,
-            reduceRadialMenuCallDelay: Boolean,
-            leftHandMode: Boolean,
-            reduceCameraShake: Boolean,
-            improveTreeMarkerVisibility: Boolean,
-            disableOcclusionCullingSafeMode: Boolean,
-            disableGibsCompletely: Boolean,
-        ): Map<String, String> {
+        private fun buildActivePresetLinesByKey(enabled: PresetFlags): Map<String, String> {
             val activePresets = linkedMapOf<String, String>()
-            listOf(
-                disableParasiticParameters to parasiticPresetLinesByKey,
-                disableLegsRendering to legsPresetLinesByKey,
-                disableLegsDeformation to legsDeformationPresetLinesByKey,
-                disableStrobeLights to disableStrobeLightsPresetLinesByKey,
-                reduceHeldItemSize to reduceHeldItemSizePresetLinesByKey,
-                restoreEventTextNotifications to restoreEventTextNotificationsPresetLinesByKey,
-                removeAutocraftMenuDelay to removeAutocraftMenuDelayPresetLinesByKey,
-                reduceSleepingBagRemovalDelay to reduceSleepingBagRemovalDelayPresetLinesByKey,
-                addMapInfoToF8Menu to addMapInfoToF8MenuPresetLinesByKey,
-                disableClientErrorOverlay to disableClientErrorOverlayPresetLinesByKey,
-                addAdminGesturesToGameMenu to addAdminGesturesToGameMenuPresetLinesByKey,
-                convenientSkinSorting to convenientSkinSortingPresetLinesByKey,
-                enlargedConsole to enlargedConsolePresetLinesByKey,
-                reduceRadialMenuCallDelay to reduceRadialMenuCallDelayPresetLinesByKey,
-                leftHandMode to leftHandModePresetLinesByKey,
-                reduceCameraShake to reduceCameraShakePresetLinesByKey,
-                improveTreeMarkerVisibility to improveTreeMarkerVisibilityPresetLinesByKey,
-                disableOcclusionCullingSafeMode to disableOcclusionCullingSafeModePresetLinesByKey,
-                disableGibsCompletely to disableGibsCompletelyPresetLinesByKey,
-            ).forEach { (enabled, presetLinesByKey) ->
-                if (enabled) activePresets.putAll(presetLinesByKey)
+            PresetId.entries.forEach { id ->
+                if (enabled[id]) {
+                    activePresets.putAll(presetLinesByKeyById.getValue(id))
+                }
             }
             return activePresets
+        }
+
+        private fun buildKeysToRemove(remove: PresetFlags): Set<String> {
+            val keysToRemove = linkedSetOf<String>()
+            PresetId.entries.forEach { id ->
+                if (remove[id]) {
+                    keysToRemove += presetLinesByKeyById.getValue(id).keys
+                }
+            }
+            return keysToRemove
         }
 
         private fun canonicalPresetLinesByKey(values: Map<String, String>): Map<String, String> {
