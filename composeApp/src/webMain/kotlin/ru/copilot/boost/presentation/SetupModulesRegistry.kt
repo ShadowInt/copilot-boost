@@ -19,6 +19,7 @@ enum class SetupTextKey {
     StepTweaksTitle,
     StepLaunchArgsTitle,
     StepBindsTitle,
+    StepApplyInstructionsTitle,
 }
 
 data class SetupStepDefinition(

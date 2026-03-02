@@ -169,6 +169,29 @@ fun App() {
                     LaunchArgsScreen(store = launchArgsStore)
                 }
             }
+
+            AppScreen.ApplyInstructions -> {
+                ApplyInstructionsScreen(
+                    selectedModules = flowStore.selectedModules,
+                    cfgHasChanges = cfgStore.state.hasChanges,
+                    onDownloadCfg = {
+                        val fileName = cfgStore.state.downloadFileName ?: return@ApplyInstructionsScreen
+                        downloadCfgFile(
+                            fileName = fileName,
+                            content = cfgStore.state.patchedContent,
+                        )
+                    },
+                    launchArgsHasSettings = launchArgsStore.hasSelectedSettings,
+                    launchArgs = launchArgsStore.launchArgs,
+                    onCopyLaunchArgs = {
+                        val args = launchArgsStore.launchArgs
+                        if (args.isNotBlank()) {
+                            copyTextToClipboard(args)
+                        }
+                    },
+                    onGoHome = coordinator::goHome,
+                )
+            }
         }
     }
 }
