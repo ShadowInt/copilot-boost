@@ -4,10 +4,14 @@ import org.w3c.dom.events.Event
 import org.w3c.files.File
 import org.w3c.files.FileReader
 
-internal actual fun platformReadFileAsText(file: File, onRead: (String) -> Unit) {
+internal actual fun platformReadFileAsText(file: File, onRead: (String) -> Unit, onError: () -> Unit) {
     val reader = FileReader()
     reader.onload = {
         onRead((reader.result as? String).orEmpty())
+        null
+    }
+    reader.onerror = {
+        onError()
         null
     }
     reader.readAsText(file)

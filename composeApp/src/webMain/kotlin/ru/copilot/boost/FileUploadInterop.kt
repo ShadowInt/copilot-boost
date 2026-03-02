@@ -12,28 +12,44 @@ fun observeGlobalFileDrop(
     onDragStateChanged: (Boolean) -> Unit,
     onFileSelected: (UploadedFileData) -> Unit,
     onInvalidFile: () -> Unit,
+    onReadError: () -> Unit,
 ): () -> Unit {
+    var dragCounter = 0
+
     val dragOverListener: (Event) -> Unit = { event ->
-        val dragEvent = event as DragEvent
-        dragEvent.preventDefault()
-        onDragStateChanged(true)
+        event.preventDefault()
+    }
+
+    val dragEnterListener: (Event) -> Unit = { event ->
+        event.preventDefault()
+        dragCounter++
+        if (dragCounter == 1) onDragStateChanged(true)
     }
 
     val dragLeaveListener: (Event) -> Unit = { event ->
         event.preventDefault()
-        onDragStateChanged(false)
+        dragCounter--
+        if (dragCounter <= 0) {
+            dragCounter = 0
+            onDragStateChanged(false)
+        }
     }
 
     val dropListener: (Event) -> Unit = { event ->
         val dragEvent = event as DragEvent
         dragEvent.preventDefault()
+        dragCounter = 0
         onDragStateChanged(false)
         val file = dragEvent.dataTransfer?.files?.item(0)
         if (file != null) {
             if (isAllowedClientCfgFile(file.name)) {
-                platformReadFileAsText(file) { content ->
-                    onFileSelected(UploadedFileData(name = file.name, content = content))
-                }
+                platformReadFileAsText(
+                    file = file,
+                    onRead = { content ->
+                        onFileSelected(UploadedFileData(name = file.name, content = content))
+                    },
+                    onError = onReadError,
+                )
             } else {
                 onInvalidFile()
             }
@@ -41,11 +57,13 @@ fun observeGlobalFileDrop(
     }
 
     window.document.addEventListener("dragover", dragOverListener)
+    window.document.addEventListener("dragenter", dragEnterListener)
     window.document.addEventListener("dragleave", dragLeaveListener)
     window.document.addEventListener("drop", dropListener)
 
     return {
         window.document.removeEventListener("dragover", dragOverListener)
+        window.document.removeEventListener("dragenter", dragEnterListener)
         window.document.removeEventListener("dragleave", dragLeaveListener)
         window.document.removeEventListener("drop", dropListener)
     }
@@ -54,6 +72,7 @@ fun observeGlobalFileDrop(
 fun openFilePicker(
     onFileSelected: (UploadedFileData) -> Unit,
     onInvalidFile: () -> Unit,
+    onReadError: () -> Unit,
 ) {
     val input = window.document.createElement("input") as HTMLInputElement
     input.type = "file"
@@ -64,9 +83,13 @@ fun openFilePicker(
         val file = input.files?.item(0)
         if (file != null) {
             if (isAllowedClientCfgFile(file.name)) {
-                platformReadFileAsText(file) { content ->
-                    onFileSelected(UploadedFileData(name = file.name, content = content))
-                }
+                platformReadFileAsText(
+                    file = file,
+                    onRead = { content ->
+                        onFileSelected(UploadedFileData(name = file.name, content = content))
+                    },
+                    onError = onReadError,
+                )
             } else {
                 onInvalidFile()
             }
@@ -104,9 +127,10 @@ fun observePageUnloadWarning(message: String): () -> Unit {
     }
 }
 
-private fun isAllowedClientCfgFile(fileName: String): Boolean = fileName == "client.cfg"
+private fun isAllowedClientCfgFile(fileName: String): Boolean =
+    fileName.equals("client.cfg", ignoreCase = true)
 
-internal expect fun platformReadFileAsText(file: File, onRead: (String) -> Unit)
+internal expect fun platformReadFileAsText(file: File, onRead: (String) -> Unit, onError: () -> Unit)
 
 internal expect fun platformSetBeforeUnloadReturnValue(event: Event, message: String)
 

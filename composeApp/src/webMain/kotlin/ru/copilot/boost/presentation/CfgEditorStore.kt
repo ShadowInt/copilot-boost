@@ -9,6 +9,7 @@ import ru.copilot.boost.domain.model.PresetId
 import ru.copilot.boost.domain.model.PreparedCfgContent
 import ru.copilot.boost.model.UploadedFileData
 import ru.copilot.boost.presentation.model.CfgEditorUiState
+import ru.copilot.boost.presentation.model.CfgUploadError
 
 class CfgEditorStore(
     private val cfgPatcher: CfgPatcher = CfgPatcher(),
@@ -24,8 +25,13 @@ class CfgEditorStore(
     }
 
     fun onInvalidFile() {
-        if (state.uploadError == INVALID_FILE_ERROR) return
-        state = state.copy(uploadError = INVALID_FILE_ERROR)
+        if (state.uploadError == CfgUploadError.InvalidFileName) return
+        state = state.copy(uploadError = CfgUploadError.InvalidFileName)
+    }
+
+    fun onReadError() {
+        if (state.uploadError == CfgUploadError.ReadFailed) return
+        state = state.copy(uploadError = CfgUploadError.ReadFailed)
     }
 
     fun onFileSelected(fileData: UploadedFileData) {
@@ -85,9 +91,5 @@ class CfgEditorStore(
             patchedContent = patchResult.updatedContent,
             diffRows = patchResult.diffRows,
         )
-    }
-
-    companion object {
-        const val INVALID_FILE_ERROR: String = "Разрешен только файл с именем client.cfg"
     }
 }

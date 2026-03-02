@@ -117,6 +117,7 @@
     <string name="launch_args_old_pickup_label">Старые уведомления о подборе предметов</string>
     <string name="launch_args_old_pickup_hint">При включении возвращает старый способ отображения подобранных предметов: каждый предмет отображается отдельно.</string>
 
-    <!-- CfgEditorStore -->
-    <string name="error_invalid_file">Разрешен только файл с именем client.cfg</string>
+    <!-- Errors -->
+    <string name="error_invalid_file_name">Разрешен только файл с именем client.cfg</string>
+    <string name="error_file_read_failed">Не удалось прочитать файл</string>
 </resources>

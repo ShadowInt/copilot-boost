@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,20 +54,22 @@ fun SetupSelectionScreen(
         )
 
         modules.forEachIndexed { index, module ->
-            val isChecked = module.id in selectedModules
-            SetupOptionRow(
-                title = module.title,
-                description = module.description,
-                checked = isChecked,
-                onCheckedChange = { checked ->
-                    selectedModules = if (checked) {
-                        selectedModules + module.id
-                    } else {
-                        selectedModules - module.id
-                    }
-                },
-                modifier = Modifier.padding(top = if (index == 0) 20.dp else 12.dp),
-            )
+            key(module.id) {
+                val isChecked = module.id in selectedModules
+                SetupOptionRow(
+                    title = module.title,
+                    description = module.description,
+                    checked = isChecked,
+                    onCheckedChange = { checked ->
+                        selectedModules = if (checked) {
+                            selectedModules + module.id
+                        } else {
+                            selectedModules - module.id
+                        }
+                    },
+                    modifier = Modifier.padding(top = if (index == 0) 20.dp else 12.dp),
+                )
+            }
         }
 
         Button(

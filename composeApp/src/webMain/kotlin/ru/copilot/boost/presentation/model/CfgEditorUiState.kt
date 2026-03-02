@@ -8,7 +8,7 @@ import ru.copilot.boost.model.UploadedFileData
 data class CfgEditorUiState(
     val uploadedFile: UploadedFileData? = null,
     val isDragging: Boolean = false,
-    val uploadError: String? = null,
+    val uploadError: CfgUploadError? = null,
     val presets: PresetFlags = PresetFlags(),
     val patchedContent: String = "",
     val diffRows: List<DiffRow> = emptyList(),

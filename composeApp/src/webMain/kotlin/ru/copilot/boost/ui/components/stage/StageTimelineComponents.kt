@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,12 +46,14 @@ fun StageTimeline(
             .padding(horizontal = 10.dp),
     ) {
         stages.forEachIndexed { index, stage ->
-            StageTimelineRow(
-                modifier = stageModifiers[index] ?: Modifier,
-                definition = stage,
-                status = stageStatusProvider(index),
-                showConnector = index != stages.lastIndex,
-            )
+            key(index) {
+                StageTimelineRow(
+                    modifier = stageModifiers[index] ?: Modifier,
+                    definition = stage,
+                    status = stageStatusProvider(index),
+                    showConnector = index != stages.lastIndex,
+                )
+            }
         }
     }
 }

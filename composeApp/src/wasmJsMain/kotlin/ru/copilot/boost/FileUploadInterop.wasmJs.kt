@@ -6,10 +6,14 @@ import org.w3c.files.FileReader
 import kotlin.js.ExperimentalWasmJsInterop
 
 @OptIn(ExperimentalWasmJsInterop::class)
-internal actual fun platformReadFileAsText(file: File, onRead: (String) -> Unit) {
+internal actual fun platformReadFileAsText(file: File, onRead: (String) -> Unit, onError: () -> Unit) {
     val reader = FileReader()
     reader.onload = {
         onRead(reader.result?.toString().orEmpty())
+        null
+    }
+    reader.onerror = {
+        onError()
         null
     }
     reader.readAsText(file)

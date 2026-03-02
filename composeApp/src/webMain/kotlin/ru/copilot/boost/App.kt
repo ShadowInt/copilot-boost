@@ -14,6 +14,7 @@ import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.presentation.SetupFlowUiState
 import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.presentation.SetupTextKey
+import ru.copilot.boost.presentation.model.CfgUploadError
 import copilotboost.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.ui.*
@@ -52,6 +53,7 @@ fun App() {
                 onDragStateChanged = cfgStore::onDragStateChanged,
                 onFileSelected = onFileSelectedAndAdvance,
                 onInvalidFile = cfgStore::onInvalidFile,
+                onReadError = cfgStore::onReadError,
             )
 
             onDispose { disposeListeners() }
@@ -111,7 +113,7 @@ fun App() {
                 ) {
                     ClientCfgUploadScreen(
                         isDragging = cfgStore.state.isDragging,
-                        uploadError = cfgStore.state.uploadError,
+                        uploadError = resolveUploadError(cfgStore.state.uploadError),
                         fileName = cfgStore.state.fileName,
                         onPickFileClick = {
                             openFilePicker(
@@ -120,6 +122,7 @@ fun App() {
                                     coordinator.handleFlowAction(SetupFlowAction.Next)
                                 },
                                 onInvalidFile = cfgStore::onInvalidFile,
+                                onReadError = cfgStore::onReadError,
                             )
                         },
                     )
@@ -171,6 +174,13 @@ fun App() {
             }
         }
     }
+}
+
+@Composable
+private fun resolveUploadError(error: CfgUploadError?): String? = when (error) {
+    CfgUploadError.InvalidFileName -> stringResource(Res.string.error_invalid_file_name)
+    CfgUploadError.ReadFailed -> stringResource(Res.string.error_file_read_failed)
+    null -> null
 }
 
 @Composable

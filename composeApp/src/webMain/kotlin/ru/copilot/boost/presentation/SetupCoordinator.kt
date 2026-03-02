@@ -13,9 +13,9 @@ class SetupCoordinator(
         flowStore.finishToHome()
     }
 
-    fun startFlow(selectedModules: Set<SetupModuleId>) {
+    fun startFlow(selectedModules: Set<SetupModuleId>): Boolean {
         resetAllModules()
-        flowStore.startFlow(selectedModules = selectedModules)
+        return flowStore.startFlow(selectedModules = selectedModules)
     }
 
     fun handleFlowAction(action: SetupFlowAction) {

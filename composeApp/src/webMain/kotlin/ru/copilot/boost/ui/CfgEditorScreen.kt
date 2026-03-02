@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -365,29 +366,31 @@ private fun DiffColumn(
                 .verticalScroll(scrollState),
         ) {
             Column {
-                diffRows.forEach { row ->
-                    val text = if (isNewColumn) row.newLine.orEmpty() else row.oldLine.orEmpty()
-                    val bg = when (row.type) {
-                        DiffRowType.MODIFIED -> {
-                            if (isNewColumn) Color(0x1A00AA00) else Color(0x1AAA0000)
+                diffRows.forEachIndexed { index, row ->
+                    key(index) {
+                        val text = if (isNewColumn) row.newLine.orEmpty() else row.oldLine.orEmpty()
+                        val bg = when (row.type) {
+                            DiffRowType.MODIFIED -> {
+                                if (isNewColumn) Color(0x1A00AA00) else Color(0x1AAA0000)
+                            }
+                            DiffRowType.ADDED -> {
+                                if (isNewColumn) Color(0x1A00AA00) else Color.Transparent
+                            }
+                            DiffRowType.REMOVED -> {
+                                if (isNewColumn) Color(0x10AA0000) else Color(0x1AAA0000)
+                            }
+                            DiffRowType.UNCHANGED -> Color.Transparent
                         }
-                        DiffRowType.ADDED -> {
-                            if (isNewColumn) Color(0x1A00AA00) else Color.Transparent
-                        }
-                        DiffRowType.REMOVED -> {
-                            if (isNewColumn) Color(0x10AA0000) else Color(0x1AAA0000)
-                        }
-                        DiffRowType.UNCHANGED -> Color.Transparent
-                    }
-                    val displayLine = if (text.isEmpty()) " " else text
+                        val displayLine = if (text.isEmpty()) " " else text
 
-                    Text(
-                        text = displayLine,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(bg),
-                        fontFamily = FontFamily.Monospace,
-                    )
+                        Text(
+                            text = displayLine,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(bg),
+                            fontFamily = FontFamily.Monospace,
+                        )
+                    }
                 }
                 if (diffRows.isEmpty()) {
                     Text(
