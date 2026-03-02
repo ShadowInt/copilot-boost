@@ -22,6 +22,10 @@ class SetupCoordinator(
         flowStore.dispatch(action)
     }
 
+    fun returnToLastFlowStep() {
+        flowStore.returnToLastFlowStep()
+    }
+
     private fun resetAllModules() {
         moduleStores.forEach { it.reset() }
     }

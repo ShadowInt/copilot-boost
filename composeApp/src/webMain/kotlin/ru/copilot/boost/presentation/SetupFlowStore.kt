@@ -69,6 +69,11 @@ class SetupFlowStore(
         }
     }
 
+    fun returnToLastFlowStep() {
+        val step = setupFlow.getOrNull(setupFlowStepIndex) ?: return
+        currentScreen = step.screen
+    }
+
     fun goNextOrFinish(): AppScreen {
         val moved = moveForward()
         if (!moved) {

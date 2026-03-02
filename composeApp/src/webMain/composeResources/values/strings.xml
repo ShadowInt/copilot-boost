@@ -95,11 +95,9 @@
     <string name="preset_left_hand_hint">Переносит оружие и предметы в левую руку персонажа</string>
 
     <!-- LaunchArgsScreen -->
-    <string name="launch_args_settings_title">Настройки</string>
-    <string name="launch_args_window_title">Настройка параметров запуска</string>
-    <string name="launch_args_select_and_copy">Выберите настройки и скопируйте их</string>
-    <string name="launch_args_copy_button">Копировать</string>
-    <string name="launch_args_copied">Скопировано</string>
+    <string name="launch_args_title">Парметры</string>
+    <string name="launch_args_window_title">Предпросмотр</string>
+    <string name="launch_args_preview_empty">Выберите параметры слева</string>
     <string name="launch_args_group_recommended">Рекомендуемые</string>
     <string name="launch_args_group_visual">Визуальные эффекты</string>
     <string name="launch_args_group_experimental">Экспериментальные</string>
@@ -124,7 +122,6 @@
     <string name="apply_tweaks_step2">Заменить файл client.cfg в папке cfg игры</string>
     <string name="apply_tweaks_download">Скачать</string>
     <string name="apply_launch_args_step1">Скопировать параметры запуска</string>
-    <string name="apply_launch_args_step2">Вставить в параметры запуска Steam</string>
     <string name="apply_launch_args_copy">Копировать</string>
     <string name="apply_go_home">На главную</string>
 

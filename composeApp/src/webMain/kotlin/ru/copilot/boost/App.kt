@@ -183,12 +183,15 @@ fun App() {
                     },
                     launchArgsHasSettings = launchArgsStore.hasSelectedSettings,
                     launchArgs = launchArgsStore.launchArgs,
+                    isLaunchArgsCopied = launchArgsStore.isCurrentSelectionCopied,
                     onCopyLaunchArgs = {
                         val args = launchArgsStore.launchArgs
                         if (args.isNotBlank()) {
                             copyTextToClipboard(args)
+                            launchArgsStore.onCopyConfirmed()
                         }
                     },
+                    onBack = coordinator::returnToLastFlowStep,
                     onGoHome = coordinator::goHome,
                 )
             }

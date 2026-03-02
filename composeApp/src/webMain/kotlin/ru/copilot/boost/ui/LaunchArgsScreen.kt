@@ -5,122 +5,56 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import org.jetbrains.compose.resources.stringResource
-import ru.copilot.boost.copyTextToClipboard
 import ru.copilot.boost.presentation.LaunchArgsStore
-import ru.copilot.boost.ui.components.stage.StageDefinition
-import ru.copilot.boost.ui.components.stage.StageMarkerColumn
-import ru.copilot.boost.ui.components.stage.StageStatus
-import ru.copilot.boost.ui.components.stage.StageTimeline
-import ru.copilot.boost.ui.components.stage.stageStatusColor
-import ru.copilot.boost.ui.components.stage.stageStatusTextColor
 
 @Composable
 fun LaunchArgsScreen(
     store: LaunchArgsStore,
 ) {
     val launchArgs = store.launchArgs
-    val hasSelectedSettings = store.hasSelectedSettings
-    val isCurrentSelectionCopied = store.isCurrentSelectionCopied
-    val remainingStages = rememberRemainingStages()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-    val copiedMessage = stringResource(Res.string.launch_args_copied)
 
-    Box(
+    Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
             .safeContentPadding()
             .fillMaxSize()
+            .padding(LaunchArgsUiSpec.ScreenPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
     ) {
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(LaunchArgsUiSpec.ScreenPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
+                .fillMaxWidth()
+                .fillMaxSize(),
         ) {
-            BoxWithConstraints(
+            val columns = calculateColumns(maxWidth)
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxSize(),
             ) {
-                val columns = calculateColumns(maxWidth)
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxSize(),
-                ) {
-                    LaunchArgsSettingsCard(
-                        store = store,
-                        modifier = Modifier.width(columns.left),
-                    )
-                    Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
-                    LaunchArgsWindow(
-                        launchArgs = launchArgs,
-                        hasSelectedSettings = hasSelectedSettings,
-                        isCurrentSelectionCopied = isCurrentSelectionCopied,
-                        remainingStages = remainingStages,
-                        onCopyClick = {
-                            if (launchArgs.isNotBlank()) {
-                                copyTextToClipboard(launchArgs)
-                                store.onCopyConfirmed()
-                                scope.launch {
-                                    snackbarHostState.currentSnackbarData?.dismiss()
-                                    withTimeoutOrNull(1200) {
-                                        snackbarHostState.showSnackbar(
-                                            message = copiedMessage,
-                                        )
-                                    }
-                                }
-                            }
-                        },
-                        modifier = Modifier.width(columns.right),
-                    )
-                }
+                LaunchArgsSettingsCard(
+                    store = store,
+                    modifier = Modifier.width(columns.left),
+                )
+                Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
+                LaunchArgsPreview(
+                    launchArgs = launchArgs,
+                    modifier = Modifier.width(columns.right),
+                )
             }
         }
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .widthIn(max = 200.dp)
-                .padding(16.dp),
-        )
-    }
-}
-
-@Composable
-private fun rememberRemainingStages(): List<StageDefinition> {
-    val stage1 = stringResource(Res.string.launch_args_stage_open_steam)
-    val stage2 = stringResource(Res.string.launch_args_stage_paste_params)
-    val stage3 = stringResource(Res.string.launch_args_stage_done)
-    return remember(stage1, stage2, stage3) {
-        listOf(
-            StageDefinition(text = stage1, imageResource = Res.drawable.lib_steam_macos_ru),
-            StageDefinition(text = stage2, imageResource = Res.drawable.rust_steam_args_macos_ru),
-            StageDefinition(text = stage3),
-        )
     }
 }
 
@@ -139,7 +73,7 @@ private fun LaunchArgsSettingsCard(
                 .padding(bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = stringResource(Res.string.launch_args_settings_title))
+            Text(text = stringResource(Res.string.launch_args_title))
         }
         Box(
             modifier = Modifier
@@ -199,27 +133,10 @@ private fun LaunchArgsSettingsCard(
 }
 
 @Composable
-private fun LaunchArgsWindow(
+private fun LaunchArgsPreview(
     launchArgs: String,
-    hasSelectedSettings: Boolean,
-    isCurrentSelectionCopied: Boolean,
-    remainingStages: List<StageDefinition>,
-    onCopyClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scrollState = rememberScrollState()
-    val totalStages = 1 + remainingStages.size
-    val stageHeightsPx = remember(totalStages) {
-        mutableStateListOf<Int>().apply { repeat(totalStages) { add(0) } }
-    }
-    val density = LocalDensity.current
-    val stageSwitchThresholdPx = LaunchArgsUiSpec.STAGE_SWITCH_THRESHOLD_PX
-    fun updateStageHeight(index: Int, newHeight: Int) {
-        if (index in stageHeightsPx.indices && stageHeightsPx[index] != newHeight) {
-            stageHeightsPx[index] = newHeight
-        }
-    }
-
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -236,121 +153,20 @@ private fun LaunchArgsWindow(
                 .border(1.dp, Color.Gray)
                 .padding(12.dp),
         ) {
-            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                val viewportHeightPx = with(density) { maxHeight.roundToPx() }
-                val progress = computeStageProgress(
-                    stageHeightsPx = stageHeightsPx,
-                    scrollValue = scrollState.value,
-                    viewportHeightPx = viewportHeightPx,
-                    maxScrollValue = scrollState.maxValue,
-                    stageSwitchThresholdPx = stageSwitchThresholdPx,
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState),
-                ) {
-                    LaunchArgsSelectStageWithCopy(
-                        modifier = Modifier.onSizeChanged { updateStageHeight(index = 0, newHeight = it.height) },
-                        launchArgs = launchArgs,
-                        status = statusForStage(
-                            index = 0,
-                            hasSelectedSettings = hasSelectedSettings,
-                            isCurrentSelectionCopied = isCurrentSelectionCopied,
-                            progress = progress,
-                        ),
-                        isCopyEnabled = launchArgs.isNotBlank(),
-                        onCopyClick = onCopyClick,
-                    )
-                    StageTimeline(
-                        stages = remainingStages,
-                        stageStatusProvider = { stageIndex ->
-                            statusForStage(
-                                index = stageIndex + 1,
-                                hasSelectedSettings = hasSelectedSettings,
-                                isCurrentSelectionCopied = isCurrentSelectionCopied,
-                                progress = progress,
-                            )
-                        },
-                        stageModifiers = remainingStages.indices.associateWith { index ->
-                            Modifier.onSizeChanged { updateStageHeight(index = index + 1, newHeight = it.height) }
-                        },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun LaunchArgsSelectStageWithCopy(
-    modifier: Modifier = Modifier,
-    launchArgs: String,
-    status: StageStatus,
-    isCopyEnabled: Boolean,
-    onCopyClick: () -> Unit,
-) {
-    val markerColor = stageStatusColor(status)
-    val labelColor = stageStatusTextColor(status)
-    val isStarted = status != StageStatus.NOT_STARTED
-    var contentHeightPx by remember { mutableIntStateOf(0) }
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp),
-    ) {
-        StageMarkerColumn(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxHeight(),
-            color = markerColor,
-            showConnector = true,
-            contentHeightPx = contentHeightPx,
-            markerTopOffset = 5.dp,
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp)
-                .onSizeChanged { contentHeightPx = it.height },
-        ) {
-            Text(
-                text = stringResource(Res.string.launch_args_select_and_copy),
-                style = MaterialTheme.typography.bodyMedium,
-                color = labelColor,
-                modifier = Modifier.padding(end = 4.dp),
-            )
-            if (isStarted) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
+            if (launchArgs.isNotBlank()) {
+                Text(
+                    text = launchArgs,
+                    style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = LaunchArgsUiSpec.CopyFieldMinHeight, max = LaunchArgsUiSpec.CopyFieldMaxHeight)
-                        .border(1.dp, Color.Gray)
-                        .padding(start = 12.dp, top = 6.dp, end = 4.dp, bottom = 6.dp),
-                ) {
-                    Text(
-                        text = launchArgs,
-                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 36.dp)
-                            .verticalScroll(rememberScrollState())
-                            .align(Alignment.CenterStart),
-                    )
-                    IconButton(
-                        onClick = onCopyClick,
-                        enabled = isCopyEnabled,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .align(Alignment.CenterEnd),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.ContentCopy,
-                            contentDescription = stringResource(Res.string.launch_args_copy_button),
-                        )
-                    }
-                }
+                        .verticalScroll(rememberScrollState()),
+                )
+            } else {
+                Text(
+                    text = stringResource(Res.string.launch_args_preview_empty),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }

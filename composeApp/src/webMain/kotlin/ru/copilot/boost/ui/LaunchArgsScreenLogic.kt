@@ -2,7 +2,6 @@ package ru.copilot.boost.ui
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import ru.copilot.boost.ui.components.stage.StageStatus
 
 internal data class EditorColumns(
     val left: Dp,
@@ -15,9 +14,6 @@ internal object LaunchArgsUiSpec {
     val InnerGap = 8.dp
     val CardHeaderHeight = 44.dp
     val CardHeaderBottomPadding = 6.dp
-    const val STAGE_SWITCH_THRESHOLD_PX = 24
-    val CopyFieldMinHeight = 48.dp
-    val CopyFieldMaxHeight = 180.dp
 }
 
 internal fun calculateColumns(maxWidth: Dp): EditorColumns {
@@ -51,57 +47,3 @@ internal fun buildLaunchArgs(
         add("-global.usesingleitempickupnotice \"False\"")
     }
 }.joinToString(" ")
-
-internal data class StageProgress(
-    val activeStageIndex: Int,
-    val isAtBottom: Boolean,
-    val lastStageIndex: Int,
-)
-
-internal fun computeStageProgress(
-    stageHeightsPx: List<Int>,
-    scrollValue: Int,
-    viewportHeightPx: Int,
-    stageSwitchThresholdPx: Int = LaunchArgsUiSpec.STAGE_SWITCH_THRESHOLD_PX,
-    maxScrollValue: Int,
-): StageProgress {
-    val totalStages = stageHeightsPx.size
-    val stageEnds = buildList {
-        var sum = 0
-        stageHeightsPx.forEach { height ->
-            sum += height
-            add(sum)
-        }
-    }
-    val viewportBottom = scrollValue + viewportHeightPx
-    val passedStagesCount = stageEnds.count { end -> viewportBottom >= end - stageSwitchThresholdPx }
-    val activeStageIndex = passedStagesCount.coerceAtMost(totalStages - 1)
-    val isAtBottom = scrollValue >= (maxScrollValue - stageSwitchThresholdPx).coerceAtLeast(0)
-    return StageProgress(
-        activeStageIndex = activeStageIndex,
-        isAtBottom = isAtBottom,
-        lastStageIndex = totalStages - 1,
-    )
-}
-
-internal fun statusForStage(
-    index: Int,
-    hasSelectedSettings: Boolean,
-    isCurrentSelectionCopied: Boolean,
-    progress: StageProgress,
-): StageStatus {
-    val effectiveActiveStageIndex = if (isCurrentSelectionCopied) {
-        progress.activeStageIndex.coerceAtLeast(1)
-    } else {
-        progress.activeStageIndex
-    }
-    return when {
-        !hasSelectedSettings -> StageStatus.NOT_STARTED
-        !isCurrentSelectionCopied && index == 0 -> StageStatus.IN_PROGRESS
-        !isCurrentSelectionCopied -> StageStatus.NOT_STARTED
-        progress.isAtBottom && index == progress.lastStageIndex -> StageStatus.COMPLETED
-        index < effectiveActiveStageIndex -> StageStatus.COMPLETED
-        index == effectiveActiveStageIndex -> StageStatus.IN_PROGRESS
-        else -> StageStatus.NOT_STARTED
-    }
-}
