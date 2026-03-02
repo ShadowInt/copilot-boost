@@ -3,7 +3,6 @@ package ru.copilot.boost
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
@@ -12,6 +11,7 @@ import ru.copilot.boost.presentation.SetupCoordinator
 import ru.copilot.boost.presentation.SetupFlowAction
 import ru.copilot.boost.presentation.SetupFlowContext
 import ru.copilot.boost.presentation.SetupFlowStore
+import ru.copilot.boost.presentation.SetupFlowUiState
 import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.presentation.SetupTextKey
 import ru.copilot.boost.ui.*
@@ -28,7 +28,7 @@ fun App() {
     val moduleStores = remember(cfgStore, launchArgsStore) {
         listOf(cfgStore, launchArgsStore)
     }
-    val flowStore = remember { SetupFlowStore(initialScreen = loadSavedScreen()) }
+    val flowStore = remember { SetupFlowStore() }
     val coordinator = remember(flowStore, moduleStores) {
         SetupCoordinator(
             flowStore = flowStore,
@@ -36,10 +36,6 @@ fun App() {
         )
     }
     val currentScreen = flowStore.currentScreen
-
-    LaunchedEffect(currentScreen) {
-        saveScreen(currentScreen)
-    }
 
     if (currentScreen == AppScreen.ClientCfgUpload) {
         val onFileSelectedAndAdvance: (ru.copilot.boost.model.UploadedFileData) -> Unit = remember(cfgStore, coordinator) {
@@ -84,8 +80,6 @@ fun App() {
                 description = setupText(module.descriptionKey),
             )
         }
-        val stepSubtitle = flowStepSubtitle(flowUiState.currentStepNumber, flowUiState.totalSteps)
-        val primaryActionText = flowPrimaryActionText(flowUiState.primaryAction)
 
         when (currentScreen) {
             AppScreen.Home -> {
@@ -108,19 +102,10 @@ fun App() {
             }
 
             AppScreen.ClientCfgUpload -> {
-                ModuleScaffold(
-                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepClientCfgUploadTitle),
-                    subtitle = stepSubtitle,
-                    onBack = {
-                        coordinator.handleFlowAction(SetupFlowAction.Back)
-                    },
-                    primaryActionText = primaryActionText,
-                    primaryActionEnabled = flowUiState.canProceed,
-                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
-                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
-                    } else {
-                        null
-                    },
+                FlowStepScaffold(
+                    flowUiState = flowUiState,
+                    defaultTitleKey = SetupTextKey.StepClientCfgUploadTitle,
+                    coordinator = coordinator,
                 ) {
                     ClientCfgUploadScreen(
                         isDragging = cfgStore.state.isDragging,
@@ -140,19 +125,10 @@ fun App() {
             }
 
             AppScreen.Tweaks -> {
-                ModuleScaffold(
-                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepTweaksTitle),
-                    subtitle = stepSubtitle,
-                    onBack = {
-                        coordinator.handleFlowAction(SetupFlowAction.Back)
-                    },
-                    primaryActionText = primaryActionText,
-                    primaryActionEnabled = flowUiState.canProceed,
-                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
-                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
-                    } else {
-                        null
-                    },
+                FlowStepScaffold(
+                    flowUiState = flowUiState,
+                    defaultTitleKey = SetupTextKey.StepTweaksTitle,
+                    coordinator = coordinator,
                 ) {
                     val state = cfgStore.state
                     CfgEditorScreen(
@@ -170,19 +146,10 @@ fun App() {
             }
 
             AppScreen.Binds -> {
-                ModuleScaffold(
-                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepBindsTitle),
-                    subtitle = stepSubtitle,
-                    onBack = {
-                        coordinator.handleFlowAction(SetupFlowAction.Back)
-                    },
-                    primaryActionText = primaryActionText,
-                    primaryActionEnabled = flowUiState.canProceed,
-                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
-                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
-                    } else {
-                        null
-                    },
+                FlowStepScaffold(
+                    flowUiState = flowUiState,
+                    defaultTitleKey = SetupTextKey.StepBindsTitle,
+                    coordinator = coordinator,
                 ) {
                     ModuleStubScreen(
                         title = "Функционал биндов",
@@ -192,23 +159,39 @@ fun App() {
             }
 
             AppScreen.LaunchArgs -> {
-                ModuleScaffold(
-                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepLaunchArgsTitle),
-                    subtitle = stepSubtitle,
-                    onBack = {
-                        coordinator.handleFlowAction(SetupFlowAction.Back)
-                    },
-                    primaryActionText = primaryActionText,
-                    primaryActionEnabled = flowUiState.canProceed,
-                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
-                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
-                    } else {
-                        null
-                    },
+                FlowStepScaffold(
+                    flowUiState = flowUiState,
+                    defaultTitleKey = SetupTextKey.StepLaunchArgsTitle,
+                    coordinator = coordinator,
                 ) {
                     LaunchArgsScreen(store = launchArgsStore)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun FlowStepScaffold(
+    flowUiState: SetupFlowUiState,
+    defaultTitleKey: SetupTextKey,
+    coordinator: SetupCoordinator,
+    content: @Composable () -> Unit,
+) {
+    val stepSubtitle = flowStepSubtitle(flowUiState.currentStepNumber, flowUiState.totalSteps)
+    val primaryActionText = flowPrimaryActionText(flowUiState.primaryAction)
+
+    ModuleScaffold(
+        title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(defaultTitleKey),
+        subtitle = stepSubtitle,
+        onBack = { coordinator.handleFlowAction(SetupFlowAction.Back) },
+        primaryActionText = primaryActionText,
+        primaryActionEnabled = flowUiState.canProceed,
+        onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+            { coordinator.handleFlowAction(SetupFlowAction.Next) }
+        } else {
+            null
+        },
+        content = content,
+    )
 }
