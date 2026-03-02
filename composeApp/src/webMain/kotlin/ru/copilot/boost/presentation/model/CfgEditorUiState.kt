@@ -15,7 +15,6 @@ data class CfgEditorUiState(
 ) {
     val hasFile: Boolean get() = uploadedFile != null
     val fileName: String? get() = uploadedFile?.name
-    val showDiff: Boolean get() = presets.anyEnabled() && diffRows.isNotEmpty()
     val hasChanges: Boolean get() = diffRows.any { it.type != DiffRowType.UNCHANGED }
     val downloadFileName: String? get() = uploadedFile?.name
 }

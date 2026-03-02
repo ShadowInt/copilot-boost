@@ -17,12 +17,10 @@ enum class SetupPrimaryAction {
 }
 
 data class SetupFlowUiState(
-    val currentScreen: AppScreen,
     val currentStepTitleKey: SetupTextKey? = null,
     val currentStepNumber: Int? = null,
     val totalSteps: Int = 0,
     val isCurrentStepScreen: Boolean = false,
-    val hasNextStep: Boolean = false,
     val canProceed: Boolean = true,
     val primaryAction: SetupPrimaryAction? = null,
 )
@@ -104,12 +102,10 @@ class SetupFlowStore(
     fun uiState(context: SetupFlowContext): SetupFlowUiState {
         val step = setupFlow.getOrNull(setupFlowStepIndex)
         return SetupFlowUiState(
-            currentScreen = currentScreen,
             currentStepTitleKey = step?.titleKey,
             currentStepNumber = if (step != null) setupFlowStepIndex + 1 else null,
             totalSteps = setupFlow.size,
             isCurrentStepScreen = step?.screen == currentScreen,
-            hasNextStep = hasNextFlowStep(),
             canProceed = step?.canProceed?.invoke(context) ?: true,
             primaryAction = if (step?.screen == currentScreen) {
                 if (hasNextFlowStep()) SetupPrimaryAction.Next else SetupPrimaryAction.Finish
