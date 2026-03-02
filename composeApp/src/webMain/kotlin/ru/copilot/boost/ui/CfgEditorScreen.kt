@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,7 +42,6 @@ import ru.copilot.boost.presentation.model.CfgEditorUiState
 fun CfgEditorScreen(
     state: CfgEditorUiState,
     onPresetChanged: (PresetId, Boolean) -> Unit,
-    onDownloadClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -62,10 +60,9 @@ fun CfgEditorScreen(
             return@Column
         }
 
-        ThreeColumnEditorWithDownload(
+        ThreeColumnEditor(
             state = state,
             onPresetChanged = onPresetChanged,
-            onDownloadClick = onDownloadClick,
             modifier = Modifier
                 .padding(top = 12.dp)
                 .fillMaxWidth()
@@ -75,10 +72,9 @@ fun CfgEditorScreen(
 }
 
 @Composable
-private fun ThreeColumnEditorWithDownload(
+private fun ThreeColumnEditor(
     state: CfgEditorUiState,
     onPresetChanged: (PresetId, Boolean) -> Unit,
-    onDownloadClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val sharedScrollState = rememberScrollState()
@@ -130,8 +126,6 @@ private fun ThreeColumnEditorWithDownload(
                             diffRows = diffRowsToShow,
                             isNewColumn = false,
                             scrollState = sharedScrollState,
-                            showDownloadButton = false,
-                            onDownloadClick = null,
                             modifier = Modifier.width(fileColumnWidth),
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -140,8 +134,6 @@ private fun ThreeColumnEditorWithDownload(
                             diffRows = diffRowsToShow,
                             isNewColumn = true,
                             scrollState = sharedScrollState,
-                            showDownloadButton = state.hasChanges,
-                            onDownloadClick = onDownloadClick,
                             modifier = Modifier.width(fileColumnWidth),
                         )
                     }
@@ -308,31 +300,16 @@ private fun DiffColumn(
     diffRows: List<DiffRow>,
     isNewColumn: Boolean,
     scrollState: androidx.compose.foundation.ScrollState,
-    showDownloadButton: Boolean,
-    onDownloadClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Row(
+        Text(
+            text = title,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(44.dp)
                 .padding(bottom = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(text = title)
-            Box(
-                modifier = Modifier.width(132.dp),
-                contentAlignment = Alignment.CenterEnd,
-            ) {
-                if (showDownloadButton && onDownloadClick != null) {
-                    Button(onClick = onDownloadClick) {
-                        Text(stringResource(Res.string.cfg_download))
-                    }
-                }
-            }
-        }
+        )
         Box(
             modifier = Modifier
                 .fillMaxSize()

@@ -140,17 +140,9 @@ fun App() {
                         null
                     },
                 ) {
-                    val state = cfgStore.state
                     CfgEditorScreen(
-                        state = state,
+                        state = cfgStore.state,
                         onPresetChanged = cfgStore::onPresetChanged,
-                        onDownloadClick = {
-                            val fileName = state.downloadFileName ?: return@CfgEditorScreen
-                            downloadCfgFile(
-                                fileName = fileName,
-                                content = state.patchedContent,
-                            )
-                        },
                     )
                 }
             }

@@ -49,7 +49,6 @@
     <string name="cfg_column_original">Исходный</string>
     <string name="cfg_column_modified">Измененный</string>
     <string name="cfg_settings_title">Настройки</string>
-    <string name="cfg_download">Скачать</string>
     <string name="cfg_no_data">Нет данных</string>
     <string name="cfg_group_recommended">Рекомендуемые</string>
     <string name="cfg_group_visual">Визуальные эффекты</string>
