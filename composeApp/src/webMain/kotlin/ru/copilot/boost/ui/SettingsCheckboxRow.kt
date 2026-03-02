@@ -13,6 +13,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
+internal fun SettingsSectionTitle(
+    text: String,
+    withTopSpacing: Boolean = true,
+    withBottomSpacing: Boolean = false,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(
+            top = if (withTopSpacing) 10.dp else 0.dp,
+            start = 4.dp,
+            bottom = if (withBottomSpacing) 6.dp else 0.dp,
+        ),
+    )
+}
+
+@Composable
 internal fun SettingsCheckboxRow(
     label: String,
     checked: Boolean,

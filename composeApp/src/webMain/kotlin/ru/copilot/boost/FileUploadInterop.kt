@@ -98,16 +98,18 @@ fun openFilePicker(
         null
     }
 
-    window.document.body?.appendChild(input)
+    val body = window.document.body ?: return
+    body.appendChild(input)
     input.click()
 }
 
 fun downloadCfgFile(fileName: String, content: String) {
+    val body = window.document.body ?: return
     val base64Content = window.btoa(content)
     val anchor = window.document.createElement("a") as HTMLAnchorElement
     anchor.href = "data:text/plain;base64,$base64Content"
     anchor.download = fileName
-    window.document.body?.appendChild(anchor)
+    body.appendChild(anchor)
     anchor.click()
     anchor.remove()
 }

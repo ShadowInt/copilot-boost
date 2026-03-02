@@ -7,6 +7,4 @@ data class PresetFlags(
 
     fun with(id: PresetId, value: Boolean): PresetFlags =
         PresetFlags(flags + (id to value))
-
-    fun anyEnabled(): Boolean = flags.values.any { it }
 }

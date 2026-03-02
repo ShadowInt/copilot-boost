@@ -20,9 +20,9 @@ fun ModuleStubScreen(
     title: String,
     description: String,
     onBack: (() -> Unit)? = null,
-    backButtonText: String = stringResource(Res.string.nav_back),
+    backButtonText: String? = null,
     onPrimaryAction: (() -> Unit)? = null,
-    primaryActionText: String = stringResource(Res.string.flow_action_next),
+    primaryActionText: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -36,12 +36,12 @@ fun ModuleStubScreen(
         Text(description, modifier = Modifier.padding(top = 8.dp))
         if (onPrimaryAction != null) {
             Button(onClick = onPrimaryAction, modifier = Modifier.padding(top = 16.dp)) {
-                Text(primaryActionText)
+                Text(primaryActionText ?: stringResource(Res.string.flow_action_next))
             }
         }
         if (onBack != null) {
             Button(onClick = onBack, modifier = Modifier.padding(top = 16.dp)) {
-                Text(backButtonText)
+                Text(backButtonText ?: stringResource(Res.string.nav_back))
             }
         }
     }

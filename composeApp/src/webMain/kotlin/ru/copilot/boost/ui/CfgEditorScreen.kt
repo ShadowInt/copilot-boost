@@ -83,10 +83,9 @@ private fun ThreeColumnEditorWithDownload(
 ) {
     val sharedScrollState = rememberScrollState()
     var showOnlyChanges by remember { mutableStateOf(true) }
-    val diffRowsToShow = if (showOnlyChanges) {
-        state.diffRows.filter { it.type != DiffRowType.UNCHANGED }
-    } else {
-        state.diffRows
+    val diffRowsToShow = remember(showOnlyChanges, state.diffRows) {
+        if (showOnlyChanges) state.diffRows.filter { it.type != DiffRowType.UNCHANGED }
+        else state.diffRows
     }
 
     BoxWithConstraints(modifier = modifier) {
@@ -176,122 +175,122 @@ internal fun SettingsCard(
                 .verticalScroll(rememberScrollState()),
         ) {
             Column {
-                SettingsGroupTitle(stringResource(Res.string.cfg_group_recommended))
-                SettingRow(
+                SettingsSectionTitle(stringResource(Res.string.cfg_group_recommended))
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_parasitic_label),
                     checked = state.presets[PresetId.DisableParasiticParameters],
                     onCheckedChange = { onPresetChanged(PresetId.DisableParasiticParameters, it) },
                     hint = stringResource(Res.string.preset_parasitic_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_legs_rendering_label),
                     checked = state.presets[PresetId.DisableLegsRendering],
                     onCheckedChange = { onPresetChanged(PresetId.DisableLegsRendering, it) },
                     hint = stringResource(Res.string.preset_legs_rendering_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_camera_shake_label),
                     checked = state.presets[PresetId.ReduceCameraShake],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceCameraShake, it) },
                     hint = stringResource(Res.string.preset_camera_shake_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_tree_marker_label),
                     checked = state.presets[PresetId.ImproveTreeMarkerVisibility],
                     onCheckedChange = { onPresetChanged(PresetId.ImproveTreeMarkerVisibility, it) },
                     hint = stringResource(Res.string.preset_tree_marker_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_occlusion_culling_label),
                     checked = state.presets[PresetId.DisableOcclusionCullingSafeMode],
                     onCheckedChange = { onPresetChanged(PresetId.DisableOcclusionCullingSafeMode, it) },
                     hint = stringResource(Res.string.preset_occlusion_culling_hint),
                 )
 
-                SettingsGroupTitle(stringResource(Res.string.cfg_group_visual))
-                SettingRow(
+                SettingsSectionTitle(stringResource(Res.string.cfg_group_visual))
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_gibs_label),
                     checked = state.presets[PresetId.DisableGibsCompletely],
                     onCheckedChange = { onPresetChanged(PresetId.DisableGibsCompletely, it) },
                     hint = stringResource(Res.string.preset_gibs_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_legs_deformation_label),
                     checked = state.presets[PresetId.DisableLegsDeformation],
                     onCheckedChange = { onPresetChanged(PresetId.DisableLegsDeformation, it) },
                     hint = stringResource(Res.string.preset_legs_deformation_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_strobe_lights_label),
                     checked = state.presets[PresetId.DisableStrobeLights],
                     onCheckedChange = { onPresetChanged(PresetId.DisableStrobeLights, it) },
                     hint = stringResource(Res.string.preset_strobe_lights_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_held_item_size_label),
                     checked = state.presets[PresetId.ReduceHeldItemSize],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceHeldItemSize, it) },
                     hint = stringResource(Res.string.preset_held_item_size_hint),
                 )
 
-                SettingsGroupTitle(stringResource(Res.string.cfg_group_interface))
-                SettingRow(
+                SettingsSectionTitle(stringResource(Res.string.cfg_group_interface))
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_event_notifications_label),
                     checked = state.presets[PresetId.RestoreEventTextNotifications],
                     onCheckedChange = { onPresetChanged(PresetId.RestoreEventTextNotifications, it) },
                     hint = stringResource(Res.string.preset_event_notifications_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_autocraft_delay_label),
                     checked = state.presets[PresetId.RemoveAutocraftMenuDelay],
                     onCheckedChange = { onPresetChanged(PresetId.RemoveAutocraftMenuDelay, it) },
                     hint = stringResource(Res.string.preset_autocraft_delay_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_sleeping_bag_label),
                     checked = state.presets[PresetId.ReduceSleepingBagRemovalDelay],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceSleepingBagRemovalDelay, it) },
                     hint = stringResource(Res.string.preset_sleeping_bag_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_f8_map_info_label),
                     checked = state.presets[PresetId.AddMapInfoToF8Menu],
                     onCheckedChange = { onPresetChanged(PresetId.AddMapInfoToF8Menu, it) },
                     hint = stringResource(Res.string.preset_f8_map_info_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_error_overlay_label),
                     checked = state.presets[PresetId.DisableClientErrorOverlay],
                     onCheckedChange = { onPresetChanged(PresetId.DisableClientErrorOverlay, it) },
                     hint = stringResource(Res.string.preset_error_overlay_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_admin_gestures_label),
                     checked = state.presets[PresetId.AddAdminGesturesToGameMenu],
                     onCheckedChange = { onPresetChanged(PresetId.AddAdminGesturesToGameMenu, it) },
                     hint = stringResource(Res.string.preset_admin_gestures_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_skin_sorting_label),
                     checked = state.presets[PresetId.ConvenientSkinSorting],
                     onCheckedChange = { onPresetChanged(PresetId.ConvenientSkinSorting, it) },
                     hint = stringResource(Res.string.preset_skin_sorting_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_enlarged_console_label),
                     checked = state.presets[PresetId.EnlargedConsole],
                     onCheckedChange = { onPresetChanged(PresetId.EnlargedConsole, it) },
                     hint = stringResource(Res.string.preset_enlarged_console_hint),
                 )
 
-                SettingsGroupTitle(stringResource(Res.string.cfg_group_experimental))
-                SettingRow(
+                SettingsSectionTitle(stringResource(Res.string.cfg_group_experimental))
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_radial_menu_label),
                     checked = state.presets[PresetId.ReduceRadialMenuCallDelay],
                     onCheckedChange = { onPresetChanged(PresetId.ReduceRadialMenuCallDelay, it) },
                     hint = stringResource(Res.string.preset_radial_menu_hint),
                 )
-                SettingRow(
+                SettingsCheckboxRow(
                     label = stringResource(Res.string.preset_left_hand_label),
                     checked = state.presets[PresetId.LeftHandMode],
                     onCheckedChange = { onPresetChanged(PresetId.LeftHandMode, it) },
@@ -301,30 +300,6 @@ internal fun SettingsCard(
             }
         }
     }
-}
-
-@Composable
-private fun SettingsGroupTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleSmall,
-        modifier = Modifier.padding(top = 10.dp, start = 4.dp),
-    )
-}
-
-@Composable
-private fun SettingRow(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    hint: String? = null,
-) {
-    SettingsCheckboxRow(
-        label = label,
-        checked = checked,
-        onCheckedChange = onCheckedChange,
-        hint = hint,
-    )
 }
 
 @Composable
