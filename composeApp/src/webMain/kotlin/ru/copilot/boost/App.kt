@@ -134,6 +134,11 @@ fun App() {
                     flowUiState = flowUiState,
                     defaultTitleKey = SetupTextKey.StepTweaksTitle,
                     coordinator = coordinator,
+                    primaryActionTextOverride = if (!cfgStore.state.hasChanges) {
+                        stringResource(Res.string.flow_action_skip)
+                    } else {
+                        null
+                    },
                 ) {
                     val state = cfgStore.state
                     CfgEditorScreen(
@@ -188,10 +193,11 @@ private fun FlowStepScaffold(
     flowUiState: SetupFlowUiState,
     defaultTitleKey: SetupTextKey,
     coordinator: SetupCoordinator,
+    primaryActionTextOverride: String? = null,
     content: @Composable () -> Unit,
 ) {
     val stepSubtitle = flowStepSubtitle(flowUiState.currentStepNumber, flowUiState.totalSteps)
-    val primaryActionText = flowPrimaryActionText(flowUiState.primaryAction)
+    val primaryActionText = primaryActionTextOverride ?: flowPrimaryActionText(flowUiState.primaryAction)
 
     ModuleScaffold(
         title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(defaultTitleKey),

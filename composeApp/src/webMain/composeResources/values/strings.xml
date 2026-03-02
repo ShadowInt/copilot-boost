@@ -1,6 +1,7 @@
 <resources>
     <string name="nav_back">Назад</string>
     <string name="flow_action_next">Далее</string>
+    <string name="flow_action_skip">Пропустить</string>
     <string name="flow_action_finish">Завершить</string>
     <string name="flow_step_counter">ШАГ %1$d/%2$d</string>
     <string name="flow_unload_warning">Прогресс настройки будет потерян. Продолжить?</string>
