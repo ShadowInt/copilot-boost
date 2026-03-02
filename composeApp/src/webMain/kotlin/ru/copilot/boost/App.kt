@@ -89,18 +89,14 @@ fun App() {
             AppScreen.Home -> {
                 HomeScreen(
                     appVersion = BuildKonfig.PROJECT_VERSION,
-                    onStartSetup = {
-                        coordinator.openSetupSelection()
-                    },
+                    onStartSetup = coordinator::openSetupSelection,
                 )
             }
 
             AppScreen.SetupSelection -> {
                 SetupSelectionScreen(
                     modules = selectionModulesUi,
-                    onStartFlow = { selectedModules ->
-                        coordinator.startFlow(selectedModules = selectedModules)
-                    },
+                    onStartFlow = coordinator::startFlow,
                     onBackHome = coordinator::goHome,
                 )
             }
@@ -217,17 +213,16 @@ private fun FlowStepScaffold(
     val stepSubtitle = flowStepSubtitle(flowUiState.currentStepNumber, flowUiState.totalSteps)
     val primaryActionText = primaryActionTextOverride ?: flowPrimaryActionText(flowUiState.primaryAction)
 
+    val onBack = remember(coordinator) { { coordinator.handleFlowAction(SetupFlowAction.Back) } }
+    val onNext = remember(coordinator) { { coordinator.handleFlowAction(SetupFlowAction.Next) } }
+
     ModuleScaffold(
         title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(defaultTitleKey),
         subtitle = stepSubtitle,
-        onBack = { coordinator.handleFlowAction(SetupFlowAction.Back) },
+        onBack = onBack,
         primaryActionText = primaryActionText,
         primaryActionEnabled = flowUiState.canProceed,
-        onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
-            { coordinator.handleFlowAction(SetupFlowAction.Next) }
-        } else {
-            null
-        },
+        onPrimaryAction = if (flowUiState.isCurrentStepScreen) onNext else null,
         content = content,
     )
 }

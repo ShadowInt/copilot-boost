@@ -48,7 +48,7 @@ fun LaunchArgsScreen(
                     store = store,
                     modifier = Modifier.width(columns.left),
                 )
-                Spacer(modifier = Modifier.width(LaunchArgsUiSpec.InnerGap))
+                Spacer(modifier = Modifier.width(LaunchArgsUiSpec.ColumnGap))
                 LaunchArgsPreview(
                     launchArgs = launchArgs,
                     modifier = Modifier.width(columns.right),

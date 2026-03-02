@@ -85,11 +85,15 @@ private fun ThreeColumnEditor(
     }
 
     BoxWithConstraints(modifier = modifier) {
-        val gaps = 16.dp
-        val baseLeftWidth = maxWidth * 0.33f
-        val baseRemainingWidth = maxWidth - baseLeftWidth - gaps
-        val fileColumnWidth = ((baseRemainingWidth - 8.dp) / 2) - 20.dp
-        val leftWidth = maxWidth - (fileColumnWidth * 2) - gaps
+        val settingsColumnFraction = 0.33f
+        val settingsDiffGap = 16.dp
+        val diffColumnGap = 8.dp
+        val diffColumnInset = 20.dp
+
+        val baseLeftWidth = maxWidth * settingsColumnFraction
+        val baseRemainingWidth = maxWidth - baseLeftWidth - settingsDiffGap
+        val fileColumnWidth = ((baseRemainingWidth - diffColumnGap) / 2) - diffColumnInset
+        val leftWidth = maxWidth - (fileColumnWidth * 2) - settingsDiffGap
 
         Column(modifier = Modifier.fillMaxSize()) {
             Row(
