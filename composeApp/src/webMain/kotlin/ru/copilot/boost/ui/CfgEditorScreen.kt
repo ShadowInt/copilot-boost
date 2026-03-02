@@ -34,12 +34,10 @@ import androidx.compose.ui.unit.dp
 import ru.copilot.boost.domain.model.DiffRow
 import ru.copilot.boost.domain.model.DiffRowType
 import ru.copilot.boost.presentation.model.CfgEditorUiState
-import ru.copilot.boost.ui.components.FileDropZone
 
 @Composable
 fun CfgEditorScreen(
     state: CfgEditorUiState,
-    onPickFileClick: () -> Unit,
     onDisableParasiticChanged: (Boolean) -> Unit,
     onDisableLegsRenderingChanged: (Boolean) -> Unit,
     onDisableLegsDeformationChanged: (Boolean) -> Unit,
@@ -71,46 +69,40 @@ fun CfgEditorScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         if (!state.hasFile) {
-            FileDropZone(
-                isDragging = state.isDragging,
-                idleMessage = "Перетащите client.cfg файл в эту область",
-                dragMessage = "Отпустите файл здесь",
-                pickButtonText = "Выберите файл",
-                onPickFileClick = onPickFileClick,
-                errorMessage = state.uploadError,
+            Text(
+                text = "Сначала загрузите client.cfg на предыдущем шаге.",
+                modifier = Modifier.padding(top = 12.dp),
             )
             return@Column
         }
 
-        if (state.hasFile) {
-            ThreeColumnEditorWithDownload(
-                state = state,
-                onDisableParasiticChanged = onDisableParasiticChanged,
-                onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
-                onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
-                onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
-                onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
-                onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
-                onRemoveAutocraftMenuDelayChanged = onRemoveAutocraftMenuDelayChanged,
-                onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
-                onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
-                onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
-                onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
-                onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
-                onEnlargedConsoleChanged = onEnlargedConsoleChanged,
-                onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
-                onLeftHandModeChanged = onLeftHandModeChanged,
-                onReduceCameraShakeChanged = onReduceCameraShakeChanged,
-                onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
-                onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
-                onDisableGibsCompletelyChanged = onDisableGibsCompletelyChanged,
-                onDownloadClick = onDownloadClick,
-                modifier = Modifier
-                    .padding(top = 12.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-            )
-        }
+        ThreeColumnEditorWithDownload(
+            state = state,
+            onDisableParasiticChanged = onDisableParasiticChanged,
+            onDisableLegsRenderingChanged = onDisableLegsRenderingChanged,
+            onDisableLegsDeformationChanged = onDisableLegsDeformationChanged,
+            onDisableStrobeLightsChanged = onDisableStrobeLightsChanged,
+            onReduceHeldItemSizeChanged = onReduceHeldItemSizeChanged,
+            onRestoreEventTextNotificationsChanged = onRestoreEventTextNotificationsChanged,
+            onRemoveAutocraftMenuDelayChanged = onRemoveAutocraftMenuDelayChanged,
+            onReduceSleepingBagRemovalDelayChanged = onReduceSleepingBagRemovalDelayChanged,
+            onAddMapInfoToF8MenuChanged = onAddMapInfoToF8MenuChanged,
+            onDisableClientErrorOverlayChanged = onDisableClientErrorOverlayChanged,
+            onAddAdminGesturesToGameMenuChanged = onAddAdminGesturesToGameMenuChanged,
+            onConvenientSkinSortingChanged = onConvenientSkinSortingChanged,
+            onEnlargedConsoleChanged = onEnlargedConsoleChanged,
+            onReduceRadialMenuCallDelayChanged = onReduceRadialMenuCallDelayChanged,
+            onLeftHandModeChanged = onLeftHandModeChanged,
+            onReduceCameraShakeChanged = onReduceCameraShakeChanged,
+            onImproveTreeMarkerVisibilityChanged = onImproveTreeMarkerVisibilityChanged,
+            onDisableOcclusionCullingSafeModeChanged = onDisableOcclusionCullingSafeModeChanged,
+            onDisableGibsCompletelyChanged = onDisableGibsCompletelyChanged,
+            onDownloadClick = onDownloadClick,
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .fillMaxWidth()
+                .fillMaxHeight(),
+        )
     }
 }
 

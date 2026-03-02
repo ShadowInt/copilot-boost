@@ -12,7 +12,7 @@ import ru.copilot.boost.presentation.model.CfgEditorUiState
 
 class CfgEditorStore(
     private val cfgPatcher: CfgPatcher = CfgPatcher(),
-) {
+) : SetupModuleStore {
     var state by mutableStateOf(CfgEditorUiState())
         private set
     private var initiallyAppliedPresets: AppliedPresetState? = null
@@ -170,6 +170,12 @@ class CfgEditorStore(
         updateAndRecalculateIfChanged(enabled, state.disableGibsCompletely) {
             it.copy(disableGibsCompletely = enabled)
         }
+    }
+
+    override fun reset() {
+        state = CfgEditorUiState()
+        initiallyAppliedPresets = null
+        preparedContent = null
     }
 
     private fun recalculatePatch() {

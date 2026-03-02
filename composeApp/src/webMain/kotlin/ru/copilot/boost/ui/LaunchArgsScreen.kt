@@ -37,8 +37,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun LaunchArgsScreen() {
-    val store = remember { LaunchArgsStore() }
+fun LaunchArgsScreen(
+    store: LaunchArgsStore,
+) {
     val state = store.state
     val launchArgs = store.launchArgs
     val hasSelectedSettings = store.hasSelectedSettings

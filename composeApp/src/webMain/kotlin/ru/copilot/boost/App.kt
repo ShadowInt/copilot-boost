@@ -1,115 +1,230 @@
 package ru.copilot.boost
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.CfgEditorStore
-import ru.copilot.boost.ui.CfgEditorScreen
-import ru.copilot.boost.ui.HomeScreen
-import ru.copilot.boost.ui.LaunchArgsScreen
-import ru.copilot.boost.ui.ModuleStubScreen
-import ru.copilot.boost.ui.TopNavigation
+import ru.copilot.boost.presentation.LaunchArgsStore
+import ru.copilot.boost.presentation.SetupCoordinator
+import ru.copilot.boost.presentation.SetupFlowAction
+import ru.copilot.boost.presentation.SetupFlowContext
+import ru.copilot.boost.presentation.SetupFlowStore
+import ru.copilot.boost.presentation.SetupModulesRegistry
+import ru.copilot.boost.presentation.SetupTextKey
+import ru.copilot.boost.ui.*
+import ru.copilot.boost.ui.components.ModuleScaffold
+import ru.copilot.boost.ui.i18n.flowPrimaryActionText
+import ru.copilot.boost.ui.i18n.flowStepSubtitle
+import ru.copilot.boost.ui.i18n.flowUnloadWarningText
+import ru.copilot.boost.ui.i18n.setupText
 
 @Composable
 fun App() {
-    val store = remember { CfgEditorStore() }
-    var currentScreen by remember { mutableStateOf(loadSavedScreen()) }
+    val cfgStore = remember { CfgEditorStore() }
+    val launchArgsStore = remember { LaunchArgsStore() }
+    val moduleStores = remember(cfgStore, launchArgsStore) {
+        listOf(cfgStore, launchArgsStore)
+    }
+    val flowStore = remember { SetupFlowStore(initialScreen = loadSavedScreen()) }
+    val coordinator = remember(flowStore, moduleStores) {
+        SetupCoordinator(
+            flowStore = flowStore,
+            moduleStores = moduleStores,
+        )
+    }
+    val currentScreen = flowStore.currentScreen
 
     LaunchedEffect(currentScreen) {
         saveScreen(currentScreen)
     }
 
-    if (currentScreen == AppScreen.Tweaks) {
-        DisposableEffect(store) {
+    if (currentScreen == AppScreen.ClientCfgUpload) {
+        val onFileSelectedAndAdvance: (ru.copilot.boost.model.UploadedFileData) -> Unit = remember(cfgStore, coordinator) {
+            { fileData ->
+                cfgStore.onFileSelected(fileData)
+                coordinator.handleFlowAction(SetupFlowAction.Next)
+            }
+        }
+
+        DisposableEffect(cfgStore) {
             val disposeListeners = observeGlobalFileDrop(
-                onDragStateChanged = store::onDragStateChanged,
-                onFileSelected = store::onFileSelected,
-                onInvalidFile = store::onInvalidFile,
+                onDragStateChanged = cfgStore::onDragStateChanged,
+                onFileSelected = onFileSelectedAndAdvance,
+                onInvalidFile = cfgStore::onInvalidFile,
             )
 
             onDispose { disposeListeners() }
         }
     }
 
+    val shouldWarnOnPageRefresh = currentScreen != AppScreen.Home
+    val unloadWarningMessage = flowUnloadWarningText()
+    if (shouldWarnOnPageRefresh) {
+        DisposableEffect(currentScreen) {
+            val disposeWarning = observePageUnloadWarning(
+                message = unloadWarningMessage,
+            )
+            onDispose { disposeWarning() }
+        }
+    }
+
     MaterialTheme {
+        val flowUiState = flowStore.uiState(
+            context = SetupFlowContext(
+                hasClientCfg = cfgStore.state.hasFile,
+            ),
+        )
+        val selectionModulesUi = SetupModulesRegistry.modules.map { module ->
+            SetupSelectionModuleUi(
+                id = module.id,
+                title = setupText(module.titleKey),
+                description = setupText(module.descriptionKey),
+            )
+        }
+        val stepSubtitle = flowStepSubtitle(flowUiState.currentStepNumber, flowUiState.totalSteps)
+        val primaryActionText = flowPrimaryActionText(flowUiState.primaryAction)
+
         when (currentScreen) {
             AppScreen.Home -> {
                 HomeScreen(
                     appVersion = BuildKonfig.PROJECT_VERSION,
-                    onOpenTweaks = { currentScreen = AppScreen.Tweaks },
-                    onOpenBinds = { currentScreen = AppScreen.Binds },
-                    onOpenLaunchArgs = { currentScreen = AppScreen.LaunchArgs },
+                    onStartSetup = {
+                        coordinator.openSetupSelection()
+                    },
                 )
             }
 
-            AppScreen.Tweaks -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    TopNavigation(
-                        currentScreen = currentScreen,
-                        onNavigate = { currentScreen = it },
+            AppScreen.SetupSelection -> {
+                SetupSelectionScreen(
+                    modules = selectionModulesUi,
+                    onStartFlow = { selectedModules ->
+                        coordinator.startFlow(selectedModules = selectedModules)
+                    },
+                    onBackHome = coordinator::goHome,
+                )
+            }
+
+            AppScreen.ClientCfgUpload -> {
+                ModuleScaffold(
+                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepClientCfgUploadTitle),
+                    subtitle = stepSubtitle,
+                    onBack = {
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
+                    },
+                    primaryActionText = primaryActionText,
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
+                    } else {
+                        null
+                    },
+                ) {
+                    ClientCfgUploadScreen(
+                        isDragging = cfgStore.state.isDragging,
+                        uploadError = cfgStore.state.uploadError,
+                        fileName = cfgStore.state.fileName,
+                        onPickFileClick = {
+                            openFilePicker(
+                                onFileSelected = { fileData ->
+                                    cfgStore.onFileSelected(fileData)
+                                    coordinator.handleFlowAction(SetupFlowAction.Next)
+                                },
+                                onInvalidFile = cfgStore::onInvalidFile,
+                            )
+                        },
                     )
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        val state = store.state
-                        CfgEditorScreen(
-                            state = state,
-                            onPickFileClick = {
-                                openFilePicker(
-                                    onFileSelected = store::onFileSelected,
-                                    onInvalidFile = store::onInvalidFile,
-                                )
-                            },
-                            onDisableParasiticChanged = store::onDisableParasiticChanged,
-                            onDisableLegsRenderingChanged = store::onDisableLegsRenderingChanged,
-                            onDisableLegsDeformationChanged = store::onDisableLegsDeformationChanged,
-                            onDisableStrobeLightsChanged = store::onDisableStrobeLightsChanged,
-                            onReduceHeldItemSizeChanged = store::onReduceHeldItemSizeChanged,
-                            onRestoreEventTextNotificationsChanged = store::onRestoreEventTextNotificationsChanged,
-                            onRemoveAutocraftMenuDelayChanged = store::onRemoveAutocraftMenuDelayChanged,
-                            onReduceSleepingBagRemovalDelayChanged = store::onReduceSleepingBagRemovalDelayChanged,
-                            onAddMapInfoToF8MenuChanged = store::onAddMapInfoToF8MenuChanged,
-                            onDisableClientErrorOverlayChanged = store::onDisableClientErrorOverlayChanged,
-                            onAddAdminGesturesToGameMenuChanged = store::onAddAdminGesturesToGameMenuChanged,
-                            onConvenientSkinSortingChanged = store::onConvenientSkinSortingChanged,
-                            onEnlargedConsoleChanged = store::onEnlargedConsoleChanged,
-                            onReduceRadialMenuCallDelayChanged = store::onReduceRadialMenuCallDelayChanged,
-                            onLeftHandModeChanged = store::onLeftHandModeChanged,
-                            onReduceCameraShakeChanged = store::onReduceCameraShakeChanged,
-                            onImproveTreeMarkerVisibilityChanged = store::onImproveTreeMarkerVisibilityChanged,
-                            onDisableOcclusionCullingSafeModeChanged = store::onDisableOcclusionCullingSafeModeChanged,
-                            onDisableGibsCompletelyChanged = store::onDisableGibsCompletelyChanged,
-                            onDownloadClick = {
-                                val fileName = state.downloadFileName ?: return@CfgEditorScreen
-                                downloadCfgFile(
-                                    fileName = fileName,
-                                    content = state.patchedContent,
-                                )
-                            },
-                        )
-                    }
+                }
+            }
+
+            AppScreen.Tweaks -> {
+                ModuleScaffold(
+                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepTweaksTitle),
+                    subtitle = stepSubtitle,
+                    onBack = {
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
+                    },
+                    primaryActionText = primaryActionText,
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
+                    } else {
+                        null
+                    },
+                ) {
+                    val state = cfgStore.state
+                    CfgEditorScreen(
+                        state = state,
+                        onDisableParasiticChanged = cfgStore::onDisableParasiticChanged,
+                        onDisableLegsRenderingChanged = cfgStore::onDisableLegsRenderingChanged,
+                        onDisableLegsDeformationChanged = cfgStore::onDisableLegsDeformationChanged,
+                        onDisableStrobeLightsChanged = cfgStore::onDisableStrobeLightsChanged,
+                        onReduceHeldItemSizeChanged = cfgStore::onReduceHeldItemSizeChanged,
+                        onRestoreEventTextNotificationsChanged = cfgStore::onRestoreEventTextNotificationsChanged,
+                        onRemoveAutocraftMenuDelayChanged = cfgStore::onRemoveAutocraftMenuDelayChanged,
+                        onReduceSleepingBagRemovalDelayChanged = cfgStore::onReduceSleepingBagRemovalDelayChanged,
+                        onAddMapInfoToF8MenuChanged = cfgStore::onAddMapInfoToF8MenuChanged,
+                        onDisableClientErrorOverlayChanged = cfgStore::onDisableClientErrorOverlayChanged,
+                        onAddAdminGesturesToGameMenuChanged = cfgStore::onAddAdminGesturesToGameMenuChanged,
+                        onConvenientSkinSortingChanged = cfgStore::onConvenientSkinSortingChanged,
+                        onEnlargedConsoleChanged = cfgStore::onEnlargedConsoleChanged,
+                        onReduceRadialMenuCallDelayChanged = cfgStore::onReduceRadialMenuCallDelayChanged,
+                        onLeftHandModeChanged = cfgStore::onLeftHandModeChanged,
+                        onReduceCameraShakeChanged = cfgStore::onReduceCameraShakeChanged,
+                        onImproveTreeMarkerVisibilityChanged = cfgStore::onImproveTreeMarkerVisibilityChanged,
+                        onDisableOcclusionCullingSafeModeChanged = cfgStore::onDisableOcclusionCullingSafeModeChanged,
+                        onDisableGibsCompletelyChanged = cfgStore::onDisableGibsCompletelyChanged,
+                        onDownloadClick = {
+                            val fileName = state.downloadFileName ?: return@CfgEditorScreen
+                            downloadCfgFile(
+                                fileName = fileName,
+                                content = state.patchedContent,
+                            )
+                        },
+                    )
                 }
             }
 
             AppScreen.Binds -> {
-                ModuleStubScreen(
-                    title = "Функционал биндов",
-                    description = "Здесь будет настройка биндов и пресетов клавиш.",
-                    onBackHome = { currentScreen = AppScreen.Home },
-                )
+                ModuleScaffold(
+                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepBindsTitle),
+                    subtitle = stepSubtitle,
+                    onBack = {
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
+                    },
+                    primaryActionText = primaryActionText,
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
+                    } else {
+                        null
+                    },
+                ) {
+                    ModuleStubScreen(
+                        title = "Функционал биндов",
+                        description = "Здесь будет настройка биндов и пресетов клавиш.",
+                    )
+                }
             }
 
             AppScreen.LaunchArgs -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    TopNavigation(
-                        currentScreen = currentScreen,
-                        onNavigate = { currentScreen = it },
-                    )
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        LaunchArgsScreen()
-                    }
+                ModuleScaffold(
+                    title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(SetupTextKey.StepLaunchArgsTitle),
+                    subtitle = stepSubtitle,
+                    onBack = {
+                        coordinator.handleFlowAction(SetupFlowAction.Back)
+                    },
+                    primaryActionText = primaryActionText,
+                    primaryActionEnabled = flowUiState.canProceed,
+                    onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
+                        { coordinator.handleFlowAction(SetupFlowAction.Next) }
+                    } else {
+                        null
+                    },
+                ) {
+                    LaunchArgsScreen(store = launchArgsStore)
                 }
             }
         }

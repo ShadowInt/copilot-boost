@@ -20,3 +20,5 @@ expect fun copyTextToClipboard(text: String)
 expect fun readLocalStorage(key: String): String?
 
 expect fun writeLocalStorage(key: String, value: String)
+
+expect fun observePageUnloadWarning(message: String): () -> Unit

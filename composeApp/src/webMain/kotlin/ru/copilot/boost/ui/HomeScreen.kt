@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,9 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun HomeScreen(
     appVersion: String,
-    onOpenTweaks: () -> Unit,
-    onOpenBinds: () -> Unit,
-    onOpenLaunchArgs: () -> Unit,
+    onStartSetup: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -29,24 +28,11 @@ fun HomeScreen(
     ) {
         Text("CopilotBoost", style = MaterialTheme.typography.headlineMedium)
         Text("Версия: $appVersion", modifier = Modifier.padding(top = 4.dp))
-
-        ModuleCard(
-            title = "Твики конфигурации",
-            description = "Изменение параметров client.cfg с diff-просмотром",
-            onOpen = onOpenTweaks,
+        Button(
+            onClick = onStartSetup,
             modifier = Modifier.padding(top = 20.dp),
-        )
-        ModuleCard(
-            title = "Параметры запуска",
-            description = "Настройка аргументов запуска клиента",
-            onOpen = onOpenLaunchArgs,
-            modifier = Modifier.padding(top = 12.dp),
-        )
-        ModuleCard(
-            title = "Функционал биндов",
-            description = "Настройка и управление биндами",
-            onOpen = onOpenBinds,
-            modifier = Modifier.padding(top = 12.dp),
-        )
+        ) {
+            Text("Настроить Rust")
+        }
     }
 }
