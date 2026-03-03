@@ -124,6 +124,8 @@
     <string name="apply_launch_args_step1">Скопируйте выбранные параметры запуска</string>
     <string name="apply_launch_args_copy">Копировать</string>
     <string name="apply_open_automatically">Открыть автоматически</string>
+    <string name="apply_status_completed">Выполнено</string>
+    <string name="apply_status_in_progress">Не завершено</string>
     <string name="apply_go_home">На главную</string>
 
     <!-- Errors -->

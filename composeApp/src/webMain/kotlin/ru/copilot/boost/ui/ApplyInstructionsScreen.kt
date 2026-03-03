@@ -20,9 +20,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +46,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -145,53 +149,70 @@ private fun LaunchArgsInstructionCard(
     expanded: Boolean,
     onToggle: () -> Unit,
 ) {
+    val stages = listOf(
+        StageDefinition(
+            text = stringResource(Res.string.apply_launch_args_step1),
+            content = { _ ->
+                LaunchArgsCopyBox(launchArgs = launchArgs, onCopy = onCopy)
+            },
+        ),
+        StageDefinition(
+            text = stringResource(Res.string.launch_args_stage_open_steam),
+            content = { _ ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.lib_steam_macos_ru),
+                        contentDescription = stringResource(Res.string.launch_args_stage_open_steam),
+                        modifier = Modifier.fillMaxWidth(0.62f),
+                        contentScale = ContentScale.Fit,
+                    )
+                    Button(onClick = ::openSteamRustDetails) {
+                        Text(stringResource(Res.string.apply_open_automatically))
+                    }
+                }
+            },
+        ),
+        StageDefinition(
+            text = stringResource(Res.string.launch_args_stage_paste_params),
+            imageResource = Res.drawable.rust_steam_args_macos_ru,
+        ),
+        StageDefinition(text = stringResource(Res.string.launch_args_stage_done)),
+    )
+    val totalStages = stages.size
+    var maxReachedStageIndex by remember(isCopied, totalStages) {
+        mutableIntStateOf(if (isCopied) 1 else 0)
+    }
     ModuleInstructionCard(
         modifier = modifier,
         title = stringResource(Res.string.module_launch_args_title),
         expanded = expanded,
         onToggle = onToggle,
+        statusIcon = if (isCopied && maxReachedStageIndex >= (totalStages - 1)) {
+            Icons.Filled.CheckCircle
+        } else {
+            Icons.Filled.Schedule
+        },
+        statusIconTint = if (isCopied && maxReachedStageIndex >= (totalStages - 1)) {
+            Color(0xFF2E7D32)
+        } else {
+            Color(0xFFF9A825)
+        },
+        statusContentDescription = if (isCopied && maxReachedStageIndex >= (totalStages - 1)) {
+            stringResource(Res.string.apply_status_completed)
+        } else {
+            stringResource(Res.string.apply_status_in_progress)
+        },
     ) {
         if (!hasSettings) {
             SkippedLabel()
             return@ModuleInstructionCard
         }
 
-        val stages = listOf(
-            StageDefinition(
-                text = stringResource(Res.string.apply_launch_args_step1),
-                content = { _ ->
-                    LaunchArgsCopyBox(launchArgs = launchArgs, onCopy = onCopy)
-                },
-            ),
-            StageDefinition(
-                text = stringResource(Res.string.launch_args_stage_open_steam),
-                content = { _ ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        Image(
-                            painter = painterResource(Res.drawable.lib_steam_macos_ru),
-                            contentDescription = stringResource(Res.string.launch_args_stage_open_steam),
-                            modifier = Modifier.fillMaxWidth(0.62f),
-                            contentScale = ContentScale.Fit,
-                        )
-                        Button(onClick = ::openSteamRustDetails) {
-                            Text(stringResource(Res.string.apply_open_automatically))
-                        }
-                    }
-                },
-            ),
-            StageDefinition(
-                text = stringResource(Res.string.launch_args_stage_paste_params),
-                imageResource = Res.drawable.rust_steam_args_macos_ru,
-            ),
-            StageDefinition(text = stringResource(Res.string.launch_args_stage_done)),
-        )
-
         val scrollState = rememberScrollState()
-        val totalStages = stages.size
         val stageHeightsPx = remember(totalStages) {
             mutableStateListOf<Int>().apply { repeat(totalStages) { add(0) } }
         }
@@ -214,6 +235,14 @@ private fun LaunchArgsInstructionCard(
                 viewportHeightPx = viewportHeightPx,
                 maxScrollValue = scrollState.maxValue,
             )
+            val currentReachedStage = when {
+                !isCopied -> 0
+                progress.isAtBottom -> progress.lastStageIndex
+                else -> progress.activeStageIndex.coerceAtLeast(1)
+            }
+            if (currentReachedStage > maxReachedStageIndex) {
+                maxReachedStageIndex = currentReachedStage
+            }
 
             Column(
                 modifier = Modifier
@@ -226,7 +255,8 @@ private fun LaunchArgsInstructionCard(
                         launchArgsStageStatus(
                             index = index,
                             isCopied = isCopied,
-                            progress = progress,
+                            maxReachedStageIndex = maxReachedStageIndex,
+                            lastStageIndex = progress.lastStageIndex,
                         )
                     },
                     stageModifiers = stages.indices.associateWith { index ->
@@ -273,19 +303,15 @@ private fun launchArgsStageProgress(
 private fun launchArgsStageStatus(
     index: Int,
     isCopied: Boolean,
-    progress: LaunchArgsStageProgress,
+    maxReachedStageIndex: Int,
+    lastStageIndex: Int,
 ): StageStatus {
-    val effectiveActiveStageIndex = if (isCopied) {
-        progress.activeStageIndex.coerceAtLeast(1)
-    } else {
-        progress.activeStageIndex
-    }
     return when {
         !isCopied && index == 0 -> StageStatus.IN_PROGRESS
         !isCopied -> StageStatus.NOT_STARTED
-        progress.isAtBottom && index == progress.lastStageIndex -> StageStatus.COMPLETED
-        index < effectiveActiveStageIndex -> StageStatus.COMPLETED
-        index == effectiveActiveStageIndex -> StageStatus.IN_PROGRESS
+        maxReachedStageIndex >= lastStageIndex -> StageStatus.COMPLETED
+        index < maxReachedStageIndex -> StageStatus.COMPLETED
+        index == maxReachedStageIndex -> StageStatus.IN_PROGRESS
         else -> StageStatus.NOT_STARTED
     }
 }
@@ -373,6 +399,9 @@ private fun ModuleInstructionCard(
     title: String,
     expanded: Boolean,
     onToggle: () -> Unit,
+    statusIcon: ImageVector? = null,
+    statusIconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    statusContentDescription: String? = null,
     content: @Composable () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -393,14 +422,31 @@ private fun ModuleInstructionCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                )
-                Icon(
-                    imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = null,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (statusIcon != null) {
+                        Icon(
+                            imageVector = statusIcon,
+                            contentDescription = statusContentDescription,
+                            tint = statusIconTint,
+                        )
+                    }
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                        contentDescription = null,
+                    )
+                }
             }
             if (!expanded) return@Column
             Spacer(modifier = Modifier.height(12.dp))
