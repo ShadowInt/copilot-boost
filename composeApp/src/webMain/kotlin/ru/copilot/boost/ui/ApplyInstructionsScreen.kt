@@ -80,8 +80,7 @@ fun ApplyInstructionsScreen(
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .safeContentPadding()
                 .fillMaxSize()
-                .padding(24.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             val visibleModules = SetupModuleId.entries.filter { it in selectedModules }
@@ -89,32 +88,43 @@ fun ApplyInstructionsScreen(
                 mutableStateOf(visibleModules.firstOrNull())
             }
             for (moduleId in visibleModules) {
+                val isExpanded = expandedModuleId == moduleId
+                val cardModifier = if (isExpanded) {
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f, fill = true)
+                } else {
+                    Modifier.fillMaxWidth()
+                }
                 when (moduleId) {
                     SetupModuleId.Tweaks -> TwoStepInstructionCard(
+                        modifier = cardModifier,
                         title = stringResource(Res.string.module_tweaks_title),
                         hasContent = cfgHasChanges,
                         step1Text = stringResource(Res.string.apply_tweaks_step1),
                         step1ActionLabel = stringResource(Res.string.apply_tweaks_download),
                         onStep1Action = onDownloadCfg,
                         step2Text = stringResource(Res.string.apply_tweaks_step2),
-                        expanded = expandedModuleId == moduleId,
+                        expanded = isExpanded,
                         onToggle = {
                             expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
                         },
                     )
                     SetupModuleId.LaunchArgs -> LaunchArgsInstructionCard(
+                        modifier = cardModifier,
                         hasSettings = launchArgsHasSettings,
                         launchArgs = launchArgs,
                         isCopied = isLaunchArgsCopied,
                         onCopy = onCopyLaunchArgs,
-                        expanded = expandedModuleId == moduleId,
+                        expanded = isExpanded,
                         onToggle = {
                             expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
                         },
                     )
                     SetupModuleId.Binds -> ModuleInstructionCard(
+                        modifier = cardModifier,
                         title = stringResource(Res.string.module_binds_title),
-                        expanded = expandedModuleId == moduleId,
+                        expanded = isExpanded,
                         onToggle = {
                             expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
                         },
@@ -127,6 +137,7 @@ fun ApplyInstructionsScreen(
 
 @Composable
 private fun LaunchArgsInstructionCard(
+    modifier: Modifier = Modifier,
     hasSettings: Boolean,
     launchArgs: String,
     isCopied: Boolean,
@@ -135,6 +146,7 @@ private fun LaunchArgsInstructionCard(
     onToggle: () -> Unit,
 ) {
     ModuleInstructionCard(
+        modifier = modifier,
         title = stringResource(Res.string.module_launch_args_title),
         expanded = expanded,
         onToggle = onToggle,
@@ -193,7 +205,7 @@ private fun LaunchArgsInstructionCard(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 520.dp),
+                .fillMaxSize(),
         ) {
             val viewportHeightPx = with(density) { maxHeight.roundToPx() }
             val progress = launchArgsStageProgress(
@@ -321,6 +333,7 @@ private fun LaunchArgsCopyBox(
 
 @Composable
 private fun TwoStepInstructionCard(
+    modifier: Modifier = Modifier,
     title: String,
     hasContent: Boolean,
     step1Text: String,
@@ -331,6 +344,7 @@ private fun TwoStepInstructionCard(
     onToggle: () -> Unit,
 ) {
     ModuleInstructionCard(
+        modifier = modifier,
         title = title,
         expanded = expanded,
         onToggle = onToggle,
@@ -355,6 +369,7 @@ private fun TwoStepInstructionCard(
 
 @Composable
 private fun ModuleInstructionCard(
+    modifier: Modifier = Modifier,
     title: String,
     expanded: Boolean,
     onToggle: () -> Unit,
@@ -362,8 +377,7 @@ private fun ModuleInstructionCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -390,7 +404,13 @@ private fun ModuleInstructionCard(
             }
             if (!expanded) return@Column
             Spacer(modifier = Modifier.height(12.dp))
-            content()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = true),
+            ) {
+                content()
+            }
         }
     }
 }

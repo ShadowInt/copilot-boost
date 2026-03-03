@@ -87,7 +87,7 @@ private fun StageTimelineRow(
             color = markerColor,
             showConnector = showConnector,
             contentHeightPx = contentHeightPx,
-            markerTopOffset = 0.dp,
+            markerTopOffset = 4.dp,
             markerLabel = markerLabel,
         )
         Column(
