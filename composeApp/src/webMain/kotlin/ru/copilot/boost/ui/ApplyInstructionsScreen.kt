@@ -9,14 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.*
 import kotlinx.browser.window
@@ -27,7 +21,7 @@ import ru.copilot.boost.ui.components.ModuleInstructionCard
 import ru.copilot.boost.ui.components.ModuleScaffold
 import ru.copilot.boost.ui.components.stage.StageDefinition
 import ru.copilot.boost.ui.components.stage.StageInstructionCard
-import ru.copilot.boost.ui.components.stage.StageStatus
+import ru.copilot.boost.ui.components.stage.StageTitleWithLink
 
 @Composable
 fun ApplyInstructionsScreen(
@@ -128,7 +122,12 @@ private fun launchArgsStages(
         text = stringResource(Res.string.launch_args_stage_open_steam),
         imageResource = Res.drawable.lib_steam_macos_ru,
         titleContent = { status ->
-            OpenSteamTitleWithLink(status = status)
+            StageTitleWithLink(
+                text = stringResource(Res.string.launch_args_stage_open_steam),
+                linkPhrase = stringResource(Res.string.launch_args_steam_link_phrase),
+                onLinkClick = ::openSteamRustDetails,
+                status = status,
+            )
         },
     ),
     StageDefinition(
@@ -137,51 +136,6 @@ private fun launchArgsStages(
     ),
     StageDefinition(text = stringResource(Res.string.launch_args_stage_done)),
 )
-
-@Composable
-private fun OpenSteamTitleWithLink(status: StageStatus) {
-    val baseText = stringResource(Res.string.launch_args_stage_open_steam)
-    val labelColor = when (status) {
-        StageStatus.NOT_STARTED -> MaterialTheme.colorScheme.onSurfaceVariant
-        StageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSurface
-        StageStatus.COMPLETED -> MaterialTheme.colorScheme.onSurface
-    }
-    val linkColor = MaterialTheme.colorScheme.primary
-    val linkPhrase = "Перейти к свойствам Rust в Steam"
-    val linkStart = baseText.indexOf(linkPhrase)
-    val linkEnd = if (linkStart >= 0) linkStart + linkPhrase.length else -1
-    val annotated = remember(baseText, linkStart, linkEnd, linkColor) {
-        buildAnnotatedString {
-            if (linkStart in 0..<linkEnd) {
-                append(baseText.substring(0, linkStart))
-                withLink(
-                    LinkAnnotation.Clickable(
-                        tag = "steam-link",
-                        styles = TextLinkStyles(
-                            style = SpanStyle(
-                                color = linkColor,
-                                textDecoration = TextDecoration.Underline,
-                            ),
-                        ),
-                        linkInteractionListener = {
-                            openSteamRustDetails()
-                        },
-                    ),
-                ) {
-                    append(linkPhrase)
-                }
-                append(baseText.substring(linkEnd))
-            } else {
-                append(baseText)
-            }
-        }
-    }
-    Text(
-        text = annotated,
-        modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
-        style = MaterialTheme.typography.bodyMedium.copy(color = labelColor),
-    )
-}
 
 private fun openSteamRustDetails() {
     suppressNextUnloadWarning()

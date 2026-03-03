@@ -102,6 +102,7 @@
     <string name="launch_args_group_visual">Визуальные эффекты</string>
     <string name="launch_args_group_experimental">Экспериментальные</string>
     <string name="launch_args_stage_open_steam">Откройте свойства Rust в Steam самостоятельно или нажмите «Перейти к свойствам Rust в Steam» для автоматического открытия нужного раздела.</string>
+    <string name="launch_args_steam_link_phrase">Перейти к свойствам Rust в Steam</string>
     <string name="launch_args_stage_paste_params">Вставьте скопированные параметры в данное поле</string>
     <string name="launch_args_stage_done">Готово</string>
     <string name="launch_args_admin_teleport_label">Админский телепорт</string>
