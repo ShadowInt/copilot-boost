@@ -14,11 +14,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.*
 import kotlinx.browser.window
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.presentation.SetupModuleId
 import ru.copilot.boost.suppressNextUnloadWarning
+import ru.copilot.boost.ui.components.AppSnackbarHost
 import ru.copilot.boost.ui.components.ModuleInstructionCard
 import ru.copilot.boost.ui.components.ModuleScaffold
+import ru.copilot.boost.ui.components.SnackbarTone
+import ru.copilot.boost.ui.components.showAppSnackbar
 import ru.copilot.boost.ui.components.stage.StageDefinition
 import ru.copilot.boost.ui.components.stage.StageInstructionCard
 import ru.copilot.boost.ui.components.stage.StageTitleWithLink
@@ -35,74 +39,102 @@ fun ApplyInstructionsScreen(
     onBack: () -> Unit,
     onGoHome: () -> Unit,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val copiedMessage = stringResource(Res.string.apply_launch_args_copied)
+    val onCopyWithSnackbar = remember(onCopyLaunchArgs, copiedMessage) {
+        {
+            onCopyLaunchArgs()
+            coroutineScope.launch {
+                snackbarHostState.showAppSnackbar(
+                    message = copiedMessage,
+                    tone = SnackbarTone.Success,
+                )
+            }
+            Unit
+        }
+    }
+
     ModuleScaffold(
         title = stringResource(Res.string.step_apply_instructions_title),
         onBack = onBack,
         primaryActionText = stringResource(Res.string.apply_go_home),
         onPrimaryAction = onGoHome,
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .safeContentPadding()
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .fillMaxSize(),
         ) {
-            val visibleModules = SetupModuleId.entries.filter { it in selectedModules }
-            var expandedModuleId by remember(selectedModules) {
-                mutableStateOf(visibleModules.firstOrNull())
-            }
-            for (moduleId in visibleModules) {
-                val isExpanded = expandedModuleId == moduleId
-                val cardModifier = if (isExpanded) {
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f, fill = true)
-                } else {
-                    Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                val visibleModules = SetupModuleId.entries.filter { it in selectedModules }
+                var expandedModuleId by remember(selectedModules) {
+                    mutableStateOf(visibleModules.firstOrNull())
                 }
-                when (moduleId) {
-                    SetupModuleId.Tweaks -> TwoStepInstructionCard(
-                        modifier = cardModifier,
-                        title = stringResource(Res.string.module_tweaks_title),
-                        hasContent = cfgHasChanges,
-                        step1Text = stringResource(Res.string.apply_tweaks_step1),
-                        step1ActionLabel = stringResource(Res.string.apply_tweaks_download),
-                        onStep1Action = onDownloadCfg,
-                        step2Text = stringResource(Res.string.apply_tweaks_step2),
-                        expanded = isExpanded,
-                        onToggle = {
-                            expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
-                        },
-                    )
-                    SetupModuleId.LaunchArgs -> StageInstructionCard(
-                        modifier = cardModifier,
-                        title = stringResource(Res.string.module_launch_args_title),
-                        stages = launchArgsStages(launchArgs, onCopyLaunchArgs),
-                        isActivated = isLaunchArgsCopied,
-                        expanded = isExpanded,
-                        onToggle = {
-                            expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
-                        },
-                        hasContent = launchArgsHasSettings,
-                    )
-                    SetupModuleId.Binds -> ModuleInstructionCard(
-                        modifier = cardModifier,
-                        title = stringResource(Res.string.module_binds_title),
-                        expanded = isExpanded,
-                        onToggle = {
-                            expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.apply_skipped),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                for (moduleId in visibleModules) {
+                    val isExpanded = expandedModuleId == moduleId
+                    val cardModifier = if (isExpanded) {
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f, fill = true)
+                    } else {
+                        Modifier.fillMaxWidth()
+                    }
+                    when (moduleId) {
+                        SetupModuleId.Tweaks -> TwoStepInstructionCard(
+                            modifier = cardModifier,
+                            title = stringResource(Res.string.module_tweaks_title),
+                            hasContent = cfgHasChanges,
+                            step1Text = stringResource(Res.string.apply_tweaks_step1),
+                            step1ActionLabel = stringResource(Res.string.apply_tweaks_download),
+                            onStep1Action = onDownloadCfg,
+                            step2Text = stringResource(Res.string.apply_tweaks_step2),
+                            expanded = isExpanded,
+                            onToggle = {
+                                expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
+                            },
                         )
+                        SetupModuleId.LaunchArgs -> StageInstructionCard(
+                            modifier = cardModifier,
+                            title = stringResource(Res.string.module_launch_args_title),
+                            stages = launchArgsStages(launchArgs, onCopyWithSnackbar),
+                            isActivated = isLaunchArgsCopied,
+                            expanded = isExpanded,
+                            onToggle = {
+                                expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
+                            },
+                            hasContent = launchArgsHasSettings,
+                        )
+                        SetupModuleId.Binds -> ModuleInstructionCard(
+                            modifier = cardModifier,
+                            title = stringResource(Res.string.module_binds_title),
+                            expanded = isExpanded,
+                            onToggle = {
+                                expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
+                            },
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.apply_skipped),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
             }
+
+            AppSnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+            )
         }
     }
 }
