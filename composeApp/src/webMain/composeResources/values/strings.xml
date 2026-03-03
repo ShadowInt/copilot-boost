@@ -72,7 +72,7 @@
     <string name="preset_strobe_lights_label">Отключить стробоскопы</string>
     <string name="preset_strobe_lights_hint">Полностью отключает стробоскопы в игре, оставляя только звук их работы. Может сильно повысить FPS, если рядом несколько стробоскопов.</string>
     <string name="preset_held_item_size_label">Уменьшить предмет в руках</string>
-    <string name="preset_held_item_size_hint">Делает оружие и предметы в руках персонажа меньше. Функция работает только если уголь обзора установлен выше 70.</string>
+    <string name="preset_held_item_size_hint">Делает оружие и предметы в руках персонажа меньше. Функция работает только если угол обзора установлен выше 70.</string>
     <string name="preset_event_notifications_label">Вернуть текстовые уведомления об ивентах</string>
     <string name="preset_event_notifications_hint">Возвращает текстовые уведомления о старте ивентов, таких как появление на карте карго, патрульного вертолета, чинука и т.п.</string>
     <string name="preset_autocraft_delay_label">Убрать задержку в меню автокрафта</string>
