@@ -74,7 +74,6 @@ private fun StageTimelineRow(
 ) {
     val markerColor = stageStatusColor(status)
     val labelColor = stageStatusTextColor(status)
-    val isStarted = status != StageStatus.NOT_STARTED
     var contentHeightPx by remember { mutableIntStateOf(0) }
     Box(
         modifier = modifier
@@ -95,28 +94,30 @@ private fun StageTimelineRow(
                 .padding(start = 24.dp)
                 .onSizeChanged { contentHeightPx = it.height },
         ) {
-            Text(
-                text = definition.text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = labelColor,
-                modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
-            )
-            if (isStarted) {
-                when {
-                    definition.content != null -> {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        definition.content.invoke(status)
-                    }
-                    definition.imageResource != null -> {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Image(
-                            painter = painterResource(definition.imageResource),
-                            contentDescription = definition.text,
-                            modifier = Modifier
-                                .fillMaxSize(0.4f),
-                            contentScale = ContentScale.Fit,
-                        )
-                    }
+            if (definition.titleContent != null) {
+                definition.titleContent.invoke(status)
+            } else {
+                Text(
+                    text = definition.text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = labelColor,
+                    modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
+                )
+            }
+            when {
+                definition.content != null -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    definition.content.invoke(status)
+                }
+                definition.imageResource != null -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = painterResource(definition.imageResource),
+                        contentDescription = definition.text,
+                        modifier = Modifier
+                            .fillMaxSize(0.4f),
+                        contentScale = ContentScale.Fit,
+                    )
                 }
             }
         }
@@ -194,6 +195,7 @@ data class StageDefinition(
     val text: String,
     val imageResource: DrawableResource? = null,
     val content: (@Composable (StageStatus) -> Unit)? = null,
+    val titleContent: (@Composable (StageStatus) -> Unit)? = null,
 )
 
 @Composable

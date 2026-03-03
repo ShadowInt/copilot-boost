@@ -1,61 +1,30 @@
 package ru.copilot.boost.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.*
 import kotlinx.browser.window
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import ru.copilot.boost.suppressNextUnloadWarning
 import ru.copilot.boost.presentation.SetupModuleId
+import ru.copilot.boost.suppressNextUnloadWarning
 import ru.copilot.boost.ui.components.ModuleScaffold
 import ru.copilot.boost.ui.components.stage.StageDefinition
 import ru.copilot.boost.ui.components.stage.StageStatus
@@ -158,22 +127,9 @@ private fun LaunchArgsInstructionCard(
         ),
         StageDefinition(
             text = stringResource(Res.string.launch_args_stage_open_steam),
-            content = { _ ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.lib_steam_macos_ru),
-                        contentDescription = stringResource(Res.string.launch_args_stage_open_steam),
-                        modifier = Modifier.fillMaxWidth(0.62f),
-                        contentScale = ContentScale.Fit,
-                    )
-                    Button(onClick = ::openSteamRustDetails) {
-                        Text(stringResource(Res.string.apply_open_automatically))
-                    }
-                }
+            imageResource = Res.drawable.lib_steam_macos_ru,
+            titleContent = { status ->
+                OpenSteamTitleWithLink(status = status)
             },
         ),
         StageDefinition(
@@ -213,42 +169,32 @@ private fun LaunchArgsInstructionCard(
         }
 
         val scrollState = rememberScrollState()
-        val stageHeightsPx = remember(totalStages) {
-            mutableStateListOf<Int>().apply { repeat(totalStages) { add(0) } }
+
+        val scrollValue = scrollState.value
+        val maxScrollValue = scrollState.maxValue
+        val activeStageIndex = if (maxScrollValue > 0) {
+            ((scrollValue.toFloat() / maxScrollValue) * totalStages)
+                .toInt()
+                .coerceIn(0, totalStages - 1)
+        } else {
+            0
         }
-        val density = LocalDensity.current
-        fun updateStageHeight(index: Int, newHeight: Int) {
-            if (index in stageHeightsPx.indices && stageHeightsPx[index] != newHeight) {
-                stageHeightsPx[index] = newHeight
-            }
+        val isAtBottom = maxScrollValue > 0 && scrollValue >= (maxScrollValue - 24)
+        val currentReachedStage = when {
+            !isCopied -> 0
+            isAtBottom -> totalStages - 1
+            else -> activeStageIndex.coerceAtLeast(1)
+        }
+        if (currentReachedStage > maxReachedStageIndex) {
+            maxReachedStageIndex = currentReachedStage
         }
 
-        BoxWithConstraints(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxSize(),
+                .verticalScroll(scrollState),
         ) {
-            val viewportHeightPx = with(density) { maxHeight.roundToPx() }
-            val progress = launchArgsStageProgress(
-                stageHeightsPx = stageHeightsPx,
-                scrollValue = scrollState.value,
-                viewportHeightPx = viewportHeightPx,
-                maxScrollValue = scrollState.maxValue,
-            )
-            val currentReachedStage = when {
-                !isCopied -> 0
-                progress.isAtBottom -> progress.lastStageIndex
-                else -> progress.activeStageIndex.coerceAtLeast(1)
-            }
-            if (currentReachedStage > maxReachedStageIndex) {
-                maxReachedStageIndex = currentReachedStage
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState),
-            ) {
+            key(maxReachedStageIndex, isCopied) {
                 StageTimeline(
                     stages = stages,
                     stageStatusProvider = { index ->
@@ -256,11 +202,8 @@ private fun LaunchArgsInstructionCard(
                             index = index,
                             isCopied = isCopied,
                             maxReachedStageIndex = maxReachedStageIndex,
-                            lastStageIndex = progress.lastStageIndex,
+                            lastStageIndex = totalStages - 1,
                         )
-                    },
-                    stageModifiers = stages.indices.associateWith { index ->
-                        Modifier.onSizeChanged { updateStageHeight(index = index, newHeight = it.height) }
                     },
                 )
             }
@@ -268,35 +211,48 @@ private fun LaunchArgsInstructionCard(
     }
 }
 
-private data class LaunchArgsStageProgress(
-    val activeStageIndex: Int,
-    val isAtBottom: Boolean,
-    val lastStageIndex: Int,
-)
-
-private fun launchArgsStageProgress(
-    stageHeightsPx: List<Int>,
-    scrollValue: Int,
-    viewportHeightPx: Int,
-    maxScrollValue: Int,
-    stageSwitchThresholdPx: Int = 24,
-): LaunchArgsStageProgress {
-    val totalStages = stageHeightsPx.size
-    val stageEnds = buildList {
-        var sum = 0
-        stageHeightsPx.forEach { height ->
-            sum += height
-            add(sum)
+@Composable
+private fun OpenSteamTitleWithLink(status: StageStatus) {
+    val baseText = stringResource(Res.string.launch_args_stage_open_steam)
+    val labelColor = when (status) {
+        StageStatus.NOT_STARTED -> MaterialTheme.colorScheme.onSurfaceVariant
+        StageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.onSurface
+        StageStatus.COMPLETED -> MaterialTheme.colorScheme.onSurface
+    }
+    val linkColor = MaterialTheme.colorScheme.primary
+    val linkPhrase = "Перейти к свойствам Rust в Steam"
+    val linkStart = baseText.indexOf(linkPhrase)
+    val linkEnd = if (linkStart >= 0) linkStart + linkPhrase.length else -1
+    val annotated = remember(baseText, linkStart, linkEnd, linkColor) {
+        buildAnnotatedString {
+            if (linkStart in 0..<linkEnd) {
+                append(baseText.substring(0, linkStart))
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = "steam-link",
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                color = linkColor,
+                                textDecoration = TextDecoration.Underline,
+                            ),
+                        ),
+                        linkInteractionListener = {
+                            openSteamRustDetails()
+                        },
+                    ),
+                ) {
+                    append(linkPhrase)
+                }
+                append(baseText.substring(linkEnd))
+            } else {
+                append(baseText)
+            }
         }
     }
-    val viewportBottom = scrollValue + viewportHeightPx
-    val passedStagesCount = stageEnds.count { end -> viewportBottom >= end - stageSwitchThresholdPx }
-    val activeStageIndex = passedStagesCount.coerceAtMost(totalStages - 1)
-    val isAtBottom = scrollValue >= (maxScrollValue - stageSwitchThresholdPx).coerceAtLeast(0)
-    return LaunchArgsStageProgress(
-        activeStageIndex = activeStageIndex,
-        isAtBottom = isAtBottom,
-        lastStageIndex = totalStages - 1,
+    Text(
+        text = annotated,
+        modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
+        style = MaterialTheme.typography.bodyMedium.copy(color = labelColor),
     )
 }
 

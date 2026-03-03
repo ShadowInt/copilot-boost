@@ -101,7 +101,7 @@
     <string name="launch_args_group_recommended">Рекомендуемые</string>
     <string name="launch_args_group_visual">Визуальные эффекты</string>
     <string name="launch_args_group_experimental">Экспериментальные</string>
-    <string name="launch_args_stage_open_steam">Откройте свойства Rust в Steam самостоятельно или воспользуйтесь кнопкой автоматического перехода в нужный раздел</string>
+    <string name="launch_args_stage_open_steam">Откройте свойства Rust в Steam самостоятельно или нажмите «Перейти к свойствам Rust в Steam» для автоматического открытия нужного раздела.</string>
     <string name="launch_args_stage_paste_params">Вставьте скопированные параметры в данное поле</string>
     <string name="launch_args_stage_done">Готово</string>
     <string name="launch_args_admin_teleport_label">Админский телепорт</string>
@@ -123,7 +123,6 @@
     <string name="apply_tweaks_download">Скачать</string>
     <string name="apply_launch_args_step1">Скопируйте выбранные параметры запуска</string>
     <string name="apply_launch_args_copy">Копировать</string>
-    <string name="apply_open_automatically">Открыть автоматически</string>
     <string name="apply_status_completed">Выполнено</string>
     <string name="apply_status_in_progress">Не завершено</string>
     <string name="apply_go_home">На главную</string>
