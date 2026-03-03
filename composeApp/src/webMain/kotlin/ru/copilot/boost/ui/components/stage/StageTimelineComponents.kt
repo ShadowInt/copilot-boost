@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +31,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -51,6 +57,7 @@ fun StageTimeline(
                     definition = stage,
                     status = stageStatusProvider(index),
                     showConnector = index != stages.lastIndex,
+                    markerLabel = (index + 1).toString(),
                 )
             }
         }
@@ -63,6 +70,7 @@ private fun StageTimelineRow(
     definition: StageDefinition,
     status: StageStatus,
     showConnector: Boolean,
+    markerLabel: String,
 ) {
     val markerColor = stageStatusColor(status)
     val labelColor = stageStatusTextColor(status)
@@ -79,7 +87,8 @@ private fun StageTimelineRow(
             color = markerColor,
             showConnector = showConnector,
             contentHeightPx = contentHeightPx,
-            markerTopOffset = 5.dp,
+            markerTopOffset = 0.dp,
+            markerLabel = markerLabel,
         )
         Column(
             modifier = Modifier
@@ -90,7 +99,7 @@ private fun StageTimelineRow(
                 text = definition.text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = labelColor,
-                modifier = Modifier.padding(top = 0.dp, end = 4.dp),
+                modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
             )
             if (isStarted) {
                 when {
@@ -104,7 +113,7 @@ private fun StageTimelineRow(
                             painter = painterResource(definition.imageResource),
                             contentDescription = definition.text,
                             modifier = Modifier
-                                .fillMaxWidth(0.82f),
+                                .fillMaxSize(0.4f),
                             contentScale = ContentScale.Fit,
                         )
                     }
@@ -121,6 +130,7 @@ fun StageMarkerColumn(
     showConnector: Boolean,
     contentHeightPx: Int,
     markerTopOffset: Dp = 0.dp,
+    markerLabel: String? = null,
 ) {
     val density = LocalDensity.current
     val markerColumnHeight = with(density) {
@@ -128,11 +138,11 @@ fun StageMarkerColumn(
     }
     Box(
         modifier = modifier
-            .width(16.dp)
+            .width(22.dp)
             .height(markerColumnHeight)
             .drawBehind {
                 if (showConnector) {
-                    val markerSize = 10.dp.toPx()
+                    val markerSize = 18.dp.toPx()
                     val gapBelowMarker = 2.dp.toPx()
                     val lineWidth = 2.dp.toPx()
                     val startY = markerTopOffset.toPx() + markerSize + gapBelowMarker
@@ -149,12 +159,28 @@ fun StageMarkerColumn(
         Box(
             modifier = Modifier
                 .padding(top = markerTopOffset)
-                .size(10.dp)
+                .size(18.dp)
                 .background(
                     color = color,
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(50),
+                    shape = androidx.compose.foundation.shape.CircleShape,
                 ),
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            if (markerLabel != null) {
+                Text(
+                    text = markerLabel,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                        .offset(y = (-1).dp),
+                    fontSize = 10.sp,
+                    lineHeight = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
     }
 }
 

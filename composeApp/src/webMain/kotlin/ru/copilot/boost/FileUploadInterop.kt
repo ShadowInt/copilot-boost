@@ -8,6 +8,8 @@ import org.w3c.dom.events.Event
 import org.w3c.files.File
 import ru.copilot.boost.model.UploadedFileData
 
+private var skipNextBeforeUnloadWarning = false
+
 fun observeGlobalFileDrop(
     onDragStateChanged: (Boolean) -> Unit,
     onFileSelected: (UploadedFileData) -> Unit,
@@ -118,10 +120,25 @@ fun copyTextToClipboard(text: String) {
     platformWriteTextToClipboard(text)
 }
 
+fun suppressNextUnloadWarning(durationMs: Int = 1500) {
+    skipNextBeforeUnloadWarning = true
+    window.setTimeout(
+        handler = {
+            skipNextBeforeUnloadWarning = false
+            null
+        },
+        timeout = durationMs,
+    )
+}
+
 fun observePageUnloadWarning(message: String): () -> Unit {
     val beforeUnloadListener: (Event) -> Unit = { event ->
-        event.preventDefault()
-        platformSetBeforeUnloadReturnValue(event, message)
+        if (skipNextBeforeUnloadWarning) {
+            skipNextBeforeUnloadWarning = false
+        } else {
+            event.preventDefault()
+            platformSetBeforeUnloadReturnValue(event, message)
+        }
     }
     window.addEventListener("beforeunload", beforeUnloadListener)
     return {
