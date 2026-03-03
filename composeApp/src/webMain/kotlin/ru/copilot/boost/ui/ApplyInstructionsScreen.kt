@@ -1,7 +1,6 @@
 package ru.copilot.boost.ui
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -10,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -25,10 +23,11 @@ import kotlinx.browser.window
 import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.presentation.SetupModuleId
 import ru.copilot.boost.suppressNextUnloadWarning
+import ru.copilot.boost.ui.components.ModuleInstructionCard
 import ru.copilot.boost.ui.components.ModuleScaffold
 import ru.copilot.boost.ui.components.stage.StageDefinition
+import ru.copilot.boost.ui.components.stage.StageInstructionCard
 import ru.copilot.boost.ui.components.stage.StageStatus
-import ru.copilot.boost.ui.components.stage.StageTimeline
 
 @Composable
 fun ApplyInstructionsScreen(
@@ -83,16 +82,16 @@ fun ApplyInstructionsScreen(
                             expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
                         },
                     )
-                    SetupModuleId.LaunchArgs -> LaunchArgsInstructionCard(
+                    SetupModuleId.LaunchArgs -> StageInstructionCard(
                         modifier = cardModifier,
-                        hasSettings = launchArgsHasSettings,
-                        launchArgs = launchArgs,
-                        isCopied = isLaunchArgsCopied,
-                        onCopy = onCopyLaunchArgs,
+                        title = stringResource(Res.string.module_launch_args_title),
+                        stages = launchArgsStages(launchArgs, onCopyLaunchArgs),
+                        isActivated = isLaunchArgsCopied,
                         expanded = isExpanded,
                         onToggle = {
                             expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
                         },
+                        hasContent = launchArgsHasSettings,
                     )
                     SetupModuleId.Binds -> ModuleInstructionCard(
                         modifier = cardModifier,
@@ -101,7 +100,13 @@ fun ApplyInstructionsScreen(
                         onToggle = {
                             expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
                         },
-                    ) { SkippedLabel() }
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.apply_skipped),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }
@@ -109,107 +114,29 @@ fun ApplyInstructionsScreen(
 }
 
 @Composable
-private fun LaunchArgsInstructionCard(
-    modifier: Modifier = Modifier,
-    hasSettings: Boolean,
+private fun launchArgsStages(
     launchArgs: String,
-    isCopied: Boolean,
     onCopy: () -> Unit,
-    expanded: Boolean,
-    onToggle: () -> Unit,
-) {
-    val stages = listOf(
-        StageDefinition(
-            text = stringResource(Res.string.apply_launch_args_step1),
-            content = { _ ->
-                LaunchArgsCopyBox(launchArgs = launchArgs, onCopy = onCopy)
-            },
-        ),
-        StageDefinition(
-            text = stringResource(Res.string.launch_args_stage_open_steam),
-            imageResource = Res.drawable.lib_steam_macos_ru,
-            titleContent = { status ->
-                OpenSteamTitleWithLink(status = status)
-            },
-        ),
-        StageDefinition(
-            text = stringResource(Res.string.launch_args_stage_paste_params),
-            imageResource = Res.drawable.rust_steam_args_macos_ru,
-        ),
-        StageDefinition(text = stringResource(Res.string.launch_args_stage_done)),
-    )
-    val totalStages = stages.size
-    var maxReachedStageIndex by remember(isCopied, totalStages) {
-        mutableIntStateOf(if (isCopied) 1 else 0)
-    }
-    ModuleInstructionCard(
-        modifier = modifier,
-        title = stringResource(Res.string.module_launch_args_title),
-        expanded = expanded,
-        onToggle = onToggle,
-        statusIcon = if (isCopied && maxReachedStageIndex >= (totalStages - 1)) {
-            Icons.Filled.CheckCircle
-        } else {
-            Icons.Filled.Schedule
+): List<StageDefinition> = listOf(
+    StageDefinition(
+        text = stringResource(Res.string.apply_launch_args_step1),
+        content = { _ ->
+            LaunchArgsCopyBox(launchArgs = launchArgs, onCopy = onCopy)
         },
-        statusIconTint = if (isCopied && maxReachedStageIndex >= (totalStages - 1)) {
-            Color(0xFF2E7D32)
-        } else {
-            Color(0xFFF9A825)
+    ),
+    StageDefinition(
+        text = stringResource(Res.string.launch_args_stage_open_steam),
+        imageResource = Res.drawable.lib_steam_macos_ru,
+        titleContent = { status ->
+            OpenSteamTitleWithLink(status = status)
         },
-        statusContentDescription = if (isCopied && maxReachedStageIndex >= (totalStages - 1)) {
-            stringResource(Res.string.apply_status_completed)
-        } else {
-            stringResource(Res.string.apply_status_in_progress)
-        },
-    ) {
-        if (!hasSettings) {
-            SkippedLabel()
-            return@ModuleInstructionCard
-        }
-
-        val scrollState = rememberScrollState()
-
-        val scrollValue = scrollState.value
-        val maxScrollValue = scrollState.maxValue
-        val activeStageIndex = if (maxScrollValue > 0) {
-            ((scrollValue.toFloat() / maxScrollValue) * totalStages)
-                .toInt()
-                .coerceIn(0, totalStages - 1)
-        } else {
-            0
-        }
-        val isAtBottom = maxScrollValue > 0 && scrollValue >= (maxScrollValue - 24)
-        val currentReachedStage = when {
-            !isCopied -> 0
-            isAtBottom -> totalStages - 1
-            else -> activeStageIndex.coerceAtLeast(1)
-        }
-        if (currentReachedStage > maxReachedStageIndex) {
-            maxReachedStageIndex = currentReachedStage
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(scrollState),
-        ) {
-            key(maxReachedStageIndex, isCopied) {
-                StageTimeline(
-                    stages = stages,
-                    stageStatusProvider = { index ->
-                        launchArgsStageStatus(
-                            index = index,
-                            isCopied = isCopied,
-                            maxReachedStageIndex = maxReachedStageIndex,
-                            lastStageIndex = totalStages - 1,
-                        )
-                    },
-                )
-            }
-        }
-    }
-}
+    ),
+    StageDefinition(
+        text = stringResource(Res.string.launch_args_stage_paste_params),
+        imageResource = Res.drawable.rust_steam_args_macos_ru,
+    ),
+    StageDefinition(text = stringResource(Res.string.launch_args_stage_done)),
+)
 
 @Composable
 private fun OpenSteamTitleWithLink(status: StageStatus) {
@@ -254,22 +181,6 @@ private fun OpenSteamTitleWithLink(status: StageStatus) {
         modifier = Modifier.padding(start = 10.dp, top = 4.dp, end = 8.dp, bottom = 4.dp),
         style = MaterialTheme.typography.bodyMedium.copy(color = labelColor),
     )
-}
-
-private fun launchArgsStageStatus(
-    index: Int,
-    isCopied: Boolean,
-    maxReachedStageIndex: Int,
-    lastStageIndex: Int,
-): StageStatus {
-    return when {
-        !isCopied && index == 0 -> StageStatus.IN_PROGRESS
-        !isCopied -> StageStatus.NOT_STARTED
-        maxReachedStageIndex >= lastStageIndex -> StageStatus.COMPLETED
-        index < maxReachedStageIndex -> StageStatus.COMPLETED
-        index == maxReachedStageIndex -> StageStatus.IN_PROGRESS
-        else -> StageStatus.NOT_STARTED
-    }
 }
 
 private fun openSteamRustDetails() {
@@ -332,7 +243,11 @@ private fun TwoStepInstructionCard(
         onToggle = onToggle,
     ) {
         if (!hasContent) {
-            SkippedLabel()
+            Text(
+                text = stringResource(Res.string.apply_skipped),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         } else {
             InstructionStepWithAction(
                 stepNumber = 1,
@@ -345,74 +260,6 @@ private fun TwoStepInstructionCard(
                 stepNumber = 2,
                 text = step2Text,
             )
-        }
-    }
-}
-
-@Composable
-private fun ModuleInstructionCard(
-    modifier: Modifier = Modifier,
-    title: String,
-    expanded: Boolean,
-    onToggle: () -> Unit,
-    statusIcon: ImageVector? = null,
-    statusIconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    statusContentDescription: String? = null,
-    content: @Composable () -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    Card(
-        modifier = modifier
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onToggle,
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (statusIcon != null) {
-                        Icon(
-                            imageVector = statusIcon,
-                            contentDescription = statusContentDescription,
-                            tint = statusIconTint,
-                        )
-                    }
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                        contentDescription = null,
-                    )
-                }
-            }
-            if (!expanded) return@Column
-            Spacer(modifier = Modifier.height(12.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f, fill = true),
-            ) {
-                content()
-            }
         }
     }
 }
@@ -468,13 +315,4 @@ private fun InstructionStepWithAction(
             Text(actionLabel)
         }
     }
-}
-
-@Composable
-private fun SkippedLabel() {
-    Text(
-        text = stringResource(Res.string.apply_skipped),
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
 }
