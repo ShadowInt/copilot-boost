@@ -42,7 +42,28 @@ fun ApplyInstructionsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    var showExitConfirmationDialog by remember { mutableStateOf(false) }
     val copiedMessage = stringResource(Res.string.apply_launch_args_copied)
+    val tweaksTitle = stringResource(Res.string.module_tweaks_title)
+    val launchArgsTitle = stringResource(Res.string.module_launch_args_title)
+    val incompleteModuleNames = remember(
+        selectedModules,
+        cfgHasChanges,
+        launchArgsHasSettings,
+        applyStore.isTweaksDownloadTriggered,
+        isLaunchArgsCopied,
+        tweaksTitle,
+        launchArgsTitle,
+    ) {
+        buildList {
+            if (SetupModuleId.Tweaks in selectedModules && cfgHasChanges && !applyStore.isTweaksDownloadTriggered) {
+                add(tweaksTitle)
+            }
+            if (SetupModuleId.LaunchArgs in selectedModules && launchArgsHasSettings && !isLaunchArgsCopied) {
+                add(launchArgsTitle)
+            }
+        }
+    }
     val onCopyWithSnackbar = remember(onCopyLaunchArgs, copiedMessage) {
         {
             onCopyLaunchArgs()
@@ -62,11 +83,21 @@ fun ApplyInstructionsScreen(
         }
     }
 
+    val onGoHomeWithValidation = remember(incompleteModuleNames, onGoHome) {
+        {
+            if (incompleteModuleNames.isEmpty()) {
+                onGoHome()
+            } else {
+                showExitConfirmationDialog = true
+            }
+        }
+    }
+
     ModuleScaffold(
         title = stringResource(Res.string.step_apply_instructions_title),
         onBack = onBack,
         primaryActionText = stringResource(Res.string.apply_go_home),
-        onPrimaryAction = onGoHome,
+        onPrimaryAction = onGoHomeWithValidation,
     ) {
         Box(
             modifier = Modifier
@@ -135,6 +166,38 @@ fun ApplyInstructionsScreen(
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
             )
+
+            if (showExitConfirmationDialog) {
+                AlertDialog(
+                    onDismissRequest = { showExitConfirmationDialog = false },
+                    title = {
+                        Text(text = stringResource(Res.string.apply_exit_dialog_title))
+                    },
+                    text = {
+                        val incompleteText = incompleteModuleNames.joinToString(separator = "\n") { "- $it" }
+                        Text(
+                            text = stringResource(Res.string.apply_exit_dialog_message, incompleteText),
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showExitConfirmationDialog = false
+                                onGoHome()
+                            },
+                        ) {
+                            Text(stringResource(Res.string.apply_exit_dialog_confirm))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showExitConfirmationDialog = false },
+                        ) {
+                            Text(stringResource(Res.string.apply_exit_dialog_dismiss))
+                        }
+                    },
+                )
+            }
         }
     }
 }
