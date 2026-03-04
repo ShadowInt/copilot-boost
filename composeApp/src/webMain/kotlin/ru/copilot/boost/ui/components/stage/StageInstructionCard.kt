@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import copilotboost.composeapp.generated.resources.Res
 import copilotboost.composeapp.generated.resources.apply_skipped
 import copilotboost.composeapp.generated.resources.apply_status_completed
@@ -44,9 +43,9 @@ fun StageInstructionCard(
             Icons.Filled.Schedule
         },
         statusIconTint = if (isActivated && maxReachedStageIndex >= (totalStages - 1)) {
-            Color(0xFF2E7D32)
+            StatusColors.completed
         } else {
-            Color(0xFFF9A825)
+            StatusColors.inProgress
         },
         statusContentDescription = if (isActivated && maxReachedStageIndex >= (totalStages - 1)) {
             stringResource(Res.string.apply_status_completed)
@@ -76,8 +75,10 @@ fun StageInstructionCard(
             isAtBottom -> totalStages - 1
             else -> activeStageIndex.coerceAtLeast(1)
         }
-        if (currentReachedStage > maxReachedStageIndex) {
-            maxReachedStageIndex = currentReachedStage
+        SideEffect {
+            if (currentReachedStage > maxReachedStageIndex) {
+                maxReachedStageIndex = currentReachedStage
+            }
         }
 
         Column(
@@ -119,7 +120,7 @@ private fun stageStatusFromProgress(
 }
 
 @Composable
-private fun SkippedLabel() {
+internal fun SkippedLabel() {
     Text(
         text = stringResource(Res.string.apply_skipped),
         style = MaterialTheme.typography.bodyLarge,

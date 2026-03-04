@@ -191,6 +191,12 @@ enum class StageStatus {
     COMPLETED,
 }
 
+object StatusColors {
+    val completed = Color(0xFF2E7D32)
+    val inProgress = Color(0xFFF9A825)
+    val error = Color(0xFFC62828)
+}
+
 data class StageDefinition(
     val text: String,
     val imageResource: DrawableResource? = null,
@@ -202,7 +208,7 @@ data class StageDefinition(
 fun stageStatusColor(status: StageStatus): Color = when (status) {
     StageStatus.NOT_STARTED -> MaterialTheme.colorScheme.outlineVariant
     StageStatus.IN_PROGRESS -> MaterialTheme.colorScheme.primary
-    StageStatus.COMPLETED -> Color(0xFF2E7D32)
+    StageStatus.COMPLETED -> StatusColors.completed
 }
 
 @Composable

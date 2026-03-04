@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import ru.copilot.boost.ui.components.stage.StatusColors
 
 enum class SnackbarTone {
     Success,
@@ -69,9 +70,9 @@ private fun AppSnackbar(snackbarData: SnackbarData) {
     val visuals = snackbarData.visuals as? AppSnackbarVisuals
     val tone = visuals?.tone ?: SnackbarTone.Success
     val containerColor = when (tone) {
-        SnackbarTone.Success -> Color(0xFF2E7D32)
-        SnackbarTone.Warning -> Color(0xFFF9A825)
-        SnackbarTone.Error -> Color(0xFFC62828)
+        SnackbarTone.Success -> StatusColors.completed
+        SnackbarTone.Warning -> StatusColors.inProgress
+        SnackbarTone.Error -> StatusColors.error
     }
     val contentColor = when (tone) {
         SnackbarTone.Warning -> Color(0xFF1F1F1F)

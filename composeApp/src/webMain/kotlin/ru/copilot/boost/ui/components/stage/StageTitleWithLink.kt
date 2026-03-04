@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -28,6 +30,7 @@ fun StageTitleWithLink(
         StageStatus.COMPLETED -> MaterialTheme.colorScheme.onSurface
     }
     val linkColor = MaterialTheme.colorScheme.primary
+    val currentOnLinkClick by rememberUpdatedState(onLinkClick)
     val linkStart = text.indexOf(linkPhrase)
     val linkEnd = if (linkStart >= 0) linkStart + linkPhrase.length else -1
     val annotated = remember(text, linkStart, linkEnd, linkColor) {
@@ -43,7 +46,7 @@ fun StageTitleWithLink(
                                 textDecoration = TextDecoration.Underline,
                             ),
                         ),
-                        linkInteractionListener = { onLinkClick() },
+                        linkInteractionListener = { currentOnLinkClick() },
                     ),
                 ) {
                     append(linkPhrase)

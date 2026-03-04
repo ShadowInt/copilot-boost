@@ -8,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.*
@@ -22,6 +21,7 @@ import ru.copilot.boost.ui.components.ModuleInstructionCard
 import ru.copilot.boost.ui.components.ModuleScaffold
 import ru.copilot.boost.ui.components.SnackbarTone
 import ru.copilot.boost.ui.components.showAppSnackbar
+import ru.copilot.boost.ui.components.stage.SkippedLabel
 import ru.copilot.boost.ui.components.stage.StageDefinition
 import ru.copilot.boost.ui.components.stage.StageInstructionCard
 import ru.copilot.boost.ui.components.stage.StageTitleWithLink
@@ -85,6 +85,7 @@ fun ApplyInstructionsScreen(
                 }
                 for (moduleId in visibleModules) {
                     val isExpanded = expandedModuleId == moduleId
+                    val onToggle = { expandedModuleId = if (expandedModuleId == moduleId) null else moduleId }
                     val cardModifier = if (isExpanded) {
                         Modifier
                             .fillMaxWidth()
@@ -100,9 +101,7 @@ fun ApplyInstructionsScreen(
                             isActivated = isTweaksDownloadTriggered,
                             hasContent = cfgHasChanges,
                             expanded = isExpanded,
-                            onToggle = {
-                                expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
-                            },
+                            onToggle = onToggle,
                         )
                         SetupModuleId.LaunchArgs -> StageInstructionCard(
                             modifier = cardModifier,
@@ -110,24 +109,16 @@ fun ApplyInstructionsScreen(
                             stages = launchArgsStages(launchArgs, onCopyWithSnackbar),
                             isActivated = isLaunchArgsCopied,
                             expanded = isExpanded,
-                            onToggle = {
-                                expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
-                            },
+                            onToggle = onToggle,
                             hasContent = launchArgsHasSettings,
                         )
                         SetupModuleId.Binds -> ModuleInstructionCard(
                             modifier = cardModifier,
                             title = stringResource(Res.string.module_binds_title),
                             expanded = isExpanded,
-                            onToggle = {
-                                expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
-                            },
+                            onToggle = onToggle,
                         ) {
-                            Text(
-                                text = stringResource(Res.string.apply_skipped),
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                            SkippedLabel()
                         }
                     }
                 }
@@ -207,7 +198,7 @@ private fun LaunchArgsCopyBox(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp, max = 180.dp)
-            .border(1.dp, Color.Gray)
+            .border(1.dp, MaterialTheme.colorScheme.outline)
             .padding(start = 12.dp, top = 6.dp, end = 4.dp, bottom = 6.dp),
     ) {
         Text(
