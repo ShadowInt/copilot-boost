@@ -14,6 +14,7 @@ import copilotboost.composeapp.generated.resources.*
 import kotlinx.browser.window
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import ru.copilot.boost.presentation.ApplyInstructionsStore
 import ru.copilot.boost.presentation.SetupModuleId
 import ru.copilot.boost.suppressNextUnloadWarning
 import ru.copilot.boost.ui.components.AppSnackbarHost
@@ -37,10 +38,10 @@ fun ApplyInstructionsScreen(
     onCopyLaunchArgs: () -> Unit,
     onBack: () -> Unit,
     onGoHome: () -> Unit,
+    applyStore: ApplyInstructionsStore,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var isTweaksDownloadTriggered by remember(cfgHasChanges) { mutableStateOf(false) }
     val copiedMessage = stringResource(Res.string.apply_launch_args_copied)
     val onCopyWithSnackbar = remember(onCopyLaunchArgs, copiedMessage) {
         {
@@ -54,10 +55,10 @@ fun ApplyInstructionsScreen(
             Unit
         }
     }
-    val onDownloadCfgWithProgress = remember(onDownloadCfg) {
+    val onDownloadCfgWithProgress = remember(onDownloadCfg, applyStore) {
         {
             onDownloadCfg()
-            isTweaksDownloadTriggered = true
+            applyStore.onTweaksDownloaded()
         }
     }
 
@@ -98,10 +99,12 @@ fun ApplyInstructionsScreen(
                             modifier = cardModifier,
                             title = stringResource(Res.string.module_tweaks_title),
                             stages = tweaksStages(onDownloadCfgWithProgress),
-                            isActivated = isTweaksDownloadTriggered,
+                            isActivated = applyStore.isTweaksDownloadTriggered,
                             hasContent = cfgHasChanges,
                             expanded = isExpanded,
                             onToggle = onToggle,
+                            maxReachedStageIndex = applyStore.maxReachedStageIndex(moduleId, applyStore.isTweaksDownloadTriggered),
+                            onMaxReachedStageIndexChanged = { index -> applyStore.updateMaxReachedStageIndex(moduleId, index) },
                         )
                         SetupModuleId.LaunchArgs -> StageInstructionCard(
                             modifier = cardModifier,
@@ -111,6 +114,8 @@ fun ApplyInstructionsScreen(
                             expanded = isExpanded,
                             onToggle = onToggle,
                             hasContent = launchArgsHasSettings,
+                            maxReachedStageIndex = applyStore.maxReachedStageIndex(moduleId, isLaunchArgsCopied),
+                            onMaxReachedStageIndexChanged = { index -> applyStore.updateMaxReachedStageIndex(moduleId, index) },
                         )
                         SetupModuleId.Binds -> ModuleInstructionCard(
                             modifier = cardModifier,

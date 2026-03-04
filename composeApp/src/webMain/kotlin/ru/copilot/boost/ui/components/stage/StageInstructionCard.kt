@@ -27,11 +27,10 @@ fun StageInstructionCard(
     expanded: Boolean,
     onToggle: () -> Unit,
     hasContent: Boolean = true,
+    maxReachedStageIndex: Int = if (isActivated) 1 else 0,
+    onMaxReachedStageIndexChanged: (Int) -> Unit = {},
 ) {
     val totalStages = stages.size
-    var maxReachedStageIndex by remember(isActivated, totalStages) {
-        mutableIntStateOf(if (isActivated) 1 else 0)
-    }
     ModuleInstructionCard(
         modifier = modifier,
         title = title,
@@ -77,7 +76,7 @@ fun StageInstructionCard(
         }
         SideEffect {
             if (currentReachedStage > maxReachedStageIndex) {
-                maxReachedStageIndex = currentReachedStage
+                onMaxReachedStageIndexChanged(currentReachedStage)
             }
         }
 

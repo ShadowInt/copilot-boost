@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
+import ru.copilot.boost.presentation.ApplyInstructionsStore
 import ru.copilot.boost.presentation.CfgEditorStore
 import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.presentation.SetupCoordinator
@@ -28,8 +29,9 @@ import ru.copilot.boost.ui.i18n.setupText
 fun App() {
     val cfgStore = remember { CfgEditorStore() }
     val launchArgsStore = remember { LaunchArgsStore() }
-    val moduleStores = remember(cfgStore, launchArgsStore) {
-        listOf(cfgStore, launchArgsStore)
+    val applyStore = remember { ApplyInstructionsStore() }
+    val moduleStores = remember(cfgStore, launchArgsStore, applyStore) {
+        listOf(cfgStore, launchArgsStore, applyStore)
     }
     val flowStore = remember { SetupFlowStore() }
     val coordinator = remember(flowStore, moduleStores) {
@@ -189,6 +191,7 @@ fun App() {
                     },
                     onBack = coordinator::returnToLastFlowStep,
                     onGoHome = coordinator::goHome,
+                    applyStore = applyStore,
                 )
             }
         }
