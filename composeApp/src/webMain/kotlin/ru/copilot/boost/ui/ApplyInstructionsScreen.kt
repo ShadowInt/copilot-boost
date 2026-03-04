@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.*
 import kotlinx.browser.window
@@ -41,6 +40,7 @@ fun ApplyInstructionsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    var isTweaksDownloadTriggered by remember(cfgHasChanges) { mutableStateOf(false) }
     val copiedMessage = stringResource(Res.string.apply_launch_args_copied)
     val onCopyWithSnackbar = remember(onCopyLaunchArgs, copiedMessage) {
         {
@@ -52,6 +52,12 @@ fun ApplyInstructionsScreen(
                 )
             }
             Unit
+        }
+    }
+    val onDownloadCfgWithProgress = remember(onDownloadCfg) {
+        {
+            onDownloadCfg()
+            isTweaksDownloadTriggered = true
         }
     }
 
@@ -87,14 +93,12 @@ fun ApplyInstructionsScreen(
                         Modifier.fillMaxWidth()
                     }
                     when (moduleId) {
-                        SetupModuleId.Tweaks -> TwoStepInstructionCard(
+                        SetupModuleId.Tweaks -> StageInstructionCard(
                             modifier = cardModifier,
                             title = stringResource(Res.string.module_tweaks_title),
+                            stages = tweaksStages(onDownloadCfgWithProgress),
+                            isActivated = isTweaksDownloadTriggered,
                             hasContent = cfgHasChanges,
-                            step1Text = stringResource(Res.string.apply_tweaks_step1),
-                            step1ActionLabel = stringResource(Res.string.apply_tweaks_download),
-                            onStep1Action = onDownloadCfg,
-                            step2Text = stringResource(Res.string.apply_tweaks_step2),
                             expanded = isExpanded,
                             onToggle = {
                                 expandedModuleId = if (expandedModuleId == moduleId) null else moduleId
@@ -138,6 +142,26 @@ fun ApplyInstructionsScreen(
         }
     }
 }
+
+@Composable
+private fun tweaksStages(
+    onDownloadCfg: () -> Unit,
+): List<StageDefinition> = listOf(
+    StageDefinition(
+        text = stringResource(Res.string.apply_tweaks_step1),
+        content = { _ ->
+            Button(
+                onClick = onDownloadCfg,
+                modifier = Modifier.padding(start = 10.dp),
+            ) {
+                Text(stringResource(Res.string.apply_tweaks_download))
+            }
+        },
+    ),
+    StageDefinition(
+        text = stringResource(Res.string.apply_tweaks_step2),
+    ),
+)
 
 @Composable
 private fun launchArgsStages(
@@ -210,95 +234,3 @@ private fun LaunchArgsCopyBox(
     }
 }
 
-@Composable
-private fun TwoStepInstructionCard(
-    modifier: Modifier = Modifier,
-    title: String,
-    hasContent: Boolean,
-    step1Text: String,
-    step1ActionLabel: String,
-    onStep1Action: () -> Unit,
-    step2Text: String,
-    expanded: Boolean,
-    onToggle: () -> Unit,
-) {
-    ModuleInstructionCard(
-        modifier = modifier,
-        title = title,
-        expanded = expanded,
-        onToggle = onToggle,
-    ) {
-        if (!hasContent) {
-            Text(
-                text = stringResource(Res.string.apply_skipped),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        } else {
-            InstructionStepWithAction(
-                stepNumber = 1,
-                text = step1Text,
-                actionLabel = step1ActionLabel,
-                onAction = onStep1Action,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            InstructionStep(
-                stepNumber = 2,
-                text = step2Text,
-            )
-        }
-    }
-}
-
-@Composable
-private fun InstructionStep(stepNumber: Int, text: String) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = "$stepNumber.",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(end = 8.dp),
-        )
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-    }
-}
-
-@Composable
-private fun InstructionStepWithAction(
-    stepNumber: Int,
-    text: String,
-    actionLabel: String,
-    onAction: () -> Unit,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(
-                text = "$stepNumber.",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(end = 8.dp),
-            )
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
-        Button(
-            onClick = onAction,
-            modifier = Modifier.padding(start = 12.dp),
-        ) {
-            Text(actionLabel)
-        }
-    }
-}
