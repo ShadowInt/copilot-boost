@@ -3,6 +3,7 @@ package ru.copilot.boost
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
 import ru.copilot.boost.presentation.ApplyInstructionsStore
@@ -71,6 +72,10 @@ fun App() {
             )
             onDispose { disposeWarning() }
         }
+    }
+
+    LaunchedEffect(cfgStore.state.patchedContent) {
+        applyStore.resetTweaksDownload()
     }
 
     MaterialTheme {

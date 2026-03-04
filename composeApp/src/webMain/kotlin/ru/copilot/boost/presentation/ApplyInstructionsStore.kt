@@ -14,6 +14,12 @@ class ApplyInstructionsStore : SetupModuleStore {
         isTweaksDownloadTriggered = true
     }
 
+    fun resetTweaksDownload() {
+        if (!isTweaksDownloadTriggered) return
+        isTweaksDownloadTriggered = false
+        _maxReachedStageIndices = _maxReachedStageIndices - SetupModuleId.Tweaks
+    }
+
     fun maxReachedStageIndex(moduleId: SetupModuleId, isActivated: Boolean): Int {
         val minimum = if (isActivated) 1 else 0
         return (_maxReachedStageIndices[moduleId] ?: 0).coerceAtLeast(minimum)
