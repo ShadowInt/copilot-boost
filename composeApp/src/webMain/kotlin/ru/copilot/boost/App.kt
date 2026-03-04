@@ -63,7 +63,15 @@ fun App() {
         }
     }
 
-    val shouldWarnOnPageRefresh = currentScreen != AppScreen.Home
+    val shouldWarnOnPageRefresh = when (currentScreen) {
+        AppScreen.Home,
+        AppScreen.SetupSelection -> false
+        AppScreen.ClientCfgUpload,
+        AppScreen.Tweaks,
+        AppScreen.Binds,
+        AppScreen.LaunchArgs,
+        AppScreen.ApplyInstructions -> true
+    }
     val unloadWarningMessage = flowUnloadWarningText()
     if (shouldWarnOnPageRefresh) {
         DisposableEffect(currentScreen) {
