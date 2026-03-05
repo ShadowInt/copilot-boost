@@ -185,6 +185,8 @@ fun App() {
                 ApplyInstructionsScreen(
                     selectedModules = flowStore.selectedModules,
                     cfgHasChanges = cfgStore.state.hasChanges,
+                    cfgFileName = cfgStore.state.downloadFileName ?: "client.cfg",
+                    cfgPatchedContent = cfgStore.state.patchedContent,
                     onDownloadCfg = {
                         val fileName = cfgStore.state.downloadFileName ?: return@ApplyInstructionsScreen
                         downloadCfgFile(

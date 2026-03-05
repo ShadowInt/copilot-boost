@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 class ApplyInstructionsStore : SetupModuleStore {
     var isTweaksDownloadTriggered by mutableStateOf(false)
         private set
+    var isTweaksScriptCopied by mutableStateOf(false)
+        private set
 
     private var _maxReachedStageIndices by mutableStateOf<Map<SetupModuleId, Int>>(emptyMap())
 
@@ -14,9 +16,14 @@ class ApplyInstructionsStore : SetupModuleStore {
         isTweaksDownloadTriggered = true
     }
 
+    fun onTweaksScriptCopied() {
+        isTweaksScriptCopied = true
+    }
+
     fun resetTweaksDownload() {
-        if (!isTweaksDownloadTriggered) return
+        if (!isTweaksDownloadTriggered && !isTweaksScriptCopied) return
         isTweaksDownloadTriggered = false
+        isTweaksScriptCopied = false
         _maxReachedStageIndices = _maxReachedStageIndices - SetupModuleId.Tweaks
     }
 
@@ -34,6 +41,7 @@ class ApplyInstructionsStore : SetupModuleStore {
 
     override fun reset() {
         isTweaksDownloadTriggered = false
+        isTweaksScriptCopied = false
         _maxReachedStageIndices = emptyMap()
     }
 }

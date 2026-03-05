@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.presentation.ApplyInstructionsStore
 import ru.copilot.boost.presentation.SetupModuleId
+import ru.copilot.boost.copyTextToClipboard
 import ru.copilot.boost.suppressNextUnloadWarning
 import ru.copilot.boost.ui.components.AppSnackbarHost
 import ru.copilot.boost.ui.components.ExitConfirmationDialog
@@ -32,6 +33,8 @@ import ru.copilot.boost.ui.components.stage.StageTitleWithLink
 fun ApplyInstructionsScreen(
     selectedModules: Set<SetupModuleId>,
     cfgHasChanges: Boolean,
+    cfgFileName: String,
+    cfgPatchedContent: String,
     onDownloadCfg: () -> Unit,
     launchArgsHasSettings: Boolean,
     launchArgs: String,
@@ -45,15 +48,29 @@ fun ApplyInstructionsScreen(
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
     val copiedMessage = stringResource(Res.string.apply_launch_args_copied)
+    val tweaksScriptCopiedMessage = stringResource(Res.string.apply_tweaks_script_copied)
+    var tweaksInstallMode by remember { mutableStateOf(TweaksInstallMode.MANUAL) }
+    val tweaksInstallScript = remember(cfgFileName, cfgPatchedContent) {
+        buildTweaksInstallScript(
+            cfgFileName = cfgFileName,
+            cfgContent = cfgPatchedContent,
+        )
+    }
+    val isTweaksActivated = when (tweaksInstallMode) {
+        TweaksInstallMode.MANUAL -> applyStore.isTweaksDownloadTriggered
+        TweaksInstallMode.AUTOMATIC -> applyStore.isTweaksScriptCopied
+    }
     val incompleteModuleIds = remember(
         selectedModules,
         cfgHasChanges,
         launchArgsHasSettings,
         applyStore.isTweaksDownloadTriggered,
+        applyStore.isTweaksScriptCopied,
+        tweaksInstallMode,
         isLaunchArgsCopied,
     ) {
         buildList {
-            if (SetupModuleId.Tweaks in selectedModules && cfgHasChanges && !applyStore.isTweaksDownloadTriggered) {
+            if (SetupModuleId.Tweaks in selectedModules && cfgHasChanges && !isTweaksActivated) {
                 add(SetupModuleId.Tweaks)
             }
             if (SetupModuleId.LaunchArgs in selectedModules && launchArgsHasSettings && !isLaunchArgsCopied) {
@@ -77,6 +94,19 @@ fun ApplyInstructionsScreen(
         {
             onDownloadCfg()
             applyStore.onTweaksDownloaded()
+        }
+    }
+    val onCopyTweaksScript = remember(tweaksInstallScript, applyStore, tweaksScriptCopiedMessage) {
+        {
+            copyTextToClipboard(tweaksInstallScript)
+            applyStore.onTweaksScriptCopied()
+            coroutineScope.launch {
+                snackbarHostState.showAppSnackbar(
+                    message = tweaksScriptCopiedMessage,
+                    tone = SnackbarTone.Success,
+                )
+            }
+            Unit
         }
     }
 
@@ -128,12 +158,18 @@ fun ApplyInstructionsScreen(
                         SetupModuleId.Tweaks -> StageInstructionCard(
                             modifier = cardModifier,
                             title = stringResource(Res.string.module_tweaks_title),
-                            stages = tweaksStages(onDownloadCfgWithProgress),
-                            isActivated = applyStore.isTweaksDownloadTriggered,
+                            stages = tweaksStages(
+                                installMode = tweaksInstallMode,
+                                script = tweaksInstallScript,
+                                onInstallModeChanged = { tweaksInstallMode = it },
+                                onDownloadCfg = onDownloadCfgWithProgress,
+                                onCopyScript = onCopyTweaksScript,
+                            ),
+                            isActivated = isTweaksActivated,
                             hasContent = cfgHasChanges,
                             expanded = isExpanded,
                             onToggle = onToggle,
-                            maxReachedStageIndex = applyStore.maxReachedStageIndex(moduleId, applyStore.isTweaksDownloadTriggered),
+                            maxReachedStageIndex = applyStore.maxReachedStageIndex(moduleId, isTweaksActivated),
                             onMaxReachedStageIndexChanged = { index -> applyStore.updateMaxReachedStageIndex(moduleId, index) },
                         )
                         SetupModuleId.LaunchArgs -> StageInstructionCard(
@@ -192,21 +228,66 @@ fun ApplyInstructionsScreen(
 
 @Composable
 private fun tweaksStages(
+    installMode: TweaksInstallMode,
+    script: String,
+    onInstallModeChanged: (TweaksInstallMode) -> Unit,
     onDownloadCfg: () -> Unit,
+    onCopyScript: () -> Unit,
 ): List<StageDefinition> = listOf(
     StageDefinition(
-        text = stringResource(Res.string.apply_tweaks_step1),
+        text = stringResource(Res.string.apply_tweaks_step_select_mode),
         content = { _ ->
-            Button(
-                onClick = onDownloadCfg,
-                modifier = Modifier.padding(start = 10.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(stringResource(Res.string.apply_tweaks_download))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = installMode == TweaksInstallMode.MANUAL,
+                        onClick = { onInstallModeChanged(TweaksInstallMode.MANUAL) },
+                    )
+                    Text(text = stringResource(Res.string.apply_tweaks_mode_manual))
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = installMode == TweaksInstallMode.AUTOMATIC,
+                        onClick = { onInstallModeChanged(TweaksInstallMode.AUTOMATIC) },
+                    )
+                    Text(text = stringResource(Res.string.apply_tweaks_mode_automatic))
+                }
             }
         },
     ),
     StageDefinition(
-        text = stringResource(Res.string.apply_tweaks_step2),
+        text = if (installMode == TweaksInstallMode.MANUAL) {
+            stringResource(Res.string.apply_tweaks_step1)
+        } else {
+            stringResource(Res.string.apply_tweaks_auto_step1)
+        },
+        content = { _ ->
+            if (installMode == TweaksInstallMode.MANUAL) {
+                Button(
+                    onClick = onDownloadCfg,
+                    modifier = Modifier.padding(start = 10.dp),
+                ) {
+                    Text(stringResource(Res.string.apply_tweaks_download))
+                }
+            } else {
+                TweaksScriptCopyBox(
+                    script = script,
+                    onCopy = onCopyScript,
+                )
+            }
+        },
+    ),
+    StageDefinition(
+        text = if (installMode == TweaksInstallMode.MANUAL) {
+            stringResource(Res.string.apply_tweaks_step2)
+        } else {
+            stringResource(Res.string.apply_tweaks_auto_step2)
+        },
     ),
 )
 
@@ -279,5 +360,54 @@ private fun LaunchArgsCopyBox(
             )
         }
     }
+}
+
+@Composable
+private fun TweaksScriptCopyBox(
+    script: String,
+    onCopy: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp, max = 180.dp)
+            .border(1.dp, MaterialTheme.colorScheme.outline)
+            .padding(start = 12.dp, top = 6.dp, end = 4.dp, bottom = 6.dp),
+    ) {
+        Text(
+            text = script,
+            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 36.dp)
+                .verticalScroll(rememberScrollState())
+                .align(Alignment.CenterStart),
+        )
+        IconButton(
+            onClick = onCopy,
+            enabled = script.isNotBlank(),
+            modifier = Modifier
+                .size(32.dp)
+                .align(Alignment.CenterEnd),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ContentCopy,
+                contentDescription = stringResource(Res.string.apply_launch_args_copy),
+            )
+        }
+    }
+}
+
+private enum class TweaksInstallMode {
+    MANUAL,
+    AUTOMATIC,
+}
+
+private fun buildTweaksInstallScript(
+    cfgFileName: String,
+    cfgContent: String,
+): String {
+    val base64 = window.btoa(cfgContent)
+    return "${'$'}p=Join-Path ${'$'}{env:ProgramFiles(x86)} \"Steam\\steamapps\\common\\Rust\\cfg\\$cfgFileName\";[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName(${'$'}p))|Out-Null;[IO.File]::WriteAllBytes(${'$'}p,[Convert]::FromBase64String(\"$base64\"));Write-Host \"Готово: ${'$'}p\" -ForegroundColor Green"
 }
 
