@@ -60,21 +60,25 @@ fun ApplyInstructionsScreen(
         TweaksInstallMode.MANUAL -> applyStore.isTweaksDownloadTriggered
         TweaksInstallMode.AUTOMATIC -> applyStore.isTweaksScriptCopied
     }
+    val tweaksMaxReachedStage = applyStore.maxReachedStageIndex(SetupModuleId.Tweaks, isTweaksActivated)
+    val launchArgsMaxReachedStage = applyStore.maxReachedStageIndex(SetupModuleId.LaunchArgs, isLaunchArgsCopied)
     val incompleteModuleIds = remember(
         selectedModules,
         cfgHasChanges,
         launchArgsHasSettings,
-        applyStore.isTweaksDownloadTriggered,
-        applyStore.isTweaksScriptCopied,
-        tweaksInstallMode,
+        isTweaksActivated,
         isLaunchArgsCopied,
+        tweaksMaxReachedStage,
+        launchArgsMaxReachedStage,
     ) {
         buildList {
-            if (SetupModuleId.Tweaks in selectedModules && cfgHasChanges && !isTweaksActivated) {
-                add(SetupModuleId.Tweaks)
+            if (SetupModuleId.Tweaks in selectedModules && cfgHasChanges) {
+                val isCompleted = isTweaksActivated && tweaksMaxReachedStage >= TWEAKS_TOTAL_STAGES - 1
+                if (!isCompleted) add(SetupModuleId.Tweaks)
             }
-            if (SetupModuleId.LaunchArgs in selectedModules && launchArgsHasSettings && !isLaunchArgsCopied) {
-                add(SetupModuleId.LaunchArgs)
+            if (SetupModuleId.LaunchArgs in selectedModules && launchArgsHasSettings) {
+                val isCompleted = isLaunchArgsCopied && launchArgsMaxReachedStage >= LAUNCH_ARGS_TOTAL_STAGES - 1
+                if (!isCompleted) add(SetupModuleId.LaunchArgs)
             }
         }
     }
@@ -402,6 +406,10 @@ private enum class TweaksInstallMode {
     MANUAL,
     AUTOMATIC,
 }
+
+// Must match the number of stages returned by tweaksStages() and launchArgsStages()
+private const val TWEAKS_TOTAL_STAGES = 3
+private const val LAUNCH_ARGS_TOTAL_STAGES = 4
 
 private fun buildTweaksInstallScript(
     cfgFileName: String,
