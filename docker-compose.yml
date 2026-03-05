@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   copilot-boost:
-    image: "registry.rust-copilot.ru/copilot-boost:0.0.7"
+    image: "registry.rust-copilot.ru/copilot-boost:0.0.8"
     container_name: "copilot-boost"
     restart: always
     networks:
