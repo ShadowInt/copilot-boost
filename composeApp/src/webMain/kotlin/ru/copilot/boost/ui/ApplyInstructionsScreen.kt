@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import ru.copilot.boost.presentation.ApplyInstructionsStore
 import ru.copilot.boost.presentation.SetupModuleId
+import ru.copilot.boost.presentation.TweaksInstallMode
 import ru.copilot.boost.copyTextToClipboard
 import ru.copilot.boost.suppressNextUnloadWarning
 import ru.copilot.boost.ui.components.AppSnackbarHost
@@ -52,16 +53,17 @@ fun ApplyInstructionsScreen(
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
     val copiedMessage = stringResource(Res.string.apply_launch_args_copied)
     val tweaksScriptCopiedMessage = stringResource(Res.string.apply_tweaks_script_copied)
-    var tweaksInstallMode by remember { mutableStateOf(TweaksInstallMode.MANUAL) }
     val tweaksInstallScript = remember(cfgFileName, cfgPatchedContent) {
         buildTweaksInstallScript(
             cfgFileName = cfgFileName,
             cfgContent = cfgPatchedContent,
         )
     }
+    val tweaksInstallMode = applyStore.tweaksInstallMode
     val isTweaksActivated = when (tweaksInstallMode) {
         TweaksInstallMode.MANUAL -> applyStore.isTweaksDownloadTriggered
         TweaksInstallMode.AUTOMATIC -> applyStore.isTweaksScriptCopied
+        null -> false
     }
     val tweaksMaxReachedStage = applyStore.maxReachedStageIndex(SetupModuleId.Tweaks, isTweaksActivated)
     val launchArgsMaxReachedStage = applyStore.maxReachedStageIndex(SetupModuleId.LaunchArgs, isLaunchArgsCopied)
@@ -168,7 +170,9 @@ fun ApplyInstructionsScreen(
                             stages = tweaksStages(
                                 installMode = tweaksInstallMode,
                                 script = tweaksInstallScript,
-                                onInstallModeChanged = { tweaksInstallMode = it },
+                                onInstallModeChanged = { mode ->
+                                    applyStore.selectTweaksInstallMode(mode)
+                                },
                                 onDownloadCfg = onDownloadCfgWithProgress,
                                 onCopyScript = onCopyTweaksScript,
                             ),
@@ -235,13 +239,13 @@ fun ApplyInstructionsScreen(
 
 @Composable
 private fun tweaksStages(
-    installMode: TweaksInstallMode,
+    installMode: TweaksInstallMode?,
     script: String,
     onInstallModeChanged: (TweaksInstallMode) -> Unit,
     onDownloadCfg: () -> Unit,
     onCopyScript: () -> Unit,
-): List<StageDefinition> = listOf(
-    StageDefinition(
+): List<StageDefinition> = buildList {
+    add(StageDefinition(
         text = stringResource(Res.string.apply_tweaks_step_select_mode),
         content = { _ ->
             Column(
@@ -296,37 +300,39 @@ private fun tweaksStages(
                 }
             }
         },
-    ),
-    StageDefinition(
-        text = if (installMode == TweaksInstallMode.MANUAL) {
-            stringResource(Res.string.apply_tweaks_step1)
-        } else {
-            stringResource(Res.string.apply_tweaks_auto_step1)
-        },
-        content = { _ ->
-            if (installMode == TweaksInstallMode.MANUAL) {
-                Button(
-                    onClick = onDownloadCfg,
-                    modifier = Modifier.padding(start = 10.dp),
-                ) {
-                    Text(stringResource(Res.string.apply_tweaks_download))
-                }
+    ))
+    if (installMode != null) {
+        add(StageDefinition(
+            text = if (installMode == TweaksInstallMode.AUTOMATIC) {
+                stringResource(Res.string.apply_tweaks_auto_step1)
             } else {
-                TweaksScriptCopyBox(
-                    script = script,
-                    onCopy = onCopyScript,
-                )
-            }
-        },
-    ),
-    StageDefinition(
-        text = if (installMode == TweaksInstallMode.MANUAL) {
-            stringResource(Res.string.apply_tweaks_step2)
-        } else {
-            stringResource(Res.string.apply_tweaks_auto_step2)
-        },
-    ),
-)
+                stringResource(Res.string.apply_tweaks_step1)
+            },
+            content = { _ ->
+                if (installMode == TweaksInstallMode.MANUAL) {
+                    Button(
+                        onClick = onDownloadCfg,
+                        modifier = Modifier.padding(start = 10.dp),
+                    ) {
+                        Text(stringResource(Res.string.apply_tweaks_download))
+                    }
+                } else {
+                    TweaksScriptCopyBox(
+                        script = script,
+                        onCopy = onCopyScript,
+                    )
+                }
+            },
+        ))
+        add(StageDefinition(
+            text = if (installMode == TweaksInstallMode.AUTOMATIC) {
+                stringResource(Res.string.apply_tweaks_auto_step2)
+            } else {
+                stringResource(Res.string.apply_tweaks_step2)
+            },
+        ))
+    }
+}
 
 @Composable
 private fun launchArgsStages(
@@ -433,11 +439,6 @@ private fun TweaksScriptCopyBox(
             )
         }
     }
-}
-
-private enum class TweaksInstallMode {
-    MANUAL,
-    AUTOMATIC,
 }
 
 // Must match the number of stages returned by tweaksStages() and launchArgsStages()

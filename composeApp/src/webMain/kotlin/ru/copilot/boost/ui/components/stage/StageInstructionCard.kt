@@ -108,10 +108,9 @@ private fun stageStatusFromProgress(
     maxReachedStageIndex: Int,
     lastStageIndex: Int,
 ): StageStatus {
+    val allCompleted = isActivated && maxReachedStageIndex >= lastStageIndex
     return when {
-        !isActivated && index == 0 -> StageStatus.IN_PROGRESS
-        !isActivated -> StageStatus.NOT_STARTED
-        maxReachedStageIndex >= lastStageIndex -> StageStatus.COMPLETED
+        allCompleted -> StageStatus.COMPLETED
         index < maxReachedStageIndex -> StageStatus.COMPLETED
         index == maxReachedStageIndex -> StageStatus.IN_PROGRESS
         else -> StageStatus.NOT_STARTED
