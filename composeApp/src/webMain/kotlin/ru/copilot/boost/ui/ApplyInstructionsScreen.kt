@@ -103,12 +103,14 @@ fun ApplyInstructionsScreen(
         {
             onDownloadCfg()
             applyStore.onTweaksDownloaded()
+            applyStore.updateMaxReachedStageIndex(SetupModuleId.Tweaks, 2)
         }
     }
     val onCopyTweaksScript = remember(tweaksInstallScript, applyStore, tweaksScriptCopiedMessage) {
         {
             copyTextToClipboard(tweaksInstallScript)
             applyStore.onTweaksScriptCopied()
+            applyStore.updateMaxReachedStageIndex(SetupModuleId.Tweaks, 2)
             coroutineScope.launch {
                 snackbarHostState.showAppSnackbar(
                     message = tweaksScriptCopiedMessage,
