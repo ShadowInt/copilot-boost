@@ -7,4 +7,5 @@ enum class AppScreen {
     Tweaks,
     Binds,
     LaunchArgs,
+    ApplyInstructions,
 }

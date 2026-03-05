@@ -31,6 +31,9 @@ class SetupFlowStore(
     var currentScreen by mutableStateOf(initialScreen)
         private set
 
+    var selectedModules by mutableStateOf<Set<SetupModuleId>>(emptySet())
+        private set
+
     private var setupFlow by mutableStateOf<List<SetupStepDefinition>>(emptyList())
     private var setupFlowStepIndex by mutableIntStateOf(0)
 
@@ -52,6 +55,7 @@ class SetupFlowStore(
     fun startFlow(selectedModules: Set<SetupModuleId>): Boolean {
         val flow = SetupModulesRegistry.buildSteps(selectedModules)
         if (flow.isEmpty()) return false
+        this.selectedModules = selectedModules
         setupFlow = flow
         setupFlowStepIndex = 0
         currentScreen = flow.first().screen
@@ -65,10 +69,15 @@ class SetupFlowStore(
         }
     }
 
+    fun returnToLastFlowStep() {
+        val step = setupFlow.getOrNull(setupFlowStepIndex) ?: return
+        currentScreen = step.screen
+    }
+
     fun goNextOrFinish(): AppScreen {
         val moved = moveForward()
         if (!moved) {
-            finishToHome()
+            currentScreen = AppScreen.ApplyInstructions
         }
         return currentScreen
     }
@@ -116,6 +125,7 @@ class SetupFlowStore(
     }
 
     private fun clearFlow() {
+        selectedModules = emptySet()
         setupFlow = emptyList()
         setupFlowStepIndex = 0
     }

@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import ru.copilot.boost.presentation.model.LaunchArgsCopyState
 import ru.copilot.boost.presentation.model.LaunchArgsUiState
-import ru.copilot.boost.ui.buildLaunchArgs
 
 class LaunchArgsStore(
     initialState: LaunchArgsUiState = LaunchArgsUiState(),
@@ -14,13 +13,7 @@ class LaunchArgsStore(
         private set
 
     val launchArgs: String
-        get() = buildLaunchArgs(
-            adminTeleport = state.adminTeleport,
-            fasterAltHeadTurn = state.fasterAltHeadTurn,
-            disablePlayerEyesAnimation = state.disablePlayerEyesAnimation,
-            serverHitmarker = state.serverHitmarker,
-            oldItemPickupNotifications = state.oldItemPickupNotifications,
-        )
+        get() = buildLaunchArgs(state)
 
     val hasSelectedSettings: Boolean
         get() = launchArgs.isNotBlank()
@@ -75,5 +68,25 @@ class LaunchArgsStore(
 
     override fun reset() {
         state = LaunchArgsUiState()
+    }
+
+    companion object {
+        fun buildLaunchArgs(state: LaunchArgsUiState): String = buildList {
+            if (state.adminTeleport) add("-global.enable_marker_teleport \"True\"")
+            if (state.fasterAltHeadTurn) {
+                add("-client.headlerp \"10\"")
+                add("-headlerp_inertia \"0\"")
+            }
+            if (state.disablePlayerEyesAnimation) {
+                add("-player.eye_blinking \"False\"")
+                add("-player.eye_movement \"False\"")
+            }
+            if (state.serverHitmarker) add("-hitnotify.notification_level \"2\"")
+            if (state.oldItemPickupNotifications) {
+                add("-global.showitempickupnotices \"1\"")
+                add("-global.showitemcountsonpickup \"False\"")
+                add("-global.usesingleitempickupnotice \"False\"")
+            }
+        }.joinToString(" ")
     }
 }

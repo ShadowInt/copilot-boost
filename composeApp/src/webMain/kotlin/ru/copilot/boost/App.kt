@@ -3,8 +3,10 @@ package ru.copilot.boost
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
+import ru.copilot.boost.presentation.ApplyInstructionsStore
 import ru.copilot.boost.presentation.CfgEditorStore
 import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.presentation.SetupCoordinator
@@ -28,8 +30,9 @@ import ru.copilot.boost.ui.i18n.setupText
 fun App() {
     val cfgStore = remember { CfgEditorStore() }
     val launchArgsStore = remember { LaunchArgsStore() }
-    val moduleStores = remember(cfgStore, launchArgsStore) {
-        listOf(cfgStore, launchArgsStore)
+    val applyStore = remember { ApplyInstructionsStore() }
+    val moduleStores = remember(cfgStore, launchArgsStore, applyStore) {
+        listOf(cfgStore, launchArgsStore, applyStore)
     }
     val flowStore = remember { SetupFlowStore() }
     val coordinator = remember(flowStore, moduleStores) {
@@ -60,7 +63,15 @@ fun App() {
         }
     }
 
-    val shouldWarnOnPageRefresh = currentScreen != AppScreen.Home
+    val shouldWarnOnPageRefresh = when (currentScreen) {
+        AppScreen.Home,
+        AppScreen.SetupSelection -> false
+        AppScreen.ClientCfgUpload,
+        AppScreen.Tweaks,
+        AppScreen.Binds,
+        AppScreen.LaunchArgs,
+        AppScreen.ApplyInstructions -> true
+    }
     val unloadWarningMessage = flowUnloadWarningText()
     if (shouldWarnOnPageRefresh) {
         DisposableEffect(currentScreen) {
@@ -69,6 +80,10 @@ fun App() {
             )
             onDispose { disposeWarning() }
         }
+    }
+
+    LaunchedEffect(cfgStore.state.patchedContent) {
+        applyStore.resetTweaksDownload()
     }
 
     MaterialTheme {
@@ -89,18 +104,14 @@ fun App() {
             AppScreen.Home -> {
                 HomeScreen(
                     appVersion = BuildKonfig.PROJECT_VERSION,
-                    onStartSetup = {
-                        coordinator.openSetupSelection()
-                    },
+                    onStartSetup = coordinator::openSetupSelection,
                 )
             }
 
             AppScreen.SetupSelection -> {
                 SetupSelectionScreen(
                     modules = selectionModulesUi,
-                    onStartFlow = { selectedModules ->
-                        coordinator.startFlow(selectedModules = selectedModules)
-                    },
+                    onStartFlow = coordinator::startFlow,
                     onBackHome = coordinator::goHome,
                 )
             }
@@ -169,6 +180,35 @@ fun App() {
                     LaunchArgsScreen(store = launchArgsStore)
                 }
             }
+
+            AppScreen.ApplyInstructions -> {
+                ApplyInstructionsScreen(
+                    selectedModules = flowStore.selectedModules,
+                    cfgHasChanges = cfgStore.state.hasChanges,
+                    cfgFileName = cfgStore.state.downloadFileName ?: "client.cfg",
+                    cfgPatchedContent = cfgStore.state.patchedContent,
+                    onDownloadCfg = {
+                        val fileName = cfgStore.state.downloadFileName ?: return@ApplyInstructionsScreen
+                        downloadCfgFile(
+                            fileName = fileName,
+                            content = cfgStore.state.patchedContent,
+                        )
+                    },
+                    launchArgsHasSettings = launchArgsStore.hasSelectedSettings,
+                    launchArgs = launchArgsStore.launchArgs,
+                    isLaunchArgsCopied = launchArgsStore.isCurrentSelectionCopied,
+                    onCopyLaunchArgs = {
+                        val args = launchArgsStore.launchArgs
+                        if (args.isNotBlank()) {
+                            copyTextToClipboard(args)
+                            launchArgsStore.onCopyConfirmed()
+                        }
+                    },
+                    onBack = coordinator::returnToLastFlowStep,
+                    onGoHome = coordinator::goHome,
+                    applyStore = applyStore,
+                )
+            }
         }
     }
 }
@@ -191,17 +231,16 @@ private fun FlowStepScaffold(
     val stepSubtitle = flowStepSubtitle(flowUiState.currentStepNumber, flowUiState.totalSteps)
     val primaryActionText = primaryActionTextOverride ?: flowPrimaryActionText(flowUiState.primaryAction)
 
+    val onBack = remember(coordinator) { { coordinator.handleFlowAction(SetupFlowAction.Back) } }
+    val onNext = remember(coordinator) { { coordinator.handleFlowAction(SetupFlowAction.Next) } }
+
     ModuleScaffold(
         title = flowUiState.currentStepTitleKey?.let { setupText(it) } ?: setupText(defaultTitleKey),
         subtitle = stepSubtitle,
-        onBack = { coordinator.handleFlowAction(SetupFlowAction.Back) },
+        onBack = onBack,
         primaryActionText = primaryActionText,
         primaryActionEnabled = flowUiState.canProceed,
-        onPrimaryAction = if (flowUiState.isCurrentStepScreen) {
-            { coordinator.handleFlowAction(SetupFlowAction.Next) }
-        } else {
-            null
-        },
+        onPrimaryAction = if (flowUiState.isCurrentStepScreen) onNext else null,
         content = content,
     )
 }

@@ -8,6 +8,7 @@ import copilotboost.composeapp.generated.resources.module_launch_args_descriptio
 import copilotboost.composeapp.generated.resources.module_launch_args_title
 import copilotboost.composeapp.generated.resources.module_tweaks_description
 import copilotboost.composeapp.generated.resources.module_tweaks_title
+import copilotboost.composeapp.generated.resources.step_apply_instructions_title
 import copilotboost.composeapp.generated.resources.step_binds_title
 import copilotboost.composeapp.generated.resources.step_client_cfg_upload_title
 import copilotboost.composeapp.generated.resources.step_launch_args_title
@@ -27,4 +28,5 @@ fun setupText(key: SetupTextKey): String = when (key) {
     SetupTextKey.StepTweaksTitle -> stringResource(Res.string.step_tweaks_title)
     SetupTextKey.StepLaunchArgsTitle -> stringResource(Res.string.step_launch_args_title)
     SetupTextKey.StepBindsTitle -> stringResource(Res.string.step_binds_title)
+    SetupTextKey.StepApplyInstructionsTitle -> stringResource(Res.string.step_apply_instructions_title)
 }

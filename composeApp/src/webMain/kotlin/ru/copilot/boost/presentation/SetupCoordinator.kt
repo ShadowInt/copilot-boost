@@ -19,10 +19,11 @@ class SetupCoordinator(
     }
 
     fun handleFlowAction(action: SetupFlowAction) {
-        val destination = flowStore.dispatch(action)
-        if (action == SetupFlowAction.Next && destination == ru.copilot.boost.navigation.AppScreen.Home) {
-            resetAllModules()
-        }
+        flowStore.dispatch(action)
+    }
+
+    fun returnToLastFlowStep() {
+        flowStore.returnToLastFlowStep()
     }
 
     private fun resetAllModules() {

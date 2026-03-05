@@ -72,7 +72,7 @@
     <string name="preset_strobe_lights_label">Отключить стробоскопы</string>
     <string name="preset_strobe_lights_hint">Полностью отключает стробоскопы в игре, оставляя только звук их работы. Может сильно повысить FPS, если рядом несколько стробоскопов.</string>
     <string name="preset_held_item_size_label">Уменьшить предмет в руках</string>
-    <string name="preset_held_item_size_hint">Делает оружие и предметы в руках персонажа меньше. Функция работает только если уголь обзора установлен выше 70.</string>
+    <string name="preset_held_item_size_hint">Делает оружие и предметы в руках персонажа меньше. Функция работает только если угол обзора установлен выше 70.</string>
     <string name="preset_event_notifications_label">Вернуть текстовые уведомления об ивентах</string>
     <string name="preset_event_notifications_hint">Возвращает текстовые уведомления о старте ивентов, таких как появление на карте карго, патрульного вертолета, чинука и т.п.</string>
     <string name="preset_autocraft_delay_label">Убрать задержку в меню автокрафта</string>
@@ -95,16 +95,15 @@
     <string name="preset_left_hand_hint">Переносит оружие и предметы в левую руку персонажа</string>
 
     <!-- LaunchArgsScreen -->
-    <string name="launch_args_settings_title">Настройки</string>
-    <string name="launch_args_window_title">Настройка параметров запуска</string>
-    <string name="launch_args_select_and_copy">Выберите настройки и скопируйте их</string>
-    <string name="launch_args_copy_button">Копировать</string>
-    <string name="launch_args_copied">Скопировано</string>
+    <string name="launch_args_title">Парметры</string>
+    <string name="launch_args_window_title">Предпросмотр</string>
+    <string name="launch_args_preview_empty">Выберите параметры слева</string>
     <string name="launch_args_group_recommended">Рекомендуемые</string>
     <string name="launch_args_group_visual">Визуальные эффекты</string>
     <string name="launch_args_group_experimental">Экспериментальные</string>
-    <string name="launch_args_stage_open_steam">Откройте свойства игры в Steam</string>
-    <string name="launch_args_stage_paste_params">Вставьте сгенерированные параметры в данное поле</string>
+    <string name="launch_args_stage_open_steam">Откройте свойства Rust в Steam самостоятельно или нажмите «Перейти к свойствам Rust в Steam» для автоматического открытия нужного раздела.</string>
+    <string name="launch_args_steam_link_phrase">Перейти к свойствам Rust в Steam</string>
+    <string name="launch_args_stage_paste_params">Вставьте скопированные параметры в данное поле</string>
     <string name="launch_args_stage_done">Готово</string>
     <string name="launch_args_admin_teleport_label">Админский телепорт</string>
     <string name="launch_args_admin_teleport_hint">При наличии админки автоматически телепортирует игрока в точку установки маркера на карте.</string>
@@ -116,6 +115,29 @@
     <string name="launch_args_server_hitmarker_hint">При включении хитмаркер отображается только в том случае, когда сервер подтверждает регистрацию попадания. Добавляет небольшую задержку хитмаркерам, но избавляет от дезинформации.</string>
     <string name="launch_args_old_pickup_label">Старые уведомления о подборе предметов</string>
     <string name="launch_args_old_pickup_hint">При включении возвращает старый способ отображения подобранных предметов: каждый предмет отображается отдельно.</string>
+
+    <!-- ApplyInstructionsScreen -->
+    <string name="step_apply_instructions_title">Применение настроек</string>
+    <string name="apply_skipped">Пропущено</string>
+    <string name="apply_tweaks_step1">Скачать измененный файл конфигурации</string>
+    <string name="apply_tweaks_step2">Заменить файл client.cfg в папке cfg игры</string>
+    <string name="apply_tweaks_download">Скачать</string>
+    <string name="apply_tweaks_step_select_mode">Выберите способ установки твиков</string>
+    <string name="apply_tweaks_mode_manual">Ручной</string>
+    <string name="apply_tweaks_mode_automatic">Автоматический (через скрипт)</string>
+    <string name="apply_tweaks_auto_step1">Скопируйте скрипт установки</string>
+    <string name="apply_tweaks_auto_step2">Вставьте скрипт в PowerShell или CMD и запустите его</string>
+    <string name="apply_tweaks_script_copied">Скрипт установки скопирован</string>
+    <string name="apply_launch_args_step1">Скопируйте выбранные параметры запуска</string>
+    <string name="apply_launch_args_copy">Копировать</string>
+    <string name="apply_launch_args_copied">Параметры запуска скопированы</string>
+    <string name="apply_status_completed">Выполнено</string>
+    <string name="apply_status_in_progress">Не завершено</string>
+    <string name="apply_go_home">На главную</string>
+    <string name="apply_exit_dialog_title">Не все настройки применены</string>
+    <string name="apply_exit_dialog_message">Следующие настройки еще не завершены:\n%1$s\n\nВы действительно хотите покинуть страницу?</string>
+    <string name="apply_exit_dialog_confirm">Да</string>
+    <string name="apply_exit_dialog_dismiss">Отмена</string>
 
     <!-- Errors -->
     <string name="error_invalid_file_name">Разрешен только файл с именем client.cfg</string>
