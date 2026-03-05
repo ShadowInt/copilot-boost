@@ -18,6 +18,7 @@ import ru.copilot.boost.presentation.ApplyInstructionsStore
 import ru.copilot.boost.presentation.SetupModuleId
 import ru.copilot.boost.suppressNextUnloadWarning
 import ru.copilot.boost.ui.components.AppSnackbarHost
+import ru.copilot.boost.ui.components.ExitConfirmationDialog
 import ru.copilot.boost.ui.components.ModuleInstructionCard
 import ru.copilot.boost.ui.components.ModuleScaffold
 import ru.copilot.boost.ui.components.SnackbarTone
@@ -44,23 +45,19 @@ fun ApplyInstructionsScreen(
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
     val copiedMessage = stringResource(Res.string.apply_launch_args_copied)
-    val tweaksTitle = stringResource(Res.string.module_tweaks_title)
-    val launchArgsTitle = stringResource(Res.string.module_launch_args_title)
-    val incompleteModuleNames = remember(
+    val incompleteModuleIds = remember(
         selectedModules,
         cfgHasChanges,
         launchArgsHasSettings,
         applyStore.isTweaksDownloadTriggered,
         isLaunchArgsCopied,
-        tweaksTitle,
-        launchArgsTitle,
     ) {
         buildList {
             if (SetupModuleId.Tweaks in selectedModules && cfgHasChanges && !applyStore.isTweaksDownloadTriggered) {
-                add(tweaksTitle)
+                add(SetupModuleId.Tweaks)
             }
             if (SetupModuleId.LaunchArgs in selectedModules && launchArgsHasSettings && !isLaunchArgsCopied) {
-                add(launchArgsTitle)
+                add(SetupModuleId.LaunchArgs)
             }
         }
     }
@@ -83,9 +80,9 @@ fun ApplyInstructionsScreen(
         }
     }
 
-    val onGoHomeWithValidation = remember(incompleteModuleNames, onGoHome) {
+    val onGoHomeWithValidation = remember(incompleteModuleIds, onGoHome) {
         {
-            if (incompleteModuleNames.isEmpty()) {
+            if (incompleteModuleIds.isEmpty()) {
                 onGoHome()
             } else {
                 showExitConfirmationDialog = true
@@ -111,7 +108,9 @@ fun ApplyInstructionsScreen(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                val visibleModules = SetupModuleId.entries.filter { it in selectedModules }
+                val visibleModules = remember(selectedModules) {
+                    SetupModuleId.entries.filter { it in selectedModules }
+                }
                 var expandedModuleId by remember(selectedModules) {
                     mutableStateOf(visibleModules.firstOrNull())
                 }
@@ -167,37 +166,26 @@ fun ApplyInstructionsScreen(
                     .padding(16.dp),
             )
 
-            if (showExitConfirmationDialog) {
-                AlertDialog(
-                    onDismissRequest = { showExitConfirmationDialog = false },
-                    title = {
-                        Text(text = stringResource(Res.string.apply_exit_dialog_title))
-                    },
-                    text = {
-                        val incompleteText = incompleteModuleNames.joinToString(separator = "\n") { "- $it" }
-                        Text(
-                            text = stringResource(Res.string.apply_exit_dialog_message, incompleteText),
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                showExitConfirmationDialog = false
-                                onGoHome()
-                            },
-                        ) {
-                            Text(stringResource(Res.string.apply_exit_dialog_confirm))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showExitConfirmationDialog = false },
-                        ) {
-                            Text(stringResource(Res.string.apply_exit_dialog_dismiss))
-                        }
-                    },
-                )
+            val incompleteModuleTitles = incompleteModuleIds.map { moduleId ->
+                when (moduleId) {
+                    SetupModuleId.Tweaks -> stringResource(Res.string.module_tweaks_title)
+                    SetupModuleId.LaunchArgs -> stringResource(Res.string.module_launch_args_title)
+                    SetupModuleId.Binds -> stringResource(Res.string.module_binds_title)
+                }
             }
+            val incompleteText = incompleteModuleTitles.joinToString(separator = "\n") { "- $it" }
+            ExitConfirmationDialog(
+                visible = showExitConfirmationDialog,
+                title = stringResource(Res.string.apply_exit_dialog_title),
+                message = stringResource(Res.string.apply_exit_dialog_message, incompleteText),
+                confirmText = stringResource(Res.string.apply_exit_dialog_confirm),
+                dismissText = stringResource(Res.string.apply_exit_dialog_dismiss),
+                onConfirm = {
+                    showExitConfirmationDialog = false
+                    onGoHome()
+                },
+                onDismiss = { showExitConfirmationDialog = false },
+            )
         }
     }
 }
