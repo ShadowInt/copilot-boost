@@ -1,6 +1,8 @@
 package ru.copilot.boost.ui
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -8,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import copilotboost.composeapp.generated.resources.*
@@ -247,19 +250,49 @@ private fun tweaksStages(
                     .padding(start = 10.dp, end = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                val manualInteractionSource = remember { MutableInteractionSource() }
+                val autoInteractionSource = remember { MutableInteractionSource() }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = installMode == TweaksInstallMode.MANUAL,
+                            onClick = { onInstallModeChanged(TweaksInstallMode.MANUAL) },
+                            role = Role.RadioButton,
+                            interactionSource = manualInteractionSource,
+                            indication = null,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     RadioButton(
                         selected = installMode == TweaksInstallMode.MANUAL,
-                        onClick = { onInstallModeChanged(TweaksInstallMode.MANUAL) },
+                        onClick = null,
                     )
-                    Text(text = stringResource(Res.string.apply_tweaks_mode_manual))
+                    Text(
+                        text = stringResource(Res.string.apply_tweaks_mode_manual),
+                        modifier = Modifier.padding(start = 10.dp),
+                    )
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = installMode == TweaksInstallMode.AUTOMATIC,
+                            onClick = { onInstallModeChanged(TweaksInstallMode.AUTOMATIC) },
+                            role = Role.RadioButton,
+                            interactionSource = autoInteractionSource,
+                            indication = null,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     RadioButton(
                         selected = installMode == TweaksInstallMode.AUTOMATIC,
-                        onClick = { onInstallModeChanged(TweaksInstallMode.AUTOMATIC) },
+                        onClick = null,
                     )
-                    Text(text = stringResource(Res.string.apply_tweaks_mode_automatic))
+                    Text(
+                        text = stringResource(Res.string.apply_tweaks_mode_automatic),
+                        modifier = Modifier.padding(start = 10.dp),
+                    )
                 }
             }
         },
