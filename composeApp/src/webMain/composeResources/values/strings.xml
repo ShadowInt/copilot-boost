@@ -10,11 +10,14 @@
     <string name="module_tweaks_description">Понадобится файл client.cfg через drag-and-drop</string>
     <string name="module_launch_args_title">Параметры запуска</string>
     <string name="module_launch_args_description">Настройка аргументов запуска клиента</string>
+    <string name="module_graphics_title">Графика</string>
+    <string name="module_graphics_description">Настройка графических параметров через client.cfg</string>
     <string name="module_binds_title">Бинды</string>
     <string name="module_binds_description">Настройка и управление биндами</string>
 
     <string name="step_client_cfg_upload_title">Загрузка клиентской конфигурации</string>
     <string name="step_tweaks_title">Твики</string>
+    <string name="step_graphics_title">Настройка графики</string>
     <string name="step_launch_args_title">Параметры запуска</string>
     <string name="step_binds_title">Бинды</string>
 
@@ -138,6 +141,24 @@
     <string name="apply_exit_dialog_message">Следующие настройки еще не завершены:\n%1$s\n\nВы действительно хотите покинуть страницу?</string>
     <string name="apply_exit_dialog_confirm">Да</string>
     <string name="apply_exit_dialog_dismiss">Отмена</string>
+
+    <!-- GraphicsScreen -->
+    <string name="graphics_presets_title">Пресеты</string>
+    <string name="graphics_preset_performance">Производительность</string>
+    <string name="graphics_preset_combat">Комбат</string>
+    <string name="graphics_preset_balance">Баланс</string>
+    <string name="graphics_preset_graphics">Графика</string>
+    <string name="graphics_settings_title">Настройки графики</string>
+    <string name="graphics_shadow_quality">Качество теней</string>
+    <string name="graphics_texture_quality">Качество текстур</string>
+    <string name="graphics_lighting_quality">Качество освещения</string>
+    <string name="graphics_tree_quality">Качество деревьев</string>
+    <string name="graphics_water_reflections">Отражения на воде</string>
+    <string name="graphics_grass_quality">Качество травы</string>
+    <string name="graphics_cloud_quality">Качество облаков</string>
+    <string name="graphics_antialiasing">Сглаживание</string>
+    <string name="graphics_level_min">Мин</string>
+    <string name="graphics_level_max">Макс</string>
 
     <!-- Errors -->
     <string name="error_invalid_file_name">Разрешен только файл с именем client.cfg</string>

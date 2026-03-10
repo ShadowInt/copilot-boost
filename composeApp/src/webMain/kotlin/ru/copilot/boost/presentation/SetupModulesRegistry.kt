@@ -4,6 +4,7 @@ import ru.copilot.boost.navigation.AppScreen
 
 enum class SetupModuleId {
     Tweaks,
+    Graphics,
     LaunchArgs,
     Binds,
 }
@@ -11,12 +12,15 @@ enum class SetupModuleId {
 enum class SetupTextKey {
     ModuleTweaksTitle,
     ModuleTweaksDescription,
+    ModuleGraphicsTitle,
+    ModuleGraphicsDescription,
     ModuleLaunchArgsTitle,
     ModuleLaunchArgsDescription,
     ModuleBindsTitle,
     ModuleBindsDescription,
     StepClientCfgUploadTitle,
     StepTweaksTitle,
+    StepGraphicsTitle,
     StepLaunchArgsTitle,
     StepBindsTitle,
     StepApplyInstructionsTitle,
@@ -58,6 +62,22 @@ object SetupModulesRegistry {
             ),
         ),
         SetupModuleDefinition(
+            id = SetupModuleId.Graphics,
+            titleKey = SetupTextKey.ModuleGraphicsTitle,
+            descriptionKey = SetupTextKey.ModuleGraphicsDescription,
+            steps = listOf(
+                SetupStepDefinition(
+                    screen = AppScreen.ClientCfgUpload,
+                    titleKey = SetupTextKey.StepClientCfgUploadTitle,
+                    canProceed = { context -> context.hasClientCfg },
+                ),
+                SetupStepDefinition(
+                    screen = AppScreen.Graphics,
+                    titleKey = SetupTextKey.StepGraphicsTitle,
+                ),
+            ),
+        ),
+        SetupModuleDefinition(
             id = SetupModuleId.LaunchArgs,
             titleKey = SetupTextKey.ModuleLaunchArgsTitle,
             descriptionKey = SetupTextKey.ModuleLaunchArgsDescription,
@@ -82,8 +102,10 @@ object SetupModulesRegistry {
     )
 
     fun buildSteps(selectedModules: Set<SetupModuleId>): List<SetupStepDefinition> {
-        return modules
+        val allSteps = modules
             .filter { it.id in selectedModules }
             .flatMap { it.steps }
+        val seenScreens = mutableSetOf<AppScreen>()
+        return allSteps.filter { step -> seenScreens.add(step.screen) }
     }
 }
