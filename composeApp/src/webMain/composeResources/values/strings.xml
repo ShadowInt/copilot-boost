@@ -126,7 +126,7 @@
     <string name="apply_tweaks_mode_manual">Ручной</string>
     <string name="apply_tweaks_mode_automatic">Автоматический (через скрипт)</string>
     <string name="apply_tweaks_auto_step1">Скопируйте скрипт установки</string>
-    <string name="apply_tweaks_auto_step2">Вставьте скрипт в PowerShell или CMD и запустите его</string>
+    <string name="apply_tweaks_auto_step2">Вставьте скрипт в PowerShell и нажмите Enter</string>
     <string name="apply_tweaks_script_copied">Скрипт установки скопирован</string>
     <string name="apply_launch_args_step1">Скопируйте выбранные параметры запуска</string>
     <string name="apply_launch_args_copy">Копировать</string>
