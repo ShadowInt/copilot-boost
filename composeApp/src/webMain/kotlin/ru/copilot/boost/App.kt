@@ -6,14 +6,17 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import ru.copilot.boost.navigation.AppScreen
+import ru.copilot.boost.domain.CfgPatcher
 import ru.copilot.boost.presentation.ApplyInstructionsStore
 import ru.copilot.boost.presentation.CfgEditorStore
+import ru.copilot.boost.presentation.GraphicsStore
 import ru.copilot.boost.presentation.LaunchArgsStore
 import ru.copilot.boost.presentation.SetupCoordinator
 import ru.copilot.boost.presentation.SetupFlowAction
 import ru.copilot.boost.presentation.SetupFlowContext
 import ru.copilot.boost.presentation.SetupFlowStore
 import ru.copilot.boost.presentation.SetupFlowUiState
+import ru.copilot.boost.presentation.SetupModuleId
 import ru.copilot.boost.presentation.SetupModulesRegistry
 import ru.copilot.boost.presentation.SetupTextKey
 import ru.copilot.boost.presentation.model.CfgUploadError
@@ -29,10 +32,12 @@ import ru.copilot.boost.ui.i18n.setupText
 @Composable
 fun App() {
     val cfgStore = remember { CfgEditorStore() }
+    val graphicsStore = remember { GraphicsStore() }
     val launchArgsStore = remember { LaunchArgsStore() }
     val applyStore = remember { ApplyInstructionsStore() }
-    val moduleStores = remember(cfgStore, launchArgsStore, applyStore) {
-        listOf(cfgStore, launchArgsStore, applyStore)
+    val cfgPatcher = remember { CfgPatcher() }
+    val moduleStores = remember(cfgStore, graphicsStore, launchArgsStore, applyStore) {
+        listOf(cfgStore, graphicsStore, launchArgsStore, applyStore)
     }
     val flowStore = remember { SetupFlowStore() }
     val coordinator = remember(flowStore, moduleStores) {
@@ -44,9 +49,10 @@ fun App() {
     val currentScreen = flowStore.currentScreen
 
     if (currentScreen == AppScreen.ClientCfgUpload) {
-        val onFileSelectedAndAdvance: (ru.copilot.boost.model.UploadedFileData) -> Unit = remember(cfgStore, coordinator) {
+        val onFileSelectedAndAdvance: (ru.copilot.boost.model.UploadedFileData) -> Unit = remember(cfgStore, graphicsStore, coordinator) {
             { fileData ->
                 cfgStore.onFileSelected(fileData)
+                graphicsStore.initWithFile(fileData)
                 coordinator.handleFlowAction(SetupFlowAction.Next)
             }
         }
@@ -68,6 +74,7 @@ fun App() {
         AppScreen.SetupSelection -> false
         AppScreen.ClientCfgUpload,
         AppScreen.Tweaks,
+        AppScreen.Graphics,
         AppScreen.Binds,
         AppScreen.LaunchArgs,
         AppScreen.ApplyInstructions -> true
@@ -130,6 +137,7 @@ fun App() {
                             openFilePicker(
                                 onFileSelected = { fileData ->
                                     cfgStore.onFileSelected(fileData)
+                                    graphicsStore.initWithFile(fileData)
                                     coordinator.handleFlowAction(SetupFlowAction.Next)
                                 },
                                 onInvalidFile = cfgStore::onInvalidFile,
@@ -158,6 +166,25 @@ fun App() {
                 }
             }
 
+            AppScreen.Graphics -> {
+                FlowStepScaffold(
+                    flowUiState = flowUiState,
+                    defaultTitleKey = SetupTextKey.StepGraphicsTitle,
+                    coordinator = coordinator,
+                    primaryActionTextOverride = if (!graphicsStore.state.hasChanges) {
+                        stringResource(Res.string.flow_action_skip)
+                    } else {
+                        null
+                    },
+                ) {
+                    GraphicsScreen(
+                        state = graphicsStore.state,
+                        onSettingChanged = graphicsStore::onSettingChanged,
+                        onPresetSelected = graphicsStore::onPresetSelected,
+                    )
+                }
+            }
+
             AppScreen.Binds -> {
                 FlowStepScaffold(
                     flowUiState = flowUiState,
@@ -182,16 +209,32 @@ fun App() {
             }
 
             AppScreen.ApplyInstructions -> {
+                val finalCfgContent = remember(
+                    cfgStore.state.patchedContent,
+                    graphicsStore.state.settings,
+                    flowStore.selectedModules,
+                ) {
+                    val base = cfgStore.state.patchedContent.ifEmpty {
+                        cfgStore.state.uploadedFile?.content ?: ""
+                    }
+                    if (SetupModuleId.Graphics in flowStore.selectedModules && graphicsStore.state.hasChanges) {
+                        cfgPatcher.applyKeyValues(base, graphicsStore.state.settings.toKeyValues()).updatedContent
+                    } else {
+                        base
+                    }
+                }
+                val cfgHasAnyChanges = cfgStore.state.hasChanges || graphicsStore.state.hasChanges
+
                 ApplyInstructionsScreen(
                     selectedModules = flowStore.selectedModules,
-                    cfgHasChanges = cfgStore.state.hasChanges,
+                    cfgHasChanges = cfgHasAnyChanges,
                     cfgFileName = cfgStore.state.downloadFileName ?: "client.cfg",
-                    cfgPatchedContent = cfgStore.state.patchedContent,
+                    cfgPatchedContent = finalCfgContent,
                     onDownloadCfg = {
                         val fileName = cfgStore.state.downloadFileName ?: return@ApplyInstructionsScreen
                         downloadCfgFile(
                             fileName = fileName,
-                            content = cfgStore.state.patchedContent,
+                            content = finalCfgContent,
                         )
                     },
                     launchArgsHasSettings = launchArgsStore.hasSelectedSettings,

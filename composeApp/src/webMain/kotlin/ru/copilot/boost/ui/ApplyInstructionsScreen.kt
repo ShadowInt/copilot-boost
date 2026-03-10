@@ -200,6 +200,23 @@ fun ApplyInstructionsScreen(
                             maxReachedStageIndex = launchArgsMaxReachedStage,
                             onMaxReachedStageIndexChanged = { index -> applyStore.updateMaxReachedStageIndex(moduleId, index) },
                         )
+                        SetupModuleId.Graphics -> ModuleInstructionCard(
+                            modifier = cardModifier,
+                            title = stringResource(Res.string.module_graphics_title),
+                            expanded = isExpanded,
+                            onToggle = onToggle,
+                        ) {
+                            if (cfgHasChanges) {
+                                Text(
+                                    text = stringResource(Res.string.apply_status_completed),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(8.dp),
+                                )
+                            } else {
+                                SkippedLabel()
+                            }
+                        }
                         SetupModuleId.Binds -> ModuleInstructionCard(
                             modifier = cardModifier,
                             title = stringResource(Res.string.module_binds_title),
@@ -222,6 +239,7 @@ fun ApplyInstructionsScreen(
             val incompleteModuleTitles = incompleteModuleIds.map { moduleId ->
                 when (moduleId) {
                     SetupModuleId.Tweaks -> stringResource(Res.string.module_tweaks_title)
+                    SetupModuleId.Graphics -> stringResource(Res.string.module_graphics_title)
                     SetupModuleId.LaunchArgs -> stringResource(Res.string.module_launch_args_title)
                     SetupModuleId.Binds -> stringResource(Res.string.module_binds_title)
                 }

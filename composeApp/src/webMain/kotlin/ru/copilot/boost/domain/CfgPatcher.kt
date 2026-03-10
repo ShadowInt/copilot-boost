@@ -30,7 +30,26 @@ class CfgPatcher {
     ): CfgPatchResult {
         val activePresetLinesByKey = buildActivePresetLinesByKey(enabled)
         val keysToRemove = buildKeysToRemove(remove)
+        return applyChanges(content, activePresetLinesByKey, keysToRemove, preparedContent)
+    }
 
+    fun applyKeyValues(
+        content: String,
+        keyValues: Map<String, String>,
+        preparedContent: PreparedCfgContent? = null,
+    ): CfgPatchResult {
+        val linesByKey = keyValues
+            .mapKeys { it.key.lowercase() }
+            .mapValues { (key, value) -> "$key $value" }
+        return applyChanges(content, linesByKey, emptySet(), preparedContent)
+    }
+
+    private fun applyChanges(
+        content: String,
+        activeLinesByKey: Map<String, String>,
+        keysToRemove: Set<String>,
+        preparedContent: PreparedCfgContent?,
+    ): CfgPatchResult {
         val prepared = preparedContent ?: prepareContent(content)
         val originalLines = prepared.lines
         val originalKeys = prepared.keys
@@ -40,7 +59,7 @@ class CfgPatcher {
 
         originalLines.forEachIndexed { index, line ->
             val key = originalKeys.getOrNull(index)
-            if (key == null || !activePresetLinesByKey.containsKey(key)) {
+            if (key == null || !activeLinesByKey.containsKey(key)) {
                 if (key != null && key in keysToRemove) {
                     diffRows += DiffRow(
                         type = DiffRowType.REMOVED,
@@ -67,7 +86,7 @@ class CfgPatcher {
                 return@forEachIndexed
             }
 
-            val canonicalLine = activePresetLinesByKey.getValue(key)
+            val canonicalLine = activeLinesByKey.getValue(key)
             updatedLines += canonicalLine
             diffRows += if (line.trim() == canonicalLine) {
                 DiffRow(
@@ -85,7 +104,7 @@ class CfgPatcher {
             processedPresetKeys += key
         }
 
-        val keysToAppend = activePresetLinesByKey.keys - processedPresetKeys
+        val keysToAppend = activeLinesByKey.keys - processedPresetKeys
         if (keysToAppend.isNotEmpty()) {
             while (updatedLines.isNotEmpty() && updatedLines.last().isBlank()) {
                 updatedLines.removeAt(updatedLines.lastIndex)
@@ -94,7 +113,7 @@ class CfgPatcher {
                 }
             }
             keysToAppend.forEach { key ->
-                val line = activePresetLinesByKey.getValue(key)
+                val line = activeLinesByKey.getValue(key)
                 updatedLines += line
                 diffRows += DiffRow(
                     type = DiffRowType.ADDED,

@@ -5,6 +5,7 @@ enum class AppScreen {
     SetupSelection,
     ClientCfgUpload,
     Tweaks,
+    Graphics,
     Binds,
     LaunchArgs,
     ApplyInstructions,
